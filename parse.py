@@ -1,7 +1,7 @@
 """
 this file is based on the cohere
 
-the process is
+The process of application is: 
 
 1. pdf -> array -> cohere embedding -> store in pinecone
 
