@@ -93,7 +93,7 @@ xq = co.embed(
     truncate='LEFT'
 ).embeddings
 
-res = index.query(xq, top_k=5, include_metadata=True)
+res = index.query(xq, top_k=1, include_metadata=True)
 ## print(res)
 
 searchresults=[]
@@ -105,7 +105,17 @@ searchresults = " ".join(searchresults)
 infer answer from searching results
 """
 
-prompt = "answer the question about " + query + " based on the information in " + searchresults
+##prompt = "answer the question about " + query + " based on the information in " + searchresults
+
+prompt = """Answer the question as truthfully as possible using the provided text, and if the answer is not contained within the text below, say "I don't know"
+
+Context:
+{}
+
+Q: {}
+A:""".format(searchresults,query)
+print(prompt)
+
 
 response = co.generate(  
     model='xlarge',  
