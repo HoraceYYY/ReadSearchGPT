@@ -81,7 +81,6 @@ def google_official_search(query: str, num_results: int = 8) -> str | list[str]:
     #return safe_google_results(search_results_links)
 
 ## take the url and look for information in the page
-
 def searchContent(urls, searchQuery, maxDepth, depth: int = 0, checkedURL=None, results=None):
     if checkedURL is None:
         checkedURL = []
