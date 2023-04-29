@@ -1,0 +1,35 @@
+Appian: modules, customers, and functionality
+
+
+Website: Data-Provider Java Module [Custom Code Development v8.7]
+url: https://docs.appian.com/suite/help/23.1/rpa-8.7/custom_code/data-provider-module.html
+Summary: What is the overview of Appian's modules, customers, and functionality?
+
+Website: Process Queues Java Module [Custom Code Development v8.7]
+url: https://docs.appian.com/suite/help/23.1/rpa-8.7/custom_code/process-queues-module.html
+Summary: I'm sorry, I cannot provide an answer without a specific question.
+
+Website: Appian Community
+url: https://community.appian.com/b/appmarket/posts/data-ninja
+Summary: The content describes a paid module called Data Ninja designed by Macedon Technologies for Appian applications. Data Ninja provides an easy-to-use interface for creating and customizing reports, and it includes different modules targeted towards functionally-oriented business users and tech-oriented super users. The module includes a reporting wizard that allows any Appian user to create fully interactive reports on their data. It also includes a data explorer module that enables a new level of control over the data stored in an Appian application. The explorer provides advanced features and exposes add, update, and delete operations to users with appropriate permissions. The article does not provide information about specific customers of Data Ninja or the full functionality of Appian.
+
+Website: Appian Community
+url: https://community.appian.com/b/appmarket
+Summary: The content does not provide information on Appian's modules, customers, and functionality.
+
+Website: What does Appian do | How does Appian work | Business Model
+url: https://thestrategystory.com/2023/02/12/what-does-appian-do-how-does-appian-work-business-model/
+Summary: Appian Corporation is a cloud computing and enterprise software company that sells a platform as a service (PaaS) for building enterprise software applications. Appian has built a business model around low-code development, process mining, business process management, and case management. The company provides a low-code platform that accelerates the creation of high-impact business applications and workflows, enabling customers to automate the most important aspects of their business. Appian's customers take advantage of its process mining, workflow engine, dynamic case management, and complete automation capabilities, which include Appian's rules engine, native robotic process automation, or RPA, native Intelligent Document Processing, or IDP, artificial intelligence, or AI, and Smart Services. As of December 2021, Appian had 816 customers in various industries, of which 635 were commercial and 181 were government or non-commercial entities. Appian's customers include financial services, government, life sciences, insurance, manufacturing, energy, healthcare, telecommunications, and transportation organizations. Partnerships with companies such as KPMG, Accenture, PwC, Infosys, Wipro, and Deloitte help accelerate Appian's customers' digital transformation initiatives and deliver customer value at scale. The company generates revenue primarily through sales of subscriptions to its platform and professional services, and subscriptions contributed $263.7 million to the company's revenue in 2021.
+
+Website: Appian Community
+url: https://community.appian.com/b/appmarket/posts/client-lifecycle-management-clm
+Summary: The content is about Appcino's Client Lifecycle Management solution, which offers modules such as Customer Portal, Digital Client Onboarding, Enhanced Due-Diligence and KYC, Client Maintenance, and Customer Service. It allows for connected CLM processes, a single detailed client view, intelligent documents automation, digital client onboarding, streamlined automated and on-demand KYC's, unified communication channels, back-office processes factories for RPA, and next-generation customer service. The solution delivers tangible ROI and business benefits in the form of massive operational savings, reduced efforts in KYCs processing, massive and enhanced client experience, reduction in regulatory change management cost, faster realization of revenue, among others. There is no mention of Appian's customers and their functionality.
+
+Website: Appian Documentation
+url: https://docs.appian.com
+Summary: The content is about the features and updates included in the Appian 23.1 release. It includes enhancements such as process mining, building portals with Appian records, and creating a design library, along with the Appian Designer, Data access, Interface resources, Process Mining, Workflow, Automation, and Appian Training. The content does not provide specific information about Appian modules or customers.
+
+Website: Appian Community
+url: https://community.appian.com/b/appmarket/posts/eticket
+Summary: The content is about ETicket, an Appian-based ticketing solution that simplifies handling user tasks and offers a modular configuration. ETicket has features such as task categorization, user-defined fields and forms, automatic or predefined user/group assignments, and work logging. The solution aims to provide rich functionalities and integration possibilities to Appian-based solutions without additional overhead or installation of 3rd party add-ons. The content mentions that customers who already implemented business processes in Appian can implement their ticketing solution in the same environment or switch from external ticketing systems. However, the content does not provide information about other Appian modules or functionalities of the platform, or other Appian customers who have implemented the solution.
+
