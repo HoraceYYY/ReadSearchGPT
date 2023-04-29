@@ -1,0 +1,301 @@
+Appian: overview, modules, and customer base
+
+
+Website: How to Manage a Customer Service Case [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/how-to-manage-a-customer-service-case.html
+Summary: Appian is mentioned in the content but only as a platform from which the Connected Claims application can be accessed. The content provides an overview of the Connected Claims Customer Service module and how it allows customer service representatives to view customer records, access claim details, and collect customer feedback through integrated communication channels. It also demonstrates the different actions a representative can take within the module, including updating customer information, creating new customers or customer groups, accessing customer claims, managing communications, and creating new customer service cases. The content does not provide information on Appian's overall modules or customer base. Therefore, the information required to answer the given query is not present in the content.
+
+Website: Appian Documentation
+url: https://docs.appian.com/suite/help/23.1/
+Summary: Appian is a low-code platform that offers a variety of modules to help businesses design, manage, and deploy applications. Some of the modules include the Designer, which allows designers to build, manage, and deploy applications, Data, which helps users access and combine enterprise data, Interfaces, which provides resources to create interfaces for applications, Workflow, which captures business processes, and Automation, which takes care of repetitive and time-consuming work. Appian has a broad customer base that includes businesses of all sizes and industries. However, there is no information about Appian's customer base or further details on its modules.
+
+Website: Connected Claims [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/connected-claims-overview.html
+Summary: NONE
+
+Website: Low-Code Platform - Low-Code Application Development | Appian
+url: https://appian.com/platform/low-code-development/low-code-application-development.html
+Summary: Appian is a low-code platform that automates business processes. The platform includes modules such as Design, Data Fabric, Process Automation, Total Experience, and Process Mining. Appian's customer base includes organizations from industries such as financial services, insurance, government, life sciences, reinsurance, and corporate services.
+
+Website: Appian Guarantee
+url: https://www.appian.com/company/appian-guarantee/
+Summary: Appian is a software company that provides an enterprise low-code automation platform to automate business processes. The platform includes end-to-end process automation, mobile apps, web portals, robotic process automation, intelligent document processing, API integration, business process management, total experience, process mining, and data fabric. The company serves various industries including Financial Services, Insurance, Marketing, Sales, and Distribution, Corporate Services, Public Sector, and Life Sciences. Unfortunately, there is no mention of a customer base in this content.
+
+Website: Appian Community
+url: https://community.appian.com/training/
+Summary: Overview of Appian: Appian is a low-code automation platform that enables organizations to quickly build powerful enterprise applications. It offers comprehensive training and resources to help users learn and maintain their skills through Appian Academy. Appian also provides certifications to validate users' knowledge and experience. 
+
+Modules: Appian platform is divided into several modules according to users' roles such as Leader, Planner, Builder, Administrator, and Support. Each module is designed to cover the learning path of users in that particular role. 
+
+Customer Base: There is no information available about the customer base of Appian in the provided content.
+
+Website: Appian Community
+url: https://community.appian.com/
+Summary: Appian is a low-code platform used for process automation and digital transformation. It provides comprehensive training courses and resources for all levels, with free online and instructor-led options through Appian Academy. Appian Community Edition lets you explore and use the Appian Process Automation Platform for free without commitments. Additionally, Appian conducts the Appian Certified Developer Program to prove expertise through industry-recognized exams. However, there is no information about Appian's customer base or specific modules mentioned in the content.
+
+Website: Contact Us
+url: https://appian.com/resources/contact-us.html
+Summary: NONE
+
+Website: Appian Platform for Process Automation -Low-Code - Process Mining  
+url: https://www.appian.com
+Summary: Appian is a software company that offers end-to-end process automation, low-code development, and process mining solutions. Its product categories include Data Fabric, Process Automation, Total Experience, and Process Mining. Appian has a diverse customer base that includes financial services, insurance, public sector, corporate services, life sciences, and supply chain industries. Additionally, Appian has been recognized as a leader in both low-code and automation by Gartner and Forrester.
+
+Website: What is Connected Claims?  [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/ccs-what-is-connected-claims.html
+Summary: Appian Connected Claims is a solution built on the Appian Low-Code Platform that optimizes the claims life cycle with intelligent automation and unprecedented agility to rapidly unify disparate systems and data. It comprises seven integrated modules that are relevant to all insurance lines of business (LOB), from property and casualty to life and specialty. Connected Claims allows users to quickly access the workflows, tasks, and information that they need to process an active claim with actionable dashboards that unify the Connected Claims modules. It also enables users to configure groups so members see only the modules and information they need to do their jobs. It is unclear from the content which customer base uses Appian.
+
+Website: Appian Community
+url: https://community.appian.com/support/
+Summary: Overview of Appian and its modules are not mentioned in the content. However, the content mentions that Appian has a global customer and partner base and provides different support offerings.
+
+Website: Connected Claims Features [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/ccs-site-features.html
+Summary: NONE
+
+Website: Connected Claims Home Page [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/home-page-overview.html
+Summary: Appian is a low-code application development company that offers the Connected Claims solution to process different types of claims. The solution's home page allows users to navigate quickly and access modules like FNOL, customer service, settlement, litigation, field investigation, and fraud management. The home page displays different claims modules and data depending on the user's role and group membership. Administrators can see all modules, process templates, tasks, and customer lists, while other business users can only see modules assigned to them, tasks assigned to them, and customers corresponding to their claims. There is no information given about the customer base of Appian.
+
+Website: How to Process a Claim [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/ccs-qsg-how-to-process-a-claim.html
+Summary: NONE
+
+Website: Start Free with Appian Community Edition - Trial | Appian
+url: https://appian.com/landing/community-edition/get-started.html
+Summary: Appian is a software company that offers a platform for designing, automating, and optimizing complex processes. Its products include low-code design, data fabric, process automation, total experience, and process mining. Its customer base includes the world's most innovative organizations, particularly in the financial services, insurance, and government industries. There is no specific information about modules mentioned in the content.
+
+Website: Privacy Information
+url: https://appian.com/legal/privacy-information.html
+Summary: NONE.
+
+Website: How to Settle a Claim [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/ccs-qsg-operation-and-settlement.html
+Summary: NONE
+
+Website: How to Litigate a Claim [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/ccs-insurance-litigation2.html
+Summary: NONE
+
+Website: How to Process a Claim Recovery [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/how-to-recover-a-claim.html
+Summary: NONE
+
+Website: How to Conduct a Field Investigation [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/how-to-conduct-a-field-inspection.html
+Summary: NONE
+
+Website: How to Manage a Fraud Case [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/how-to-manage-a-fraud-alert.html
+Summary: Appian is a platform that supports different modules that enable users to manage different aspects of their business processes. One of these modules is Connected Claims, which offers features for insurance companies to manage claims, fraud alerts, and customer cases. Within Connected Claims, there is a Fraud Management module that allows users to manage fraud alerts and direct cases through Special Investigation Units (SIU). The module offers features like managing fraud cases and alerts, assigning cases to SIU teams, uploading documents on cases and alerts, and managing communications with claimants. It also enables users to annotate fraud checklists, create SIU cases, manage documents and communications, view event audits, and create on-demand tasks. However, the content does not provide information about Appian's customer base or modules other than Connected Claims.
+
+Website: Continuous Improvement [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/continuous_improvement_module.html
+Summary: NONE
+
+Website: Configuring Connected Claims [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/ccs-configure-connected-claims.html
+Summary: Appian is not mentioned in this content. Therefore, the information about Appian's overview, modules, and customer base cannot be provided.
+
+Website: Managing Lines of Business [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/managing-lines-of-business.html
+Summary: Appian is a software suite that includes Connected Claims, which allows you to manage different lines of business for your organization, each with its own unique requirements, claims journey, and phase steps for processing a claim through the entire claims lifecycle. Connected Claims makes creating new lines of business for your organization simple and easy, allowing you to add a new line of business by entering its details, such as name, description, icon, and nature of loss category including the cause code 1 and type of loss. Connected Claims also allows you to update any of the details for an existing line of business by modifying the name or description, adding or deleting a nature of loss line item, and updating the icon associated with a line of business. There is no information provided about the customer base for Appian.
+
+Website: Managing the Claims Journey [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/managing-claims-journey.html
+Summary: NONE
+
+Website: Configuring the Claim Journey Process Model [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/configuring-the-claim-journey-process-model.html
+Summary: Module: Connected Claims, a separate module that needs to be purchased separately from the Appian base platform. 
+
+Customer Base: None mentioned.
+
+Website: Configuring Reserve and Payment Rules [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/configure-reserve-and-payment-rules.html
+Summary: NONE
+
+Website: Publishing Expression Rules [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/publish-expression-rule-in-database.html
+Summary: NONE
+
+Website: Managing Business Rules [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/managing-business-rules.html
+Summary: NONE
+
+Website: Managing Questionnaires [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/managing-questionnaires.html
+Summary: Appian is not covered in detail in this text.
+
+Website: Configuring Communication Templates [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/configure-communication-templates.html
+Summary: NONE
+
+Website: Updating the Application Name [Connected Claims v21.4.1.0]
+url: https://docs.appian.com/suite/help/23.1/ccs-21.4.1.0/update-application-name.html
+Summary: NONE
+
+Website: Appian Documentation General Disclaimer
+url: https://docs.appian.com/suite/help/23.1/Appian_Documentation_General_Disclaimer.html
+Summary: NONE (The provided content does not provide any information about Appian's overview, modules, or customer base.)
+
+Website: Business Process Management (BPM) Platform & Workflow  | Appian
+url: https://appian.com/products/platform/process-automation/business-process-management-bpm.html
+Summary: Appian is a software company that offers a platform for business process management (BPM) and workflow automation. The Appian platform includes low-code design, process automation, and an integrated data fabric. It offers total experience solutions for exceptional customer experiences, process mining to identify bottlenecks, and solutions for various industries such as financial services, insurance, life sciences, and government. There is no information regarding Appian's customer base.
+
+Website: Appian Platform Overview
+url: https://appian.com/products/platform/overview.html
+Summary: Appian is a software company that automates business processes, and its Appian Platform includes modules for end-to-end process automation, low-code design, an integrated data fabric, complete process automation, and total experience. It also offers modules for process mining, API integration, business process management, and robotic process automation. Appian serves customers across various industries, including financial services, insurance, government, life sciences, supply chain, and corporate services.
+
+Website: Platform for Process Automation
+url: https://appian.com/products/platform/process-automation/overview.html
+Summary: Appian is a software company that provides a platform for process automation. Its products include Workflow Orchestration, Business Rules, System Automation, and Intelligent Document Processing. Appian's customer base includes organizations from various industries such as financial services, insurance, public sector, and corporate services.
+
+Website: Government Acquisition Management Solutions | Appian
+url: https://appian.com/industries/public-sector/acquisition-management/government-acquisitions-management-suite.html
+Summary: Appian is a software company that automates business processes. The Appian Platform includes everything you need to design, automate, and optimize even the most complex processes, from start to finish. However, there is no specific mentioned customer base or module detailed in the content.
+
+Website: Award Management Applications & Solutions for Government  | Appian
+url: https://appian.com/industries/public-sector/acquisition-management/award-management.html
+Summary: Appian is a software company that automates business processes. The Appian Platform includes everything you need to design, automate, and optimize even the most complex processes, from start to finish. It provides solutions for different industries including financial services, insurance, and public sector. Appian has modules for awards management, clause automation, contract writing, eProcurement, requirements management, source selection, and vendor management. The platform also has modules for process automation, total experience, process mining, and data fabric. There is no specific mention of the customer base in the provided content.
+
+Website: Government Clause Automation - Government | Appian
+url: https://appian.com/industries/public-sector/acquisition-management/government-clause-automation.html
+Summary: Appian is a software company that offers a platform for designing, automating, and optimizing business processes. The Appian platform has modules for end-to-end process automation, low-code design, API integration, and total experience, among others. Appian offers solutions for various industries, such as financial services, insurance, government, life sciences, and supply chain. Its customer base includes leading agencies, and the company is trusted for improving workflows, reducing procurement timelines, accelerating tasks. It also offers Clause Automation for government contracting.
+
+Website: Federal Government Contract Writing Solutions
+url: https://appian.com/industries/public-sector/acquisition-management/contract-writing.html
+Summary: Appian is a software company that automates business processes. It includes everything necessary to design, automate, and optimize the most complex processes from start to end. Appian caters to various industries such as corporate services, financial services, government, insurance, life sciences, and reinsurance. Appian offers packaged applications that can be customized to meet business needs including government acquisition management, contract writing, clause automation, e-procurement, and vendor management.
+
+Website: eProcurement - State and Local Government | Appian
+url: https://appian.com/industries/public-sector/acquisition-management/eprocurement.html
+Summary: Appian is a software company that automates business processes. Their platform includes various modules such as process automation, total experience, data fabric, process mining, and robotic process automation. They provide solutions to various industries such as financial services, insurance, public sector, supply chain, corporate operations, and life sciences. Appian is used by leading departments and agencies in the government for their eProcurement solution suite, which simplifies, automates, and accelerates procurement processes.
+
+Website: Requirements Management Solution - Government | Appian
+url: https://appian.com/industries/public-sector/acquisition-management/requirements-management.html
+Summary: NONE
+
+Website: Solutions: Government Source Selection & Proposal Reviews | Appian
+url: https://appian.com/industries/public-sector/acquisition-management/source-selection.html
+Summary: Appian is a software company that provides a low-code automation platform to design, automate, and optimize processes. Its products include end-to-end process automation, low-code design, integrated data fabric, total experience, and process mining. Appian serves industries such as financial services, insurance, public sector, reinsurance, and corporate services. It also offers solutions for government acquisition management, insurance claims processing, financial services KYC automation, and accelerating underwriting processes. However, there is no detailed information about the modules and customer base of Appian in the provided content.
+
+Website: Vendor Management - Government | Appian
+url: https://appian.com/industries/public-sector/acquisition-management/vendor-management.html
+Summary: Overview: Appian is a software company that specializes in automating business processes. The Appian Platform includes everything you need to design, automate, and optimize even the most complex processes, from start to finish. The company offers various solutions such as low-code development, process automation, mobile apps, process mining, and robotic process automation (RPA).
+
+Modules: Some of the modules provided by Appian include Process Automation (Robotic Process Automation (RPA), Intelligent Document Processing (IDP)), Low-Code, Data Fabric, Total Experience, and Process Mining.
+
+Customer Base: Appian is trusted by leading agencies and companies across various industries such as Financial Services, Insurance, Life Sciences, Corporate Operations, and the Public Sector.
+
+Website: Connected Underwriting | Automated Underwriting System for Insurers | Appian
+url: https://appian.com/industries/insurance/solutions/connected-underwriting.html
+Summary: Appian is a software company that automates business processes. The Appian Platform includes everything you need to design, automate, and optimize even the most complex processes, from start to finish. The company provides low-code development tools, intelligent automation, process management, and a data management system called Data Fabric. However, there is no information about Appian's customer base or the specific modules they offer other than Connected Underwriting, a prebuilt solution to accelerate underwriting processes and improve customer experience by reducing the time to quote in the insurance industry.
+
+Website: Connected Claims - Automated Insurance Claims Management & Handling
+url: https://appian.com/industries/insurance/solutions/connected-claims.html
+Summary: NONE
+
+Website: Connected KYC Solutions - Due Diligence, Verification & Documentation Software
+url: https://appian.com/industries/financial-services/solutions/connected-kyc.html
+Summary: Appian is a software company that provides end-to-end process automation solutions. It offers various products and solutions, including low-code design, data fabric, process automation, total experience, process mining, and API integration. Appian is trusted by top organizations globally to improve workflows, unify data, and optimize operations. There is no information provided about the customer base.
+
+Website: Connected Onboarding and Servicing Solution for Financial Services Institutions
+url: https://appian.com/industries/financial-services/solutions/connected-onboarding-and-servicing.html
+Summary: Appian is a software company that provides a platform to design, automate, and optimize business processes. The platform includes modules such as low-code design, process automation, API integration, and total experience. One of their products is Connected Onboarding and Servicing, which focuses on automating and streamlining customer onboarding and servicing for financial institutions. They claim to be trusted by leading financial institutions and provide adaptable and configurable solutions for their customer base. In terms of customer base, the content does not provide a specific number or range.
+
+Website: Appian Community
+url: https://community.appian.com/b/appmarket/posts/appcino-crm-customer-service-360
+Summary: Overview: The content provides information on Appcino's CRM on Appian - Customer Service 360 module, which is part of Appcino's CRM on Appian suite. The module helps organizations provide customer service by quickly acting on cases customers are not so happy about using powerful inbuilt sentimental analysis framework and related configuration. 
+
+Modules: The module contains key features and functionality, including 100% visibility for agents into information about entitlement, service level agreements, and customer satisfaction scores. Agents can see how knowledge and solutions are being used, curate content based on usefulness and ratings, and create new content in service of trending issues. 
+
+Customer base: There is no information provided on the customer base for Appcino's CRM on Appian - Customer Service 360 module in the content.
+
+Website: Appcino – Enterprise Apps on Appian & Salesforce
+url: https://www.appcino.com/
+Summary: NONE
+
+Website: Solution Appian CRM – Appcino
+url: https://www.appcino.com/solution-appian-crm/
+Summary: Appian is mentioned as a technology partner in the content, along with expertise in Appian CRM. However, there is no information provided about the specific overview, modules, or customer base of the Appian platform. Therefore, the answer to the query is 'NONE.'
+
+Website: Solution Appian Insurance – Appcino
+url: https://www.appcino.com/solution-appian-insurance/
+Summary: Appian is mentioned in the content as a solution alongside other technologies such as Outsystems and Salesforce. The content mentions that Appian has expertise in scope and planning, design and architecture, application development, and quality assurance. The content also mentions that Appian provides 24x7 support services. However, there is no information about Appian's modules or its customer base.
+
+Website: Solution Appian B&F – Appcino
+url: https://www.appcino.com/solution-appian-bf/
+Summary: Appian is mentioned in the context of the company's technology expertise and one of their solutions, Appian B&F. The content refers to Appian as a "modern work platform" that powers business application services. However, there is no specific information provided regarding Appian's modules or customer base. Therefore, the answer to the query is "NONE".
+
+Website: Solution Appian Operations – Appcino
+url: https://www.appcino.com/solution-appian-operations/
+Summary: Module-wise overview of Appian and its customer base is not provided in the given content.
+
+Website: Solution Appian Horizontal – Appcino
+url: https://www.appcino.com/solution-appian-horizontal/
+Summary: Appian is a platform for creating software applications that streamline workflows and automate business processes. It offers various solutions, including CRM, Insurance, Banking and finance, and Operations Horizontal. The company's customer base includes businesses from various industries. However, there is no specific information regarding the modules offered by Appian or details regarding its customer base.
+
+Website: Expertise Appian – Appcino
+url: https://www.appcino.com/expertise-appian/
+Summary: Appian is a low-code enterprise platform that allows businesses to build customized applications quickly and easily. The content describes the professional services offered by Appcino for Appian platform. There is no specific information about the modules and customer base of Appian.
+
+Website: Expertise Appian Scope and Planning – Appcino
+url: https://www.appcino.com/expertise-appian-scope-and-planning/
+Summary: Appian is mentioned several times in the content, but there is no clear overview of the platform. There is no information provided about the modules or customer base either. Therefore, the query cannot be answered from this content and the response is 'NONE'.
+
+Website: Expertise Appian Quality Assurance – Appcino
+url: https://www.appcino.com/expertise-appian-quality-assurance/
+Summary: Appian is a business solutions provider that specializes in low-code application development. Their services include quality assurance, Outsystems expertise, Salesforce consulting, and artificial intelligence. They have a dedicated team of passionate quality assurance specialists who strive for excellence and are keen to continuously learn and evolve. They provide a wide range of testing services, including functional testing, automation testing, document QA methodology, non-functional testing, and Appian test development. They have expertise in Waterfall, Agile, Extreme programming, and other models, ensuring high compatibility to deal with any complex business scenarios. They cater to a diverse customer base that includes insurance, banking and finance, operations, horizontal Salesforce, manufactX, NetZero Cloud Plug and Play Solutions, and more.
+
+Website: Expertise Appian CST – Appcino
+url: https://www.appcino.com/expertise-appian-cst/
+Summary: NONE
+
+Website: expertise salesforce – Appcino
+url: https://www.appcino.com/expertise-salesforce/
+Summary: Module, Customer Base: The content does not provide any specific information about the modules or customer base of Appian.
+
+Website: Salesforce Consulting – Appcino
+url: https://www.appcino.com/salesforce-consulting/
+Summary: NONE
+
+Website: Salesforce Cloud Offerings – Appcino
+url: https://www.appcino.com/salesforce-cloud-offerings-2/
+Summary: Appian is a low-code platform that provides various customer relationship management (CRM), banking and finance, insurance, and operations modules. It has a wide range of Salesforce cloud services, including Customer 360, Sales Cloud, Service Cloud, Commerce Cloud, Marketing Cloud, Experience Cloud, Platform, and CPQ. Appian provides support and maintenance services around the clock, and it works with various industries, such as manufacturing, technology, banking and finance, and insurance. However, the content does not contain any information about Appian's customer base.
+
+Website: Salesforce Industries – Appcino
+url: https://www.appcino.com/salesforce-industries-2/
+Summary: Appian is a low-code development platform that enables users to build process-centric and case-centric applications. It offers a suite of modules for CRM, insurance, banking and finance, operations, and horizontal solutions. Appian's customer base includes organizations in diverse industries such as consumer goods, healthcare, education, finance, manufacturing, logistics, insurance, real estate, and high-tech.
+
+Website: Pricing
+url: https://appian.com/products/platform/pricing.html
+Summary: Appian is a software company that offers a low-code platform for designing, automating, and optimizing business processes. It provides an end-to-end process automation solution along with modules such as Robotic Process Automation (RPA), Intelligent Document Processing (IDP), API Integration, Business Process Management (BPM), Total Experience, and Process Mining. Appian targets a wide range of industries such as financial services, insurance, public sector, life sciences, corporate services, and supply chain. It offers various licensing types, including a free trial, licensing by user or development, and different support options based on the subscription service. However, there is no explicit mention of the customer base.
+
+Website: Appian Community
+url: https://community.appian.com/b/appmarket/posts/product-onboarding-portal
+Summary: Appian is not clearly explained in the given content. None.
+
+Website: Appian Documentation
+url: https://docs.appian.com
+Summary: Appian is a low-code application development platform that provides modules for process mining, interface design, data access and processing, workflow, and automation. The platform also includes Appian Designer for building, managing and deploying applications. Appian has a customer base that includes enterprises of various sizes, government agencies, and non-profit organizations. However, there is no specific information provided on the modules and customer base of Appian.
+
+Website: Tata Consultancy Services
+url: https://www.appian.com/partner/tcs/
+Summary: Appian is a software company that automates business processes. Their platform includes modules such as Low-Code, Data Fabric Acceleration, Process Automation, Total Experience, and Process Mining. They serve customers in various industries such as Financial Services, Insurance, Corporate Services, Government, Life Sciences, Property and Casualty, Marketing, Sales, and Distribution, and Reinsurance.
+
+Website: Appian Community
+url: https://community.appian.com/b/appmarket/posts/client-lifecycle-management-clm
+Summary: Appian is not clearly discussed in the content, therefore there is no information available about Appian's overview, modules, and customer base. So the answer is NONE.
+
+Website: Appcino Technologies
+url: https://www.appian.com/partner/appcino-technologies/
+Summary: Appian Overview: Appian is a low-code automation platform that allows businesses to design, automate, and optimize their processes using modules such as Process Automation, Total Experience, Connected Claims, Connected Underwriting, Marketing, Sales and Distribution, and Case Management. The platform also provides solutions for industries like financial services, insurance, government, life sciences, corporate operations, and public sector, among others. Appian has won awards and has over 30 active customers across the USA, Europe, Middle-East, and Australia. It is used by the world's most innovative organizations to improve their workflows and optimize their operations, resulting in better growth and superior customer experiences.
+
+Website: My 9 Month Journey with Appian | Appian Careers
+url: https://careers.appian.com/blog/life-at-appian/my-9-month-journey-with-appian/
+Summary: Overview: Appian is a low-code automation platform that helps organizations quickly build apps and workflows. Its platform combines people, technology, and data in a single workflow to maximize resources and improve business results. 
+
+Modules: Appian offers various modules such as Internal IT, Marketing, Engineering, and Customer Success. They also have an academy and boot camp that provides education and training on how to use the platform to deliver great outcomes for customers.
+
+Customer Base: Appian is used by many of the world's largest organizations to improve customer experience, achieve operational excellence, and simplify global risk management and compliance. However, there is no exact information regarding its customer base.
+

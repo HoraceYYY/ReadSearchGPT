@@ -1,0 +1,749 @@
+AI startups specializing in customer support and their products
+
+
+Website: Customer service automation startup Lang lands $15M
+url: https://techcrunch.com/2022/05/12/2313590/
+Summary: AI startup Lang.ai specializes in customer service automation. Its platform uses AI to extract concepts from customer requests in existing help desk platforms like Zendesk and Intercom, and automatically tags customer conversations to resolve service issues. The no-code product appends incoming messages, including emails and texts, with labels like “Talk to agent,” “Delivery issue” and “Platform question.” Using Lang, companies can visually group concepts identified in customer support data and set up automations that trigger with specific labels (e.g. respond to questions about package deliveries with boilerplate text). Lang partners with vendors developing frontend and backend customer service automation products, such as business intelligence tools, to sell Lang as a complementary offering. It counts Stitch Fix, Ramp, Hippo Insurance and Freshly among its customers. The annual recurring revenue has grown 11x in the last five quarters preceding Lang's Series A funding round, which raised $10.5 million in funding led by Nava Ventures, bringing its total raised to $15 million.
+
+Website: Lang.ai - Unlock CX data with easy-to-use AI
+url: http://lang.ai
+Summary: AI startup specializing in customer support: Lang.ai
+Products offered by Lang.ai: 
+- Lang Data Operations
+- Lang Optimize
+- Lang Predict
+Features of Lang.ai: 
+- Easy-to-use AI
+- Automated tagging
+- Granular insights
+- Proactive workflow improvements
+- Real-time alerts for customers at risk
+Integrations: Zendesk, Salesforce, Intercom, Kustomer, Dixa, Freshworks
+Testimonials: Lang is foundational, everything runs off of its data structure and that data is driving automation for the CX department.
+Location: Madrid, San Francisco, New York City
+
+Website: ¿Qué Es? Sentisis' NLP SaaS Platform For Spanish Pulls In $1.3M | TechCrunch
+url: https://techcrunch.com/2015/03/18/sentisis-series-a/
+Summary: Unfortunately, the given content does not provide information about AI startups specializing in customer support and their products. It talks about Sentisis, a natural language processing startup that provides sentiment analysis of Spanish language conversations on social media, with different linguistic technology on the back-end, depending on the customer’s flavor of Spanish and their industry. Its platform is tailored to deliver specific types of insights serving them in a structured, dashboard format, and bespoke reports. It covers around 40 industries and has more than 50 users, ranging from big brands to advertising agencies, politicians to TV broadcasters. It recently closed a $1.3M Series A funding round, led by international investment firm Axon Partners Group and the Fundación José Manuel Entrecanales. Its CEO and co-founder, Jorge Peñalva, believes that Sentisis has the opportunity to scale up and dominate the Spanish-speaking market, especially in Latin America, and there is generally more insight to be unlocked from tapping into Spanish language conversations.
+
+Website: 100 Top Artificial Intelligence (AI) Companies in 2023 | Datamation
+url: https://www.datamation.com/featured/ai-companies/
+Summary: Thank you for the information. It appears that there are several AI startups specializing in customer support and their products. Can you also provide details on the specific products or services that are offered by these companies?
+
+Website: Using AI for Better Decision-Making | Datamation
+url: https://www.datamation.com/artificial-intelligence/using-ai-better-decision-making/
+Summary: Sorry, I couldn't find any information on AI startups specializing in customer support and their products from the given content as it mainly focuses on the use of AI for better decision-making. Do you have any other content or information I can assist you with?
+
+Website: Artificial Intelligence (AI) in Health Care | Datamation
+url: https://www.datamation.com/artificial-intelligence/artificial-intelligence-in-health-care/
+Summary: Sorry, I could not find information about AI startups specializing in customer support and their products in the given content as it discusses AI applications in healthcare. Shall I look into another content?
+
+Website: 100 Top Artificial Intelligence (AI) Companies in 2023 | Datamation
+url: https://www.datamation.com/artificial-intelligence/ai-companies/
+Summary: Thank you for providing more information. It seems that Clarifai, HyperScience, and Narrative Science are not specifically focused on customer support but rather on different aspects of AI technology. However, some AI startups that do specialize in customer support and their products are:
+
+1. Directly - offers AI-powered customer support and enables customer service representatives to outsource specific inquiries to qualified experts.
+
+2. Rulai - provides a chatbot platform that uses AI to understand, reason, and learn from customer interactions.
+
+3. People.ai - uses AI-powered sales intelligence to automate data entry and analysis, saving sales teams time and increasing productivity.
+
+4. Swim.ai - offers an edge intelligence platform that provides real-time insights on customers and their interactions with a company's products.
+
+These startups are just a few examples and there are many more AI startups that specialize in customer support and their products.
+
+Website: Artificial Intelligence (AI) in Marketing | Datamation
+url: https://www.datamation.com/artificial-intelligence/artificial-intelligence-in-marketing/
+Summary: I'm sorry but I could not find the information you are looking for. The content I received is about Artificial Intelligence in Marketing and its various use cases. It does not specifically provide information regarding AI startups specializing in customer support and their products. Can you provide more specific content related to your query?
+
+Website: Artificial Intelligence (AI) in Finance | Datamation
+url: https://www.datamation.com/artificial-intelligence/artificial-intelligence-in-finance/
+Summary: I'm sorry, I could not find any information about AI startups specializing in customer support and their products in the provided content.
+
+Website: 5 Top Computer Vision Trends | Datamation
+url: https://www.datamation.com/artificial-intelligence/computer-vision-trends/
+Summary: Sorry, I couldn't find any information related to AI startups specializing in customer support and their products in the provided content.
+
+Website: Autonomous Retail Solutions that Scale - AiFi
+url: https://aifi.com/
+Summary: Query: Are there any AI startups that specialize in customer support?
+Content: I'm sorry, the content you provided does not contain any information about AI startups that specialize in customer support.
+
+Website: Artificial Intelligence (AI) in Automotive | Datamation
+url: https://www.datamation.com/artificial-intelligence/ai-in-automotive/
+Summary: I'm sorry, but there is no information related to AI startups specializing in customer support and their products in the provided content.
+
+Website: Collision Avoidance System: Predictive Alerts | Nauto
+url: https://www.nauto.com/product/predictive-collision-alerts
+Summary: Based on the content provided, there is no mention of AI startups specializing in customer support and their products.
+
+Website: Datagen | Synthetic Image Datasets for Computer Vision
+url: https://www.datagen.tech/
+Summary: Query: Are there any AI startups specializing in customer support and what are their products? 
+Content: The given content does not provide information related to AI startups specializing in customer support and their products.
+
+Website: Artificial Intelligence (AI) in Law & Legal Industry | Datamation
+url: https://www.datamation.com/artificial-intelligence/ai-in-law/
+Summary: Sorry, there is no information in the provided content about AI startups specializing in customer support and their products.
+
+Website: IBM Artificial Intelligence (AI) Portfolio Review | Datamation
+url: https://www.datamation.com/artificial-intelligence/ibm-artificial-intelligence-ai-portfolio/
+Summary: Unfortunately, there is no specific information in this content about AI startups specializing in customer support and their products. The content mainly discusses IBM's AI portfolio and its various offerings.
+
+Website: Sight Machine: Manufacturing Data Platform
+url: https://www.sightmachine.com/
+Summary: I'm sorry, but the content provided does not mention AI startups specializing in customer support and their products. Is there anything else I can help you with?
+
+Website: Artificial Intelligence (AI) in Retail | Datamation
+url: https://www.datamation.com/artificial-intelligence/artificial-intelligence-in-retail/
+Summary: I'm sorry but the provided content does not answer the query on AI startups specializing in customer support and their products. Can you please provide a new content related to the query?
+
+Website: AI in Education: The Future of Teaching | Datamation
+url: https://www.datamation.com/artificial-intelligence/how-ai-is-being-used-in-education/
+Summary: I'm sorry, but I couldn't find any information on AI startups specializing in customer support and their products in the given content. The content is about how AI is being used in education. Is there any other specific content or query you have in mind?
+
+Website: 5 Top Trends in Sentiment Analysis | Datamation
+url: https://www.datamation.com/artificial-intelligence/sentiment-analysis-trends/
+Summary: I could not find information about AI startups specializing in customer support and their products in the provided content. However, the content talks about the top trends in sentiment analysis, including the use of sentiment analysis to improve HR practices, brand monitoring, sales approaches, mental health treatment, and customer service.
+
+Website: Artificial Intelligence (AI) in Energy | Datamation
+url: https://www.datamation.com/artificial-intelligence/artificial-intelligence-in-energy/
+Summary: Sorry, the given content does not provide any information on AI startups specializing in customer support and their products.
+
+Website: 5 Top Trends in AI Robotics | Datamation
+url: https://www.datamation.com/artificial-intelligence/ai-robotics-trends/
+Summary: I'm sorry, but the content provided does not contain information about AI startups specializing in customer support and their products. Would you like me to search for this information online?
+
+Website: AI Archives | Datamation
+url: https://www.datamation.com/artificial-intelligence/
+Summary: Query: What are some AI startups specializing in customer support and what are their products?
+Content: Unfortunately, the given content does not provide any information on specific AI startups specializing in customer support and their products. It mainly caters to a website called Datamation that focuses on providing insight into the latest trends and innovation in AI, data security, big data, and more, along with in-depth product recommendations and comparisons. It does not provide any specific information on AI startups specializing in customer support and their products.
+
+Website: 5 Top Natural Language Processing Trends | Datamation
+url: https://www.datamation.com/artificial-intelligence/natural-language-processing-trends/
+Summary: I apologize, but the provided content does not mention any AI startups specializing in customer support and their products. It only discusses the latest trends in Natural Language Processing (NLP).
+
+Website: Building the most open and innovative AI ecosystem | Google Cloud Blog
+url: https://cloud.google.com/blog/products/ai-machine-learning/building-an-open-generative-ai-partner-ecosystem
+Summary: I'm sorry, but there is no information in the provided content about AI startups specializing in customer support and their products. The content mainly talks about the open and innovative AI ecosystem and partnerships, programs, and resources for different segments of the AI stack.
+
+Website: Google Cloud brings generative AI to developers, businesses, and governments | Google Cloud Blog
+url: https://cloud.google.com/blog/products/ai-machine-learning/generative-ai-for-businesses-and-governments
+Summary: Sorry, I couldn't find any information relevant to the query about AI startups specializing in customer support and their products from the provided content. The content talks about Google Cloud's newly introduced Generative AI support in Vertex AI and Generative AI App Builder that infuse generative AI into their offerings, empowering developers to build with enterprise-level safety, security, and privacy.
+
+Website: New AI features and tools for Google Workspace, Cloud and developers
+url: https://blog.google/technology/ai/ai-developers-google-cloud-workspace/
+Summary: There is no specific content related to AI startups specializing in customer support and their products mentioned in the provided text. However, the content does talk about Google's investments in AI and new AI-powered features in Google Workspace.
+
+Website: Announcing new generative AI experiences in Google Workspace | Google Workspace Blog
+url: https://workspace.google.com/blog/product-announcements/generative-ai
+Summary: I'm sorry, I couldn't find any information on AI startups specializing in customer support and their products from the given content. The content seems to be about Google Workspace introducing generative AI experiences for their products.
+
+Website: Google Cloud Startup Summit introduces benefits for AI startups | Google Cloud Blog
+url: https://cloud.google.com/blog/products/ai-machine-learning/google-cloud-startup-summit-introduces-benefits-for-ai-startups
+Summary: AI startups specializing in customer support and their products are not mentioned in this content. However, it does provide information on the Google for Startups Cloud Program, which offers benefits for AI startups, including dedicated startup experts, cloud credits, technical and collaboration support, free Google Workspace Business Plus, webinars, AI benefits, and an inaugural North American Google for Startups Accelerator: Cloud. The content also highlights Google Cloud's commitment to supporting the growth and advancement of startups, particularly those using AI technology to develop their products or solutions.
+
+Website: AI startup program  |  Google Cloud
+url: https://cloud.google.com/startup/ai
+Summary: To answer your query, here are some AI startups specializing in customer support and their products:
+
+1. DigitalGenius - offers a conversational AI platform that automates customer service tasks for businesses
+2. Ada Support - provides AI-powered chatbots for customer service that can handle complex inquiries
+3. Simplify360 - offers an AI-powered social media listening and engagement tool for customer support
+4. Talla - provides an AI chatbot solution that automates customer support for e-commerce businesses
+5. Hugging Face - offers an AI-powered chat platform that allows businesses to automate customer conversations across multiple channels
+
+Website: Built with AI  |  Google Cloud
+url: https://cloud.google.com/solutions/ai-partners
+Summary: Query: Can you suggest some AI startups specializing in customer support and their products?
+Content: Sure, there are several AI startups that specialize in customer support with a wide range of products. Some of them are:
+
+1. Intercom: Intercom provides a suite of tools for customer communication, including a chatbot that can handle customer support inquiries using AI.
+
+2. DigitalGenius: DigitalGenius uses AI to automate customer service workflows, allowing for faster response times and more accurate customer support.
+
+3. Ada Support: Ada Support provides a chatbot platform that uses natural language processing (NLP) to understand customer inquiries and provide personalized responses.
+
+4. Helpshift: Helpshift offers customer service automation tools that use AI to assist customer service agents and streamline workflows.
+
+5. Talla: Talla provides a knowledge management platform that uses AI to automate customer support inquiries and provide personalized responses.
+
+These are just a few examples, as there are many other AI startups that specialize in customer support and provide a range of products and services.
+
+Website: Vertex AI  |  Google Cloud
+url: https://cloud.google.com/vertex-ai
+Summary: As per the given content, there is no information regarding AI startups specializing in customer support and their products. However, I can search for reliable sources to provide you with the required information.
+
+Website: Generative AI  |  Google Cloud
+url: https://cloud.google.com/ai/generative-ai
+Summary: Query: Can you suggest some AI startups that specialize in customer support and provide information about their products?
+Content: Sure, here are some AI startups that specialize in customer support and their products:
+
+1. DigitalGenius: Their product is an AI-powered customer service platform that automates conversations using chatbots and automates processes such as ticket routing.
+
+2. Ada: Their product is an AI-powered chatbot platform that enables businesses to provide instant customer support through messaging apps, websites and other channels.
+
+3. Cognigy: Their product is an AI conversational platform that enables businesses to build and deploy conversational AI agents across channels such as messaging apps, websites, and voice-enabled devices.
+
+4. Verloop: Their product is an AI-powered conversational platform that enables businesses to automate customer support, sales and marketing conversations across multiple channels.
+
+5. TARS: Their product is a conversational landing page builder with AI capabilities, which allows businesses to create landing pages with conversational elements and automate customer interactions.
+
+Website: Vertex AI Model Garden and Generative AI Studio | Google Cloud Blog
+url: https://cloud.google.com/blog/products/ai-machine-learning/vertex-ai-model-garden-and-generative-ai-studio
+Summary: AI startups specializing in customer support and their products are not mentioned in the provided content.
+
+Website: Recommending news articles using Vertex AI Matching Engine | Google Cloud Blog
+url: https://cloud.google.com/blog/products/ai-machine-learning/recommending-articles-using-vertex-ai-matching-engine
+Summary: I'm sorry, but the content you provided does not fully answer your query. However, based on the query "AI startups specializing in customer support and their products", I can perform a search to provide you with relevant information.
+
+Some AI startups that specialize in customer support and their products/services include:
+
+1. DigitalGenius - offers a conversational AI platform which can be used for customer service automation.
+2. Ada Support - provides AI-powered chatbots that can automate customer support workflows.
+3. Intercom - offers an AI-based customer messaging platform that can be used for customer support as well as marketing and sales.
+4. Simplify360 - provides an AI-powered social media listening and customer engagement platform.
+5. Helpshift - offers AI-powered customer support automation solutions for businesses.
+
+Hope this helps! Let me know if you need more information.
+
+Website: AI & Machine Learning | Google Cloud Blog
+url: https://cloud.google.com/blog/products/ai-machine-learning
+Summary: Unfortunately, the provided content does not contain any information specifically about AI startups specializing in customer support and their products.
+
+Website: A Wave Of Billion-Dollar Language AI Startups Is Coming
+url: https://www.forbes.com/sites/robtoews/2022/03/27/a-wave-of-billion-dollar-language-ai-startups-is-coming/
+Summary: AI startups specializing in customer support and their products include LitLingo, CopyAI, BLANC, KUDO, Lilt, NeuralSpace, Gong, Aircover, Wingman, Ada Support, Rasa, Forethought, Clinc, Thankful, Moveworks, Espressive, and Rezolve.ai. Replicant is an AI startup that applies voice AI to automate contact center agent activity, AI Rudder specializes in call centers for financial services and e-commerce, Resemble AI generates realistic human voices, Uniphore, Cresta, Observe.ai, and Level AI offer conversational coaching and analytics platforms, while GYANT, Curai, and Buoy Health specialize in patient screening and care navigation with chatbots.
+
+Website: The AI-Powered Customer Service Automation Platform | Ada
+url: https://www.ada.cx/
+Summary: AI startup specializing in customer support is Ada. Ada offers an AI-powered platform that automates customer service, resolves inquiries across more channels and languages, provides no-code automation builder, continuous improvement, integrations, and handoffs. The solution is suitable for e-commerce, fintech, SaaS, Telecom, Travel, Media, and Gaming industries. The platform is built on Large Language Models (LLMs), refined to serve customers and designed to give teams the tools to power more resolutions with less effort.
+
+Website: Build Customer Service Automation | Ada
+url: https://www.ada.cx/platform
+Summary: Query: Can you provide information on Ada, including their products and services?
+Content: Ada is an AI startup that specializes in customer support automation. Their platform provides a resolution engine that can resolve complex customer inquiries in record time. They offer a no-code automation builder that empowers CX teams to design, manage, and continuously improve automation, from FAQs to complex workflows and integrations. The platform is multimodal, allowing content and training to be shared between digital and voice channels to deploy a consistent customer service experience without duplicating effort. Ada also offers generative content creation to create conversational FAQs in a single click, sync with your knowledge base to automatically generate new intents based on existing content, and resolve inquiries in 50+ languages. Furthermore, their platform includes comprehensive reporting and AI-powered improvements, enabling teams to use actionable insights to optimize performance and continuous improvement. Ada offers out-of-the-box integrations with hundreds of turnkey integrations to CRMs, MAPs, and e-commerce software, as well as agent connectors that integrate with integral customer engagement software like Zendesk, Salesforce, Talkdesk, and more, without any need for replacement. Overall, Ada's enterprise-grade platform is an efficient and powerful solution for customer support automation.
+
+Website: Resolve more with AI | Resolution Engine | Ada
+url: https://www.ada.cx/resolution-engine
+Summary: Query: AI startups specializing in customer support and their products
+Content: From the given content, it seems that Ada is an AI startup specializing in customer support. Their product is called Resolution Engine, which helps in building and launching automation in record time using no-code automation builder. They also offer AI-driven insights for effortless optimization and have integrations with existing business systems. Ada's customer service AI uses pre-trained ML models based on billions of customer conversations, refined to fit the company's unique needs. It also offers language-agnostic models to outperform other customer service automation platforms in 50+ languages. Ada's Resolution Engine connects to business systems and takes action to resolve more inquiries. They have worked with clients such as Digicel and offer resources such as Ada Academy for self-paced courses, help and developer documents, and a use case library to discover ways to use automation.
+
+Website: Launch automation in record time | No-Code Builder | Ada
+url: https://www.ada.cx/no-code-builder
+Summary: Query: Are there any AI startups that specialize in customer support?
+
+Content: Yes, one such startup is Ada. Ada provides a platform for customer support automation that can be built and launched in record time with the help of its Resolution Engine, which is backed by industry-leading AI. Ada also offers a no-code automation builder that allows CX teams to design, manage, and continuously improve automation without depending on developers. In addition, Ada provides integrations and handoffs, which allow businesses to connect with existing business systems. Ada’s platform is backed by global security and privacy standards and can engage on web, mobile, SMS, and social channels. Ada's solutions are tailored to suit the needs of E-commerce, FinTech, SaaS, Telecom, Travel, Media, Gaming, and other industries. Ada also offers learning resources such as the Ada Academy, Help Docs, Developer Docs, Embed Directory, Use Case Library, Inspire Learning Center, Blog, Podcast, Client Stories, and Community Support.
+
+Website: Continuously improve automation | AI-Driven Analytics | Ada
+url: https://www.ada.cx/continuous-improvement
+Summary: AI startup specializing in customer support: Ada
+Product: Their product is a customer support automation platform that uses AI technologies such as AI-driven analytics and industry-leading AI to provide efficient customer support solutions. The platform offers a Resolution Engine, which can help resolve customer inquiries with intelligent voice automation, and a No-Code Automation Builder that allows users to build and launch automation in record time. Ada also offers integrations and handoffs to integrate with existing business systems, and it is backed by global security and privacy standards. Their channels include digital messaging, voice, and telephony. Ada also provides eCommerce, FinTech, SaaS, Telecom, Travel, and Media and Gaming solutions. Ada's pricing is based on their AI-driven analytics, which can help measure the impact of automation on your customer journey. They also offer a data API, which provides access to their automation data and allows businesses to gain a deeper understanding of the full customer experience. Ada's analytics tools include Conversation Topics, Review Conversations, Training Similarities, Not Helpful, Satisfaction Surveys, and Campaign Performance.
+
+Website: Enhance automated customer service | Ada’s Integrations & Handoffs
+url: https://www.ada.cx/integrations-handoffs
+Summary: Query: Are there any AI startups specializing in customer support and their products mentioned in the provided content?
+
+Content: Yes, Ada is an AI startup that specializes in customer support and provides a range of products, including a resolution engine, AI-driven insights for continuous improvement, a no-code automation builder, integrations and handoffs with existing business systems, and support across various digital channels including messaging and voice/telephony. They offer solutions for various industries such as ecommerce, fintech, SaaS, telecom, and travel, and also have resources such as the Ada Academy, Help Docs, Developer Docs, Use Case Library, and more. The content also mentions Ada's pre-built integrations with popular CX tools through their App Directory and their partnership opportunities through the Tech Alliance Network.
+
+Website: Enterprise-grade automation | Ada
+url: https://www.ada.cx/enterprise-grade
+Summary: Query: Are there any AI startups specializing in customer support mentioned in the content?
+
+Content: yes, Ada is an AI startup specializing in customer support with an enterprise-grade platform that includes a Resolution Engine, No-Code Automation Builder, Continuous Improvement, Integrations & Handoffs, and support for Digital Messaging and Voice & Telephony channels. They offer solutions for industries such as eCommerce, FinTech, SaaS, Telecom, Travel, and Gaming. They also provide learning resources such as Ada Academy and a Use Case Library, as well as a blog and client stories.
+
+Website: Power omnichannel automation | Ada
+url: https://www.ada.cx/digital-messaging
+Summary: AI startup: Ada
+Product: Ada is an AI-powered automation software that specializes in customer support across different digital channels like web, social media, mobile, and SMS.
+
+Ada's features include omnichannel automation, industry-leading AI-powered resolution engine, no-code automation builder, AI-driven insights for continuous improvement, integrations and handoffs with existing business systems, and enterprise-grade security and privacy standards.
+
+Ada's customer support solutions cater to different industries like eCommerce, FinTech, SaaS, Telecom, Travel, and Media. Ada's automation solutions help businesses reduce ticket backlog by 90%, save up to 23% in operational costs, and enable them to serve customers 24/7 across different channels.
+
+Ada's multichannel automated customer service is accessible through web and mobile devices, social media like WhatsApp, Facebook Messenger, Instagram, and SMS integration. Ada also allows agent handoff, proactive two-way SMS and web chat automation, and IVR to SMS conversion to help businesses deliver a seamless cross-channel customer experience.
+
+In addition, Ada offers voice automation solutions that replace traditional IVR channels and resolve more phone conversations at a lower cost. Ada's automation solutions are easily deployable with build once, deploy everywhere automation. 
+
+Website: Transform Your IVR Experience | Voice Automation | Ada
+url: https://www.ada.cx/voice
+Summary: AI startups specializing in customer support and their products:
+- Ada: Their platform offers voice automation for phone inquiries, with industry-leading AI resolution engine, no-code automation builder, continuous improvement, and integrations with existing business systems. They serve various industries such as eCommerce, FinTech, SaaS, Telecom, Travel, Media, and Gaming. Their advanced AI instantly and accurately recognizes customer intent, leading to better self-service resolution rates and more intelligent routing. They also offer prebuilt integrations with CRM and MAP.
+
+Website: The #1 AI Chatbot for Ecommerce - Ecommerce Chatbot | Ada
+url: https://www.ada.cx/industries/ecommerce-chatbot
+Summary: Query: Are there any AI startups specializing in customer support and their products mentioned in the provided content?
+Answer: Yes, the content mentions an AI chatbot for E-commerce called Ada that specializes in customer support. Ada's product offerings include digital messaging, intelligent voice automation, and purpose-built e-commerce integrations to provide personalized and proactive support to customers while helping businesses optimize operations and reduce costs. Ada's resolution engine, continuous improvement, integrations and handoffs, and enterprise-grade capabilities make it a comprehensive platform for AI-powered customer support.
+
+Website: #1 AI Chatbot For FinTech - FinTech Chatbot | Ada
+url: https://www.ada.cx/industries/fintech-chatbot
+Summary: AI startup: Ada
+Product: AI-powered customer service automation platform
+Specialization: Customer support in the FinTech industry 
+Features: 
+- Building automation with no-code builder
+- Resolution engine powered by industry-leading AI
+- AI-driven insights for optimization
+- Integration with existing business systems
+- Personalized experiences with out-of-the-box applications 
+- 24/7 assistance for finance-related inquiries such as opening accounts, payments, transfers, and troubleshooting
+- Proactive engagement with personalized conversations tailored to targeted customers
+- Empowering CX agents to serve customers with efficiency at scale
+- Tailored education and guidance for customers through their pre- and post-purchase journey
+- Deep FinTech expertise for faster market setup
+- Provides end-to-end services from booking appointments to reviewing transaction details and addressing security and privacy inquiries. 
+- Measurable results through automation of over 60% of brand interactions
+
+Website: #1 AI Chatbot For SaaS - SaaS Chatbot | Ada
+url: https://www.ada.cx/industries/saas-chatbot
+Summary: The AI startup that specializes in customer support and their product mentioned in the provided content is Ada. Ada delivers measurable results to some of the world’s most innovative companies, helping them shift from reactive support to proactive support. Ada provides a conversational AI platform that automates customer interactions which generate leads, accelerate the sales funnel, and reduce churn, while letting your sales and support teams focus on building long-lasting customer relationships. Ada's platform capabilities include a resolution engine, no-code builder, continuous improvement, integrations and handoffs, and enterprise-grade security and privacy standards. Their solutions channels consist of digital messaging and voice solutions and their supported industries include Ecommerce, FinTech, SaaS, Telecom, Travel, and Gaming. Ada's products include personalized experiences to drive action with out-of-the-box applications, and users can access their account details, manage subscriptions, and access detailed onboarding guides - all without a live agent.
+
+Website: #1 AI Chatbot for Telecom - Telecom Chatbot | Ada
+url: https://www.ada.cx/industries/telecommunications-chatbot
+Summary: There is information about an AI startup called Ada in the provided content, which specializes in customer support. Their product is an AI chatbot that provides automated customer service support for various industries, including e-commerce, fintech, SaaS, telecom, travel, media, and gaming. Ada's chatbot platform can engage with customers through web, mobile, SMS, and social channels, and it offers features such as voice and telephony solutions, integrations and handoffs, and enterprise-grade security and privacy standards. Ada's automation can help shift reactive support to proactive support, enabling the creation of personalized experiences that drive action through its out-of-the-box applications. Ada also offers self-paced courses in their Ada Academy and provides learning resources through their help and developer documentation, client stories, and podcasts. Pricing information is available on their website.
+
+Website: #1 AI Chatbot for Travel - Travel Chatbot | Ada
+url: https://www.ada.cx/industries/travel-chatbot
+Summary: AI startup specializing in customer support for the travel industry: Ada. Ada's AI chatbot provides virtual travel agents for customers to self-serve for tasks such as checking flight statuses, booking hotels, and accessing rewards and loyalty points. Ada helps travel companies reduce wait times by providing hyper-personalized and automated customer service in customers' channels and language of choice. Ada's no-code platform can be deployed across channels and markets instantly. Ada's chatbot transformed AirAsia's customer experience by reducing wait times from over an hour to less than a minute in just three weeks.
+
+Website: #1 AI Chatbot For Media - Media Chatbot | Ada
+url: https://www.ada.cx/industries/media-chatbot
+Summary: Query: Please identify AI startups specializing in customer support and their products.
+
+Content: Only one AI startup was mentioned in this particular content - Ada. Ada specializes in customer support and offers several solutions such as a resolution engine, no-code builder, continuous improvement, integrations and handoffs, enterprise-grade digital messaging, and voice solutions for multiple industries like E-commerce, FinTech, SaaS, Telecom, Travel, Media, and Gaming. Their AI-powered chatbot helps customers get personalized support across multiple channels and is capable of handling hundreds and thousands of customer inquiries each year.
+
+Website: #1 AI Chatbot For Gambling - Gambling Chatbot | Ada
+url: https://www.ada.cx/industries/gambling-chatbot
+Summary: Query: What is Ada and what is its product?
+Content: Ada is an AI startup specializing in customer support. Ada provides a conversational AI platform that enables businesses to deliver 24/7 support across all time zones and channels. Its Natural Language Understanding model is pre-trained using 4B+ real-world conversations to accurately capture a customer's question and provide relevant answers, resolving queries faster. Ada's product is designed to automate customer support and reduce the number of agents required to support players by providing a VIP experience to every player. Ada's platform, which can be integrated with existing business systems, is primarily aimed at gambling businesses, but it can also serve industries like e-commerce, fintech, SaaS, telecom, travel, media, and gaming. Ada has been able to help Playtech (a gambling tech company), reduce player wait times by 98%, increase agent efficiency by 50%, automate 80% of player interactions, and achieve a 10x decrease in cost-per-interaction.
+
+Website: Top 10 Startups developing AI for Customer service
+url: https://www.ai-startups.org/top/customer_support/
+Summary: Based on the content provided, here is a list of AI startups specializing in customer support:
+
+1. Uniphore
+2. Gong.io
+3. Moveworks
+4. Observe.AI
+5. Aisera
+6. Dixa
+7. Glia
+8. Cresta
+9. MOOGsoft
+10. Forethought
+11. Gorgias
+12. Cognigy
+13. Directly
+14. Wysdom
+15. Capacity
+16. Netomi
+17. Pypestream
+18. Ushur
+19. IPSoft
+20. Mavenoid
+21. Level AI
+22. Ultimate.ai
+23. Astound
+24. raffle.ai
+25. Tenyx
+26. Neuron7
+27. Lang.ai
+28. E-bot7
+29. Agara
+30. Kaizo
+31. Oto
+32. Studio Ousia
+33. AptEdge
+34. Parlamind
+35. Eloquent Labs
+36. Mindsmiths
+37. Just AI
+38. Rezo.ai
+39. Datasphera
+40. GenieTalk
+41. Floatbot
+
+Website: Uniphore (India) Funding: $620.9M
+url: https://www.ai-startups.org/video/uniphore/
+Summary: The AI startup specializing in customer support mentioned in the provided content is Uniphore. They offer Conversational AI technology to help businesses improve their customer service across multiple touchpoints. Uniphore has received a funding of $620.9M to date.
+
+Website: Uniphore: The Leader in Conversational AI & Automation
+url: http://www.uniphore.com
+Summary: Query: Are there any known AI startups that provide customer support solutions other than Uniphore?
+
+Content: Yes, there are other AI startups that specialize in customer support. One of them is Zendesk, which provides a SaaS-based customer service platform that leverages AI to automate tasks such as ticket routing, content classification, and chatbots. Another is Helpshift, which uses AI and machine learning to provide intelligent automation for customer support, including chatbots, personalized messaging, and self-service support. These startups aim to help businesses deliver better and faster customer support by automating routine tasks and providing intelligent insights.
+
+Website: Gong.io (Israel) Funding: $583M
+url: https://www.ai-startups.org/video/gongio/
+Summary: Based on the provided content, the AI startup specializing in customer support is Gong.io from Israel. Their product uses natural language processing and machine learning to assist and train salespeople and customer service representatives. They have raised $583 million in funding as of October 31, 2022.
+
+Website: Gong - Revenue Intelligence Platform
+url: https://www.gong.io/
+Summary: Query: Can you provide me information on AI-based startups catering to customer support?
+
+Content: Gong is an AI-based startup that provides a revenue intelligence platform for maximizing the potential of go-to-market teams. Their products include Forecast, Assist, and Integrations, among others. These products reveal reality to propel revenue growth, make call forecasts more accurate, collect action critical to-dos in one place, and connect Gong with all your team's tools. Gong also supports 70+ languages and is built for the largest and most complex go-to-market teams. Their solutions include teams sales, customer success, and marketing, to name a few. Gong's AI-backed insights are trusted by over 3,500 customers, including Snowflake, TEKSystems, and LinkedIn. Companies across industries, geographies, and sizes use Gong.
+
+Website: Moveworks (USA) Funding: $315M
+url: https://www.ai-startups.org/video/moveworks/
+Summary: Based on the provided content, Moveworks is an AI startup based in the USA that specializes in customer support through the automation of help desk tickets using AI. They have received $315 million in funding for their product/service.
+
+Website: Moveworks: Solve employee issues, reduce costs, unlock productivity
+url: https://www.moveworks.com/
+Summary: Query: Can you provide a list of AI startups specializing in customer support and their products from the content? 
+
+Content: 
+
+Although there is only one company mentioned in the provided content, it is an AI startup specializing in customer support. The startup's name is Moveworks, and its product is a conversational AI platform that uses advanced large language models, like GPT-3, to connect people and enterprise systems. The platform offers solutions for IT, HR, facilities management, finance, and employee communications. Additionally, Moveworks offers an Intelligence Engine, Key Features, Creator Studio, Employee Experience Insights, Multilingual Support, Moveworks API, Integration Partners, Triage, Performance Dashboards, Experiences, Answers, Approvals, Concierge, Control Center, and Customer Stories.
+
+Website: Observe.AI (USA) Funding: $214M
+url: https://www.ai-startups.org/video/observeai/
+Summary: AI startups specializing in customer support and their products:
+1. Observe.AI: they offer a voice AI platform for call centers, with their first product "Agent Assist" that provides real-time feedback on customer sentiment and helps agents during the customer call using deep learning and natural language processing (NLP).
+
+Website: The #1 Contact Center Conversation Intelligence Software | Observe.AI
+url: https://observe.ai/
+Summary: Query: Are there any AI-powered customer support startups? Please provide some examples and their products.
+Content: One example of an AI-powered customer support startup is Observe.AI, which provides conversation intelligence software for contact centers. Their AI engine uncovers insights from customer interactions, provides real-time guidance and coaching to frontline teams, and automates workflows for better performance. They offer solutions for sales performance, compliance, customer service, and operational efficiency. Another example is DigitalGenius, which provides AI-powered automation for customer service operations. Their platform uses deep learning algorithms to automate customer service conversations, reducing response times and improving efficiency. They also offer AI-powered chatbots for self-service support. A third example is Ada, which offers an AI-powered chatbot platform for customer service. Their platform can handle inquiries across multiple channels and supports personalized conversations with customers. It also provides analytics and insights for improving customer service performance.
+
+Website: Aisera (USA) Funding: $164.5M
+url: https://www.ai-startups.org/video/aisera/
+Summary: Based on the provided content, one AI startup specializing in customer support is Aisera. Aisera provides an AI-driven service solution that automates operations and support for IT, human resources, sales, and customer service. They have received a funding of $164.5M as of November 2022.
+
+Website: Aisera: Best Generative AI Platform For Automating Your Enterprise
+url: https://www.aisera.com
+Summary: Based on the provided content, it seems that Aisera is an AI startup specializing in customer support. Aisera's products include AI Service Desk, AI Customer Service, Ticket AI Assist, and AI Support Intelligence. They also offer solutions for IT, HR, Facilities, Sales & Marketing, and Call Centers. Aisera has clients from various industries including Healthcare and Hospitals, Hi-Technology, and Financial Services and Banking.
+
+Website: Dixa (Denmark) Funding: $157.9M
+url: https://www.ai-startups.org/video/dixa/
+Summary: AI startups specializing in customer support and their products:
+
+- Dixa (Denmark) offers conversational customer engagement software that connects brands with customers through real-time communication.
+
+Website: Dixa | Conversational Customer Service Platform
+url: https://dixa.com/
+Summary: Query: Can you provide information on Dixa, an AI startup specializing in customer support?
+
+Content: Dixa is a Conversational Customer Service Platform that specializes in providing all-in-one solutions for customer service needs. The company's unique platform aims to create customer loyalty at scale across industries and company size. With its built-in channels, Dixa enables businesses to reach customers wherever they are, using native voice, email, social media, messaging, and more. Its omnichannel platform offers an intuitive agent workspace with contextual customer views, dynamic knowledge, conversation timelines, smart tools, automated conversational flows, and intelligent routing to help shape customer interactions to be as meaningful and efficient as possible. The company also provides powerful analytics, built-in QA, and easy-to-read dashboards to help track and improve team performance. Dixa has attracted a diverse range of customers across several industries, including eCommerce, Fintech & InsurTech, Pet Care & Food, Health & Wellness, Baby & Kids' Supplies, Food & Grocery, Transport & Mobility, Fashion & Design, and Logistics & Mobility.
+
+Website: Top 10 Startups developing Conversational AI
+url: https://www.ai-startups.org/top/conversational/
+Summary: Based on the provided content, some AI startups specializing in customer support and their products are:
+
+1. Uniphore: Offers conversational AI technology for delivering transformational customer service across touchpoints.
+2. Dixa: Provides conversational customer engagement software that connects brands with customers through real-time communication. 
+3. Yellow Messenger: Offers a software platform that serves as an Enterprise AI channel for customer engagement.
+4. Cognigy: Provides the leading Enterprise Conversational AI Platform for customer & employee support process automation.
+5. Inbenta: Offers conversational AI solution designed to improve customer engagement. 
+
+These are just a few of the startups mentioned in the content, and there are several other startups listed that may offer relevant products for customer support.
+
+Website: Glia (USA) Funding: $152M
+url: https://www.ai-startups.org/video/glia/
+Summary: AI startups specializing in customer support and their products include Glia. Glia is a USA-based startup company that has received funding of $152M. The company's products allow companies to connect with their customers using messaging, video, co-browsing, and AI to deliver digital-first moments.
+
+Website: Glia Digital Customer Service Technology for Financial Enterprises and Beyond
+url: https://www.glia.com
+Summary: Query: Are there any AI startups specializing in customer support mentioned in the provided content?
+
+Content: While the content does talk about customer support technology provided by Glia, it doesn't mention any other AI startups that specialize in customer support.
+
+Website: Cresta (USA) Funding: $151M
+url: https://www.ai-startups.org/video/cresta/
+Summary: The AI startup specializing in customer support is Cresta from the USA. Cresta provides an artificial intelligence platform that helps scale and improve the quality of customer services. Its AI assistant surfaces the right information at the right time from sales agents and increases the conversion rate and efficiency of the team. The company has secured a funding of $151M to promote its products.
+
+Website: Cresta AI | Generative AI for the Contact Center
+url: https://www.cresta.ai/
+Summary: Query: Could you give me information on Cresta AI and their products for customer support?
+Content: Cresta AI is an AI startup that specializes in providing AI coaching, quality assurance, and performance management solutions for contact centers. They offer an integrated suite of intelligent products designed to centralize and amplify the knowledge, insights, and coaching necessary for peak contact center performance. Their products include AI-powered coaching and assistance, real-time customer intelligence, and AI-enabled coaching, QA, and performance management. Cresta AI's solutions have been proven to deliver results, with customers experiencing increases in CSAT, reductions in AHT, and savings in hours per week. Through AI technology, Cresta AI is changing the customer experience for good and companies can now pivot towards revenue generation.
+
+Website: Top 10 Startups developing AI for Call Centers
+url: https://www.ai-startups.org/top/call-center/
+Summary: Here is a list of AI startups specializing in customer support and their products that I found in the given content:
+
+1. Uniphore - Global Conversational AI technology company that enables businesses to deliver transformational customer service across touchpoints.
+2. Cresta - An artificial intelligence platform designed to help scale and improve the quality of customer services by increasing the sales team's conversion rate and efficiency.
+3. Replicant - A contact center automation software that helps companies automate their most common customer service requests using AI to provide agents with call summaries and measures trends.
+4. SaaS Labs - AI-based call quality monitoring platform.
+5. PolyAI - A machine learning platform for conversational artificial intelligence.
+6. Cognigy - An Enterprise Conversational AI Platform for customer & employee support process automation.
+7. Shelf.io - Uses AI to free companies from the complexities of knowledge management so employees can find answers they need.
+8. Balto - AI technology for real-time call guidance and coaching for contact center agents.
+9. Infinitus - Voice robotic process automation tools for the healthcare industry that makes calls from healthcare providers or pharmacies to insurance companies using “voice RPA”.
+10. Pypestream - Customer Engagement Solution that enables businesses to connect with customers using the power of smart messaging, driving satisfaction and loyalty.
+11. Level AI - A platform for businesses to automate tedious workflows and transform customer experience.
+12. Skit - Enables enterprises to automate their contact center operations using Voice AI.
+13. Parloa - A Conversational AI platform for automating omnichannel customer service in phone bots or chatbots.
+14. Loris - Provides a one-click intelligence layer for digital companies, with an AI-based solution delivering de-escalation techniques and language suggest features that guide customer service agents through the most challenging conversations.
+15. Voca.ai - Builds AI-based voice assistants for customer support services.
+
+Website: MOOGsoft (USA) Funding: $92.9M
+url: https://www.ai-startups.org/video/moogsoft/
+Summary: Based on the given content, here's the information related to the Query:
+
+AI Startups specializing in customer support and their products:
+Moogsoft is an AI startup based in the USA that specializes in providing AI for IT incident management. Their product, Moogsoft AIOps, helps Dev and Ops teams become smarter, faster, and more effective by automating mundane operational work. The startup has received a funding of $92.9M.
+
+Website: Moogsoft | Industry Leading AIOps Platform for IT Operations
+url: https://www.moogsoft.com/
+Summary: Query: Are there any AI startups that specialize in customer support and their products mentioned in the provided content?
+
+Content: The provided content is focused on Moogsoft, an AI startup that specializes in IT operations platforms and incident management. There is no mention of customer support, so it is unclear if there are any other AI startups specializing in customer support mentioned in the content.
+
+Website: Forethought (USA) Funding: $92M
+url: https://www.ai-startups.org/video/forethought/
+Summary: Here is the answer to your query - "AI startups specializing in customer support and their products":
+
+Forethought is an AI startup based in the USA that specializes in customer support. Their product is called Agatha, which is an artificially intelligent agent designed to supercharge enterprise workflows. Forethought has received funding of $92M to develop and market their product. Additionally, there are 41 other startups listed on the same website that are also developing AI for customer service.
+
+Website: Generative AI Platform for CX Automation | Forethought
+url: https://www.forethought.ai
+Summary: Query: Are there any success stories of Forethought's SupportGPT™ generative AI platform?
+Content: Yes, Forethought's SupportGPT™ generative AI platform has been successful in improving customer support for various industries. The Forethought platform has helped companies maximize ROI, cut costs, and provide top-tier service in every customer interaction. According to Forethought, companies have seen an average 40% reduction in first response time, 91% average model accuracy, and a 53% average deflection rate. 
+
+Forethought platform's generative AI has also helped e-commerce companies save support costs and boost customer satisfaction by automating answers to common questions across any channel. SaaS companies have been able to resolve simple cases automatically and route complex or high-priority inquiries to the right agent. For FinTech companies, the generative AI platform has enabled customers to self-serve and provided agents with context to provide fast resolutions. 
+
+Forethought's generative AI platform has also gained widespread attention as it propelled Forethought to victory at the 2018 TechCrunch Disrupt Battlefield. The platform's plug-in enterprise solution can be installed in two days and can improve customer support time-to-resolution by up to 30 percent. Forethought has been featured in various publications such as Forbes, TechCrunch and MarketWatch.
+
+Website: Gorgias (USA) Funding: $72.4M
+url: https://www.ai-startups.org/video/gorgias/
+Summary: Based on the given content, the AI startup specializing in customer support and their product is Gorgias. Their product is a customer support helpdesk specifically designed for online stores, which utilizes AI and customer data to automate responses to basic questions. Gorgias is based in the USA and has received funding of $72.4M as per the updated information till November 20, 2022.
+
+Website: Customer Service Made Easy for Online Stores | Gorgias
+url: https://www.gorgias.io/
+Summary: AI startup specializing in customer support and their product is Gorgias. The Gorgias product tour includes the centralization of 1:1 interactions, email, social media, live chat, voice, SMS, and WhatsApp support. Their automation features include rules, self-service, and macro. The platform allows automation add-ons and has a Help Center. The support team can customize their workspace, and Gorgias allows order management, customer sidebar, and supports multiple stores. They also provide statistics on revenue and support performance, as well as a satisfaction survey. The product can be integrated with platforms like Shopify, Magento, and BigCommerce. They provide a 7-day free trial and have been used daily by over 11,000 merchants.
+
+Website: Cognigy (Germany) Funding: $69M
+url: https://www.ai-startups.org/video/cognigy/
+Summary: Based on the provided content, one AI startup specializing in customer support is Cognigy. Their product is an Enterprise Conversational AI Platform which automates customer and employee support processes. They are based in Germany and have received funding of $69M.
+
+Website: Low-Code Conversational AI & Automation Platform | Cognigy
+url: https://www.cognigy.com
+Summary: Based on the content provided, Cognigy.AI is an AI startup specializing in customer support. Their product offerings include Conversational IVR, Smart Self-Service, and Agent + Assist, all of which aim to enhance the customer service experience with automation and AI technology. They are also recognized as a leader in the Gartner® Magic Quadrant™ for Enterprise Conversational AI Platforms for the second year in a row.
+
+Website: Top 10 Natural Language Processing startups
+url: https://www.ai-startups.org/top/natural_language_processing/
+Summary: Based on the provided content, some AI startups specializing in customer support and their products are:
+
+1. Gong.io - developed a tool that uses natural language processing and machine learning to help train and suggest information to sales people and other customer service reps.
+2. TaskUs - a customer care and back office support company that helps companies provide exceptional experiences for their customers. TaskUs provides AI training and social network content moderation services.
+3. Observe.AI - building a Voice AI platform for call centers. Its first product "Agent Assist"​ empowers call center agents to do their jobs better. The platform provides the agent with real-time feedback on customer sentiment and guides them on next best action during the customer call. The AI platform listens to the call stream in real time, uses deep learning and natural language processing (NLP) to understand the context and generates suggestions and guidance for the agent.
+
+Website: Top 10 Startups developing AI for Enterprise
+url: https://www.ai-startups.org/top/enterprise/
+Summary: Based on the provided content, there is no specific information mentioned about AI startups specializing in customer support and their products. However, there are some startups listed that provide conversational AI technology for businesses that can potentially be integrated into customer support systems such as Uniphore, Socure, and Kore.ai. It is important to note that this list may not be comprehensive and there could be other AI startups specializing in customer support and their products that are not mentioned in the content.
+
+Website: directly (USA) Funding: $66.8M
+url: https://www.ai-startups.org/video/directly/
+Summary: Here is the information you requested:
+
+AI startups specializing in customer support that offer similar products to Directly include:
+
+1. Ada - Ada is a Canadian-based AI startup that offers a chatbot customer support platform for businesses. Their platform helps businesses automate their customer service processes and answer customer inquiries 24/7.
+
+2. DigitalGenius - DigitalGenius is a UK-based AI startup that provides an AI-powered customer service platform. Their platform automates repetitive and time-consuming tasks for customer service agents, enabling them to focus on more complex customer interactions.
+
+3. Inbenta - Inbenta is a US-based AI startup that provides a natural language processing (NLP) platform for customer support. Their platform helps businesses automate their customer support processes and provide accurate and personalized responses to customer inquiries.
+
+4. Intercom - Intercom is a US-based AI startup that provides a conversational relationship platform for customer support. Their platform uses AI-powered chatbots to provide customers with instant support and guidance.
+
+All these AI startups specialize in customer support and have similar products to Directly.
+
+Website: Directly is now part of Movate | On Demand and Automated Customer Support
+url: https://www.directly.com/
+Summary: I'm sorry, but the given content does not provide enough information about AI startups specializing in customer support and their products. Can you please provide more relevant content for me to search?
+
+Website: Wysdom (Canada) Funding: $67.1M
+url: https://www.ai-startups.org/video/wysdom/
+Summary: AI startup: Wysdom
+Products: Full-stack virtual assistant platform that allows connecting with customers, answering questions, completing purchases, and transacting any time with a trusted cognitive enterprise care solution over social, web chat, and IVR.
+
+Website: Wysdom AI | Virtual agent analytics and management
+url: https://wysdom.ai/
+Summary: AI startup mentioned in the content: Wysdom AI
+Product: Virtual agent analytics and management. They offer software operations center solutions, virtual agent operations, virtual agent implementation, virtual agent tune-ups, and professional services to help companies improve the performance of their virtual agents and engage customers with conversational AI. They have expertise in large-scale enterprise deployments, manage compliance and risk while collecting data across highly regulated industries including banking, telecom, retail, and financial services. Additionally, they provide Tune-Up services by experts using specialized AI diagnostics tools and AI training data to fix issues.
+
+Website: Capacity (USA) Funding: $61.5M
+url: https://www.ai-startups.org/video/capacity/
+Summary: Some AI startups specializing in customer support and their products include Capacity. Capacity is an AI-powered helpdesk that automates support for customers and employees. They have received funding of $61.5 million and are based in the USA.
+
+Website: AI-Powered Support Automation Platform | Capacity
+url: https://capacity.com/
+Summary: AI startup specializing in customer support and their product mentioned in the content is Capacity, an AI-powered support automation platform that offers products like cobrowse, cloud drive, helpdesk, knowledge base, live chat, surveys, guided conversations, document processing, RPA, session replay, workflows, articles, and apps. Capacity helps organizations automate support processes, ease the burden of repetitive tasks, increase employee engagement, and improve customer satisfaction. There are also several customer success stories and resources available on their website.
+
+Website: Netomi (USA) Funding: $52M
+url: https://www.ai-startups.org/video/netomi/
+Summary: Some AI startups specializing in customer support and their products are:
+
+1. Netomi - Uses machine intelligence to turn customer service into a competitive edge.
+
+2. Talkdesk - Provides intelligent customer service solutions including AI-powered chatbots, speech analytics, and automation.
+
+3. Ada - Offers an AI-powered chatbot platform that enables businesses to automate customer interactions across multiple channels.
+
+4. DigitalGenius - Uses AI to automate customer service workflows, reducing response times and increasing productivity.
+
+5. Cognitivescale - Provides AI-powered virtual agents, chatbots, and voice assistants for customer service and support.
+
+Website: AI Customer Service - #1 Customer Support Helpdesk AI for Enterprise
+url: https://www.netomi.com/
+Summary: AI startup specializing in customer support: Netomi
+Products: 
+- Generative AI
+- Conversational AI
+- AI Email Resolution
+- AI Chat Interface
+- Webform Automation 
+
+Integrations: 
+- Zendesk
+- Salesforce
+- Freshdesk
+- Gladly
+- Khoros
+- Shopify
+- Sprinklr
+- Zoho 
+
+Industries: 
+- eCommerce
+- Entertainment
+- Fintech
+- SaaS
+- Telecommunications
+- Travel & Hospitality
+
+Website: Pypestream (USA) Funding: $46.5M
+url: https://www.ai-startups.org/video/pypestream/
+Summary: AI startup specializing in customer support is Pypestream. Pypestream has a Customer Engagement Solution that utilizes pragmatic AI and chatbots to enable transactions over messaging, driving satisfaction and loyalty. Their platform is patented, secure, and compliant. Pypestream has received funding of $46.5M.
+
+Website: Self-service automation | Pypestream
+url: https://www.pypestream.com/
+Summary: AI startup specializing in customer support with their product:
+- Pypestream: Self-service automation platform with live customer support, powered by advanced AI and connected to backend systems. Industries served include streaming & wireless, insurance, healthcare, travel, eCommerce, and financial services. The platform includes modules for customers, employees, and other important people to configure and operate self-service automation. PypePro℠ Implementation team is available to build the conversational solution for businesses in a fraction of the time it takes most IT teams to build it themselves.
+
+Website: Ushur (USA) Funding: $42M
+url: https://www.ai-startups.org/video/ushur/
+Summary: One AI startup specializing in customer support is Ushur. They are a cloud-based AI company that automates service workflows in both the backend process and conversational interfaces. They have received funding of $42M.
+
+Website: Customer Experience Automation™ Company | Ushur
+url: https://ushur.com/
+Summary: Query: What does Ushur's CXA platform offer and which industries and use cases do they specialize in?
+Content: Ushur's CXA platform is a Customer Experience Automation™ platform that uses AI and no-code to self-serve every micro-engagement across the entire customer service journey, from acquisition and onboarding to resolution. Their platform offers various solutions such as Conversational Apps™, which are automated conversations, Invisible App™, which is a secure app-like experience, Invisible Portal™, which is a no-code portal-like experience, SmartMail™, which is intelligent email automation, and Intelligent Document Automation™, which is document understanding and automation. 
+
+They specialize in providing automation solutions for industries such as Insurance, Healthcare, and Banking & Financial Services. The specific use cases they specialize in are Email Triage, IVR Deflection, FNOL Process Automation, Sales Enablement Automation, Two-Way Texting, Automated Surveys, Helpdesk Automation, and Automated Claims Processing. Additionally, Ushur provides Quick-Start Solution Packs that come pre-built and bundled to solve immediate challenges, allowing businesses to get up and running in a few weeks and realize immediate results.
+
+Website: IPSoft (USA) Funding
+url: https://www.ai-startups.org/video/ipsoft/
+Summary: One AI startup specializing in customer support is IPSoft, based in the USA. IPSoft's product is a cognitive support agent called Amelia, which has applications in a variety of industries, such as helping customers open bank accounts or processing insurance claims.
+
+Website: Top 10 Startups developing AI-powered Virtual Assistants
+url: https://www.ai-startups.org/top/virtualassistants/
+Summary: Based on the provided content, here are some startups specializing in AI-powered customer support and their products:
+
+1. Ada Health - Offers a conversational health assistant to empower people with personalized medical insights and identify appropriate next steps.
+2. Character.AI - Provides open-ended conversational applications that let users create characters and converse with them.
+3. Cleo - Develops an app and chatbot designed as a financial assistant.
+4. Suki - Makes an AI-powered and voice-enabled digital assistant for doctors.
+5. Wysdom - Develops a full-stack virtual assistant platform to connect with customers, answer questions, complete purchases, and transact any time with a trusted cognitive enterprise care solution over social, web chat, and IVR.
+6. Jane.ai - Provides an artificial intelligence platform that makes all of your company's information accessible through chat.
+7. Clinc - Develops intelligent personal financial assistant. Mobile, voice-activated, artificial intelligence platform enabling personal and instant answers for common or complex questions.
+8. AiCure - Develops an intelligent medical assistant, IMA, that visually controls that medication is taken.
+9. Mya Systems - Develops AI recruiting assistant Mya that automates the process from resume to hire so you can cultivate and engage the best candidates.
+10. Amelia by IPSoft - Develops cognitive support agent Amelia. From helping customers open new bank accounts to processing insurance claims and registering patients for hospital entry, Amelia has countless potential industry applications.
+
+Website: Mavenoid (Sweden) Funding: $39.9M
+url: https://www.ai-startups.org/video/mavenoid/
+Summary: Here is some information about the AI startup, Mavenoid, which specializes in customer support: 
+
+- Mavenoid is a troubleshooting software that helps its users to locate and fix malfunctions with the help of an AI-powered chatbot. 
+- The company is based in Sweden and has received $39.9M in funding. 
+- Their website is http://www.mavenoid.com/. 
+- Mavenoid falls under the category of AI startups specializing in customer support. 
+
+If you are looking for additional AI startups specializing in customer support and their products, you may refer to the link: https://www.cbinsights.com/research/ai-customer-service-startups-to-watch/. It provides a list of 41 startups developing AI for customer service.
+
+Website: Home | Mavenoid
+url: http://www.mavenoid.com/
+Summary: Query: Are there any AI startups that specialize in customer support? If so, what products or services do they offer?
+
+Content: Yes, there are AI startups that specialize in customer support, one of which is Mavenoid. Mavenoid offers a product support platform that provides both self-service and live support for hardware companies. Their platform automates repetitive inquiries such as troubleshooting, installation, warranty handling, and more, and their live support tools enable effortless escalations. They also offer live video support for a more interactive customer experience. What sets them apart is their diagnosis engine, an AI that works similarly to the human brain when solving complex technical problems, making them the first commercially available platform capable of this. They have worked with some of the world's most iconic brands, including Husqvarna Group, and are committed to offering seamless product support that can get to work in days, not months.
+
+Website: Level AI (USA) Funding: $35M
+url: https://www.ai-startups.org/video/thelevel/
+Summary: One AI startup specializing in customer support is Level AI, which is based in the USA and has received $35M in funding. Their platform automates workflows and improves customer experience.
+
+Website: Ultimate.ai (Finland) Funding: $27.5M
+url: https://www.ai-startups.org/video/ultimate/
+Summary: AI startups specializing in customer support:
+- Ultimate.ai (Finland), which provides customer service agents with AI tools for faster, smarter responses. It has received $27.5M in funding.
+
+Website: Customer Service Automation Powered by Generative AI | Ultimate
+url: https://www.ultimate.ai/
+Summary: AI startup: Ultimate
+Product specialization: Customer service automation powered by generative AI
+Integrations: Zendesk, Salesforce, LiveChat, Freshworks, Sunshine Conversations
+Industries: E-commerce, financial services, travel, telecommunications, health tech
+
+Website: Astound (USA) Funding: $27M
+url: https://www.ai-startups.org/video/astound/
+Summary: Based on the provided content, the AI startup specializing in customer support is Astound that has received a funding of $27M. Their product offers support automation using Natural Language Processing (NLP) and Machine Learning for employee service.
+
+Website: raffle.ai (Denmark) Funding: $21.8M
+url: https://www.ai-startups.org/video/raffle/
+Summary: Based on the information provided in the content, the AI startup specializing in customer support is raffle.ai. Their product is state of the art AI tools for businesses with the mission to connect employees and customers to company knowledge. Their website is https://www.raffle.ai/.
+
+Website: Raffle - A Search and Insights Engine Powered by AI
+url: https://www.raffle.ai/
+Summary: Based on the provided content, there is no specific information about startups that specialize in customer support using AI. However, Raffle, a search and insights engine powered by AI, offers products such as Raffle for Customer Service, which streamlines customer support by providing a federated search, chatbot, and other features, and Raffle Insights, which offers behavior analytics for companies to understand their customers and employees better.
+
+Website: Tenyx (USA): $15M
+url: https://www.ai-startups.org/video/tenyx/
+Summary: Based on the given information, I have found one AI startup specializing in customer support which is Tenyx. Tenyx is developing the next generation of voice-based intelligent systems based on proprietary neuroscience-inspired AI technology. Their funding is $15M and they are based in the USA.
+
+Website: Neuron7 (USA) Funding: $14.2M
+url: https://www.ai-startups.org/video/neuron7/
+Summary: AI startups specializing in customer support:
+- Neuron7 (USA): Provides a service intelligence platform that uses natural language processing to analyze metadata from knowledge bases, product documentation, customer support call logs and transcripts to help diagnose and solve problems. Their funding is $14.2M.
+
+Website: Neuron7.ai - Diagnose & Resolve Customer Service Issues in Seconds
+url: https://www.neuron7.ai/
+Summary: AI startup: Neuron7.ai
+Specialization: Customer support
+Products:
+- ResolutionGPT
+- End-to-End Resolution Intelligence
+- Customer Self-Service
+- Assist Support Agents
+- Empower Field Service Teams
+- Capture Expert Knowledge
+- Unlock Unstructured Data
+Neuron7.ai provides AI-generated resolution intelligence to diagnose and resolve customer service issues in seconds. Their products assist support agents, field service teams, and customers. They offer solutions for all service tiers, including self-service, support centers, field service, and engineering. Their AI extracts insights from product manuals, past cases, knowledge base articles, and cheat sheets to improve overall service quality. Customers have reported improvements in service metrics, such as first time fix rate, uptime and turnaround time, reduce parts wastage, and mean time to resolution. Neuron7.ai integrates with any existing CRM, tool, or workflow. Customers include industries such as manufacturing, medical device technology, and BPOs.
+
+Website: Lang.ai (Spain) Funding: $12.5M
+url: https://www.ai-startups.org/video/lang/
+Summary: AI startup Lang.ai, based in Spain, specializes in language understanding and offers an unsupervised AI platform for customer support. Their product is aimed towards businesses looking to improve their customer service through the use of advanced AI technology. Lang.ai has received $12.5M in funding so far and is one of the 41 AI startups focused on customer service.
+
+Website: E-bot7 (Germany) Funding: $9.2M
+url: https://www.ai-startups.org/video/e-bot7/
+Summary: AI Startup: E-bot7
+Specialization: Customer support through automation
+Products: AI-powered chatbots and conversational AI
+
+Website: The Conversational AI Customers Love - e-bot7
+url: http://www.e-bot7.com
+Summary: Sorry, the content provided does not contain the full details of AI startups specializing in customer support and their products. Please provide a more relevant content for me to assist you.
+
+Website: Agara (USA) Funding: $7.5M
+url: https://www.ai-startups.org/video/agara/
+Summary: Based on the provided content, there is one AI startup specializing in customer support - Agara. Agara is a USA-based company that has raised funding of $7.5 million. Their product is an autonomous voice agent powered by real-time voice AI that enhances customer experience and reduces support costs.
+
+Website: Kaizo (Netherlands) Funding: $7M
+url: https://www.ai-startups.org/video/kaizo/
+Summary: One AI startup specializing in customer support is Kaizo, based in the Netherlands. They offer an AI-powered and gamified Workforce Performance Management (WPM) solution for the world's largest remote-working population, specifically for customer support. They have received $7 million in funding to develop and expand their product.
+
+Website: Kaizo. All your customer support operations in one place
+url: https://kaizo.com
+Summary: AI startup specializing in customer support: Kaizo
+
+Product offered by Kaizo: Kaizo offers a platform solution that provides quality assurance, performance coaching, scorecards, missions, and reports for customer support operations. It empowers agents for great customer service and helps in evaluating and improving team performance with real-time insights, QA, and gamification. Using Kaizo, one can cut resolution time, build goal-driven teams, and save 4-8 hours on reporting each week.
+
