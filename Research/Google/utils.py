@@ -1,4 +1,5 @@
 import requests, os, re, time
+from termcolor import colored
 import shutil
 import openai
 from dotenv import load_dotenv
@@ -205,11 +206,11 @@ def searchType():
     valid_inputs = ["quick", "deep", "thorough"]
 
     while True:
-        searchType = input("Enter search type: 'Quick', 'Thorough' or 'Deep' \nSearch Type: ").lower()
+        searchType = input(colored("\nEnter search type (Quick, Thorough, Deep):", "blue", attrs=["bold","underline"])+ " ").lower()
         if searchType in valid_inputs:
             break
         else:
-            print("Invalid input! Please enter either 'Quick' or 'Deep'.")
+            print("Invalid input! Please enter one of following: 'Quick', 'Thorough', 'Deep'.")
     
     if searchType == "quick":
         return 1

@@ -1,0 +1,23 @@
+Appian software overview and industry use cases
+
+
+Website: Use Case: Research and Development
+url: https://appian.com/why-appian/customers/all-customers/use-case-research-and-development.html
+Summary: 4b76bd04151ea7384625746cecdb8ab293f261d4
+
+Website: Connected KYC Overview [Connected KYC v22.2.1.1]
+url: https://docs.appian.com/suite/help/22.3/kyc-22.2.1.1/appian-connected-kyc-home.html
+Summary: 4b76bd04151ea7384625746cecdb8ab293f261d4
+
+Website: Appian Documentation
+url: https://docs.appian.com/suite/help/22.3/
+Summary: Appian is a low-code platform that is designed to streamline data modeling, workflows, and more. The platform includes features like Appian Records, a powerful and easy-to-use data modeling tool, and the SAIL Design System site, which helps designers quickly create beautiful interfaces with less development. The platform also includes capabilities for process mining, automation, and workflow, allowing businesses to capture their processes and shift tasks from humans to technology applications that are better suited to handle repetitive, time-consuming work. The content does not provide specific industry use cases.
+
+Website: Low-Code Platform - Low-Code Application Development | Appian
+url: https://appian.com/platform/low-code-development/low-code-application-development.html
+Summary: 4b76bd04151ea7384625746cecdb8ab293f261d4
+
+Website: Appian Guarantee
+url: https://www.appian.com/company/appian-guarantee/
+Summary: 4b76bd04151ea7384625746cecdb8ab293f261d4
+

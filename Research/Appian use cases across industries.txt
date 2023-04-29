@@ -1,0 +1,11 @@
+Appian use cases across industries
+
+
+Website: 200 Intelligent Document Processing and RPA Use Cases with Appian
+url: https://appian.com/resources/resource-center/demos-ebooks-guides/2022/200-use-case-ideas-for-appian-rpa-and-idp.html
+Summary: 4b76bd04151ea7384625746cecdb8ab293f261d4
+
+Website: Government Acquisition Management Solutions | Appian
+url: https://appian.com/industries/public-sector/acquisition-management/government-acquisitions-management-suite.html
+Summary: 4b76bd04151ea7384625746cecdb8ab293f261d4
+

@@ -1,0 +1,7 @@
+Appian software overview and industry use cases
+
+
+Website: Appian Documentation
+url: https://docs.appian.com/suite/help/22.3/
+Summary: Appian is a low-code platform that is designed to streamline data modeling, workflows, and more. The platform includes features like Appian Records, a powerful and easy-to-use data modeling tool, and the SAIL Design System site, which helps designers quickly create beautiful interfaces with less development. The platform also includes capabilities for process mining, automation, and workflow, allowing businesses to capture their processes and shift tasks from humans to technology applications that are better suited to handle repetitive, time-consuming work. The content does not provide specific industry use cases.
+

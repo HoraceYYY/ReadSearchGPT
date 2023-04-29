@@ -1,0 +1,11 @@
+Appian software: product offerings, industry use cases, and function
+
+
+Website: Appian Platform for Process Automation -Low-Code - Process Mining  
+url: https://appian.com/
+Summary: 4b76bd04151ea7384625746cecdb8ab293f261d4
+
+Website: Products
+url: https://appian.com/products.html
+Summary: 4b76bd04151ea7384625746cecdb8ab293f261d4
+
