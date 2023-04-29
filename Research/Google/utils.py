@@ -91,55 +91,64 @@ def is_url_in_list(target_url, url_list):
     return False
 
 def relaventURL(url, searchQuery, links):
-    messages = [
-        {"role": "system", 
-        "content": "you are a link checking ai. you are designed to check if the list of the links from the webpage of the current link is relevant to the question I ask.\
-        I will gave you 2 pieces of information: Question, Links. Based on the question I give you, you will return me the links that is extremely relevant to the question as a python array only, otherwise,  return 'NONE'"}
-    ]
-     ## pass the list of message to GPT
-    links = convert_to_absolute(url, links)
-    token = num_tokens_from_string(' '.join(links))
-    if token <= 3500:
-        urlMessage = "Question: " + searchQuery + "\nLinks:" + ' '.join(links)
-        relaventURLs = singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
-        pattern = r'\[.*?\]' ## regex to extract the list of urls from the string in case gpt returns extra text
-        relaventURLs = re.search(pattern, relaventURLs)
-        if relaventURLs:
-            relaventURLs = ast.literal_eval(relaventURLs.group())
-        else:
-            return None
-    else:
-        relaventURLs = LinksBreakUp(url, searchQuery, links) # split the links into subarrays of 3000 tokens
-        list_strings = re.findall(r'\[.*?\]', relaventURLs) # Extract all the strings that are enclosed in square brackets into a list
-        if list_strings: 
-            extracted_lists = [ast.literal_eval(list_string) for list_string in list_strings] # Convert the strings into lists
-            relaventURLs = [item for sublist in extracted_lists for item in sublist] # Flatten the 2D list into a 1D list
-        else:
-            return None
-    return relaventURLs   
-    
-def LinksBreakUp(url, searchQuery, links): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
-    linksString = ' '.join(links)
-    relaventURLs = ' '
-    tokenNumber = num_tokens_from_string(linksString)
-    sectionNumber = math.ceil(tokenNumber/3000)
-    cutoffIndex = math.ceil(len(linksString)/sectionNumber)
-    for i in range(sectionNumber):
-        start_index = i * cutoffIndex
-        end_index = (i + 1) * cutoffIndex
-        section = linksString[start_index:end_index]
-        #print('sectionToken',num_tokens_from_string(section))
+    try:
         messages = [
             {"role": "system", 
             "content": "you are a link checking ai. you are designed to check if the list of the links from the webpage of the current link is relevant to the question I ask.\
-        I will gave you 2 pieces of information: Question, Links. Based on the question I give you, you will return me the links that is extremely relevant to the question as a python array only, otherwise,  return 'NONE'"}
-    ]
-        urlMessage = "Question: " + searchQuery + "\nLinks:" + section
-        relaventURLs += singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
-        #print(relaventURLs)
-        #print('\n')
-    return relaventURLs # return a text string of the links with potentially some text from GPT3.5
-
+            I will gave you 2 pieces of information: Question, Links. Based on the question I give you, you will return me the links that is extremely relevant to the question as a python array only, otherwise,  return 'NONE'"}
+        ]
+        ## pass the list of message to GPT
+        links = convert_to_absolute(url, links)
+        token = num_tokens_from_string(' '.join(links))
+        if token <= 3500:
+            urlMessage = "Question: " + searchQuery + "\nLinks:" + ' '.join(links)
+            relaventURLs = singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
+            pattern = r'\[.*?\]' ## regex to extract the list of urls from the string in case gpt returns extra text
+            relaventURLs = re.search(pattern, relaventURLs)
+            if relaventURLs:
+                relaventURLs = ast.literal_eval(relaventURLs.group())
+            else:
+                return None
+        else:
+            relaventURLs = LinksBreakUp(url, searchQuery, links) # split the links into subarrays of 3000 tokens
+            list_strings = re.findall(r'\[.*?\]', relaventURLs) # Extract all the strings that are enclosed in square brackets into a list
+            if list_strings: 
+                extracted_lists = [ast.literal_eval(list_string) for list_string in list_strings] # Convert the strings into lists
+                relaventURLs = [item for sublist in extracted_lists for item in sublist] # Flatten the 2D list into a 1D list
+            else:
+                return None
+        return relaventURLs   
+    except Exception as e:
+        print(f"An error occurred in LinksBreakUp: {e}")
+        return None
+    
+def LinksBreakUp(url, searchQuery, links): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
+    try:
+        linksString = ' '.join(links)
+        relaventURLs = ' '
+        tokenNumber = num_tokens_from_string(linksString)
+        sectionNumber = math.ceil(tokenNumber/3000)
+        cutoffIndex = math.ceil(len(linksString)/sectionNumber)
+        #print(links)
+        for i in range(sectionNumber):
+            start_index = i * cutoffIndex
+            end_index = (i + 1) * cutoffIndex
+            section = linksString[start_index:end_index]
+            #print('sectionToken',num_tokens_from_string(section))
+            messages = [
+                {"role": "system", 
+                "content": "you are a link checking ai. you are designed to check if the list of the links from the webpage of the current link is relevant to the question I ask.\
+            I will gave you 2 pieces of information: Question, Links. Based on the question I give you, you will return me the links that is extremely relevant to the question as a python array only, otherwise,  return 'NONE'"}
+        ]
+            urlMessage = "Question: " + searchQuery + "\nLinks:" + section
+            relaventURLs += singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
+            # print(relaventURLs)
+            # print('\n')
+        return relaventURLs # return a text string of the links with potentially some text from GPT3.5
+    except Exception as e:
+        print(f"An error occurred in LinksBreakUp: {e}")
+        return None
+    
 def num_tokens_from_string(string: str, encoding_name = 'cl100k_base' ) -> int:
     """Returns the number of tokens in a text string."""
     encoding = tiktoken.get_encoding(encoding_name)

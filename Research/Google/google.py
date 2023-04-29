@@ -1,12 +1,11 @@
-import os, json, requests, sys
-import openai
+import os, json, requests, sys, requests, openai
+import pandas as pd
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import requests
-from bs4 import BeautifulSoup
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import utils
+
 
 ## take the user input and covnert into a google search query
 def searchTitle(searchTpoic):
@@ -83,9 +82,14 @@ def google_official_search(query: str, num_results: int = 8) -> str | list[str]:
 
 ## take the url and look for information in the page
 
-def searchContent(urls, searchQuery, maxDepth, depth: int = 0, checkedURL=None):
+def searchContent(urls, searchQuery, maxDepth, depth: int = 0, checkedURL=None, results=None):
     if checkedURL is None:
         checkedURL = []
+    if results is None:
+        results = {
+            'raw': pd.DataFrame(columns=['URL', 'Title', 'Content']),
+            'clean': pd.DataFrame(columns=['URL', 'Title', 'Content'])
+        }
     if depth > maxDepth:
         return
     for url in urls:
@@ -110,10 +114,13 @@ def searchContent(urls, searchQuery, maxDepth, depth: int = 0, checkedURL=None):
             elif response.status_code == 200:  # if the response is 200, then extract the page content
                 content, links, page_Title = utils.getWebpageData(response) # get the page title,content, and links
                 pageSummary = utils.PageResult(searchQuery, content) # get the page summary based on the search query
+                
                 fullSummary = 'Website: '+ page_Title + '\n'+ 'url: '+ url + '\n' + 'Summary: '+ pageSummary + '\n'
                 utils.addToFile(fullSummary,searchQuery) ## add all the raw results to the file
+                results['raw'] = pd.concat([results['raw'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
                 if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
                     utils.addToFile(fullSummary,f"{searchQuery}_clean") ## add filtered result to the file
+                    results['clean'] = pd.concat([results['clean'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
                 print('Complete: ' , url, ' -> Results has been saved! Current Depth: ', depth, '\n')
                 print('Seaching for relavent links on this page...\n')
                 # Get the highly relevant links from the page and make them into asbolute URLs
@@ -124,12 +131,14 @@ def searchContent(urls, searchQuery, maxDepth, depth: int = 0, checkedURL=None):
                 else:
                     print('Additional Links to Check: ',relaventURLs, '\n')
                     # recursively call the function to check the relavent links
-                    searchContent(relaventURLs, searchQuery, maxDepth, depth + 1, checkedURL)
+                    searchContent(relaventURLs, searchQuery, maxDepth, depth + 1, checkedURL, results)
             else: # if the response is not 200, then exit
                 print(f"Failed to fetch the page. Status code: {response.status_code}")
                 exit()
         else:
             print('URL already checked: ', url, '\n\n')
             continue
+    
+    return results
 
             

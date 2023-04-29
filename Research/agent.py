@@ -1,5 +1,6 @@
 from Google import google
 from Google import utils
+import pandas as pd
 
 if __name__ == "__main__":
 
@@ -19,7 +20,12 @@ if __name__ == "__main__":
         maxDepth = utils.searchType()
         searchQuery = google.searchTitle(full_topic)
         resultLinks = google.google_official_search(searchQuery)
-        google.searchContent(resultLinks,searchQuery, maxDepth)
+        results = google.searchContent(resultLinks,searchQuery, maxDepth)
+                # Save the DataFrames to an Excel file with separate sheets
+        with pd.ExcelWriter('f{searchQuery}.xlsx', engine='openpyxl') as writer:
+            results['clean'].to_excel(writer, sheet_name='Filtered Data', index=False)
+            results['raw'].to_excel(writer, sheet_name='Raw Data', index=False)
+        
         print("SEARCH COMPLETED! \n\n") 
 
 
