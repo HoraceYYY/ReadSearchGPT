@@ -1,6 +1,5 @@
 from Google import google
 from Google import utils
-import pandas as pd
 from termcolor import colored
 
 

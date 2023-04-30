@@ -1,4 +1,4 @@
-import os, json, requests, sys, requests, openai
+import os, json, requests, sys, requests
 import pandas as pd
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
