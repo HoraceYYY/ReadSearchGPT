@@ -41,7 +41,7 @@ def download_pdf(url):
     output_path = os.path.join(folder_path, file_name)
     with open(output_path, 'wb') as output_file:
         shutil.copyfileobj(response.raw, output_file)
-    print(f'PDF downloaded and saved to {output_path}')
+    print(colored(f'PDF downloaded and saved to {output_path}'), 'green', attrs=['bold'])
 
 def convert_to_absolute(base_url, urls):
     absolute_urls = []
@@ -255,10 +255,11 @@ def updateExcel(excel_name, excelsheet, data):
     else: # If the file doesn't exist, write the new data as a new sheet  
         data.to_excel(file_name, sheet_name=excelsheet, index=False)
 
-
 def searchQueryOverride(searchQuery):
     overide = input(colored("\nWould you like to override the search query? (y/n):", "blue", attrs=["bold","underline"]) + " ").lower()
     if overide == "y":
-        searchQuery = input(colored("\nEnter search query:", "blue", attrs=["bold","underline"]) + " ")
-    return searchQuery
+        manualsearchQuery = input(colored("\nEnter search query:", "blue", attrs=["bold","underline"]) + " ")
+        return manualsearchQuery
+    else:
+        return searchQuery
 

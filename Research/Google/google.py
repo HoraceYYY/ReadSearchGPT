@@ -124,7 +124,7 @@ def searchContent(urls, searchQuery, maxDepth, depth: int = 0, checkedURL=None, 
 
 
                 print("\u2714\uFE0F", colored(' Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
-                print(colored('\U0001F9D0 Seaching for additonal relavent website on this page...', 'yellow', attrs=['bold']))
+                print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
                 # Get the highly relevant links from the page and make them into asbolute URLs
                 relaventURLs = utils.relaventURL(url,searchQuery, links)
                 if relaventURLs == None:
