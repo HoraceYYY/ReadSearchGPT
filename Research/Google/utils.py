@@ -234,7 +234,10 @@ def getWebpageData(response):
     return clean_text, links, page_Title
 
 def updateExcel(excel_name, excelsheet, data):
-    file_name = f"{excel_name}.xlsx"  # Create the Excel file name
+    folder_path = 'Results'
+    os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
+
+    file_name = f"{folder_path}/{excel_name}.xlsx"  # Create the Excel file name
     if os.path.isfile(file_name): # Check if the file exists
         with pd.ExcelFile(file_name) as xls: # If the file exists, read the existing Excel file
             if excelsheet in xls.sheet_names: # Check if the sheet exists in the Excel file
@@ -247,7 +250,6 @@ def updateExcel(excel_name, excelsheet, data):
                 with pd.ExcelWriter(file_name) as writer:  # Write all the sheets to the Excel file
                     for sheet, df in sheet_data.items():
                         df.to_excel(writer, sheet_name=sheet, index=False)
-
             else: # If the sheet doesn't exist, write the new data as a new sheet
                 with pd.ExcelWriter(file_name, mode='a') as writer:
                     data.to_excel(writer, sheet_name=excelsheet, index=False)
