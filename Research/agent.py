@@ -21,10 +21,6 @@ if __name__ == "__main__":
     resultLinks = google.google_official_search(searchQuery)
     results = google.searchContent(resultLinks,searchQuery, maxDepth)
             # Save the DataFrames to an Excel file with separate sheets
-    with pd.ExcelWriter(f'{searchQuery}.xlsx', engine='openpyxl') as writer:
-        results['clean'].to_excel(writer, sheet_name='Filteblue Data', index=False)
-        results['raw'].to_excel(writer, sheet_name='Raw Data', index=False)
-    
     print("SEARCH COMPLETED! Have a wonderful day :)\n\n") 
 
 
