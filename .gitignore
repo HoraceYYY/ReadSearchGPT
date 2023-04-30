@@ -130,4 +130,5 @@ dmypy.json
 
 # folders
 .DS_Store
-Results/
+Research/Results/
+Research/Downloaded_files/

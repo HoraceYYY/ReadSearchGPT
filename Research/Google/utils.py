@@ -34,7 +34,7 @@ def download_pdf(url):
     response = requests.get(url, headers=headers, stream=True)
     response.raise_for_status()
     ## create download folder
-    folder_path = 'Download_files'
+    folder_path = 'Downloaded_files'
     os.makedirs(folder_path, exist_ok=True)
     ## set name and path fo the pdf
     file_name = os.path.basename(url)
