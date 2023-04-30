@@ -15,9 +15,9 @@ if __name__ == "__main__":
     outcome2 = input(colored("Outcome 2: ", "blue", attrs=["bold"]))
     outcome3 = input(colored("Outcome 3: ", "blue", attrs=["bold"]))
     full_topic = "Research Topic: " + topic + "\nTarget Outcome 1: " + outcome1 + "\nTarget Outcome 2: " + outcome2 + "\nTarget Outcome 3: " + outcome3
-    
     maxDepth = utils.searchType()
     searchQuery = google.searchTitle(full_topic)
+    searchQuery = utils.searchQueryOverride(searchQuery)
     resultLinks = google.google_official_search(searchQuery)
     results = google.searchContent(resultLinks,searchQuery, maxDepth)
             # Save the DataFrames to an Excel file with separate sheets

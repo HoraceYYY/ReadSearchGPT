@@ -1,13 +1,10 @@
-import requests, os, re, time
+import requests, os, re, time, shutil, openai, ast, tiktoken, math, openpyxl
 from termcolor import colored
-import shutil
-import openai
 from dotenv import load_dotenv
 from urllib.parse import urljoin
-import ast
-import tiktoken, math
 from urllib.parse import urlparse, parse_qs, unquote
 from bs4 import BeautifulSoup
+import pandas as pd
 
 def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.5-turbo'):
     load_dotenv()
@@ -236,3 +233,32 @@ def getWebpageData(response):
     title_tag = soup.find('title')
     page_Title = title_tag.text if title_tag else None
     return clean_text, links, page_Title
+
+def updateExcel(excel_name, excelsheet, data):
+    file_name = f"{excel_name}.xlsx"  # Create the Excel file name
+    if os.path.isfile(file_name): # Check if the file exists
+        with pd.ExcelFile(file_name) as xls: # If the file exists, read the existing Excel file
+            if excelsheet in xls.sheet_names: # Check if the sheet exists in the Excel file
+                sheet_data = {} # Create a dictionary to store all the sheets because they will be overwritten
+                for sheet in xls.sheet_names: # Read all the sheets and store them in the dictionary
+                    if sheet == excelsheet:
+                        sheet_data[sheet] = data.copy() # Overwrite the specified sheet with the updated data
+                    else:
+                        sheet_data[sheet] = pd.read_excel(xls, sheet_name=sheet) # Store the data of the other sheets
+                with pd.ExcelWriter(file_name) as writer:  # Write all the sheets to the Excel file
+                    for sheet, df in sheet_data.items():
+                        df.to_excel(writer, sheet_name=sheet, index=False)
+
+            else: # If the sheet doesn't exist, write the new data as a new sheet
+                with pd.ExcelWriter(file_name, mode='a') as writer:
+                    data.to_excel(writer, sheet_name=excelsheet, index=False)
+    else: # If the file doesn't exist, write the new data as a new sheet  
+        data.to_excel(file_name, sheet_name=excelsheet, index=False)
+
+
+def searchQueryOverride(searchQuery):
+    overide = input(colored("\nWould you like to override the search query? (y/n):", "blue", attrs=["bold","underline"]) + " ").lower()
+    if overide == "y":
+        searchQuery = input(colored("\nEnter search query:", "blue", attrs=["bold","underline"]) + " ")
+    return searchQuery
+

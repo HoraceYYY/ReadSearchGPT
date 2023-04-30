@@ -1,7 +1,0 @@
-Appian software components and industry use cases
-
-
-Website: Appian Platform Overview
-url: https://appian.com/products/platform/overview.html
-Summary: 4b76bd04151ea7384625746cecdb8ab293f261d4
-

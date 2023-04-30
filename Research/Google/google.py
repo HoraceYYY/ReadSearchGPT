@@ -12,16 +12,14 @@ import utils
 def searchTitle(searchTpoic):
     messages = [
         {"role": "system", 
-        "content": "You are a reseach assistant who will help me summarize research topic and target outcomes into one query for google search. \
+        "content": "You are a research assistant who will help me generate a search query based on the research topic and target outcomes I provide. \
         Your summary should be a single search query that I can put into google search.\
         Only return me the search query without " " so that I can put in the google search."}
     ]
     searchQuery = utils.singleGPT(messages, searchTpoic)
     searchQuery = searchQuery.replace('"', '')
-    utils.createFile(searchQuery,searchQuery) ## create a file to store all the raw results and start the file with the search query
-    utils.createFile(searchQuery,f"{searchQuery}_clean") ## create a file to store all the cleaned result and start the file with the search query
     print(colored("\nSearch Query Created:", 'blue',attrs=["bold", "underline"]), f" {searchQuery}")
-    print(colored("\n\U0001F9D0 Searching...", 'yellow',attrs=["bold"]))
+    
     return searchQuery
 
 ## take the google search query and return the top 8 results URL
@@ -36,6 +34,7 @@ def google_official_search(query: str, num_results: int = 8) -> str | list[str]:
         str: The results of the search.
     """
     try:
+        print(colored("\n\U0001F9D0 Searching...", 'yellow',attrs=["bold"]))
         # Get the Google API key and Custom Search Engine ID from the config file
         api_key = os.getenv("GOOGLE_API_KEY")
         custom_search_engine_id = os.getenv("CUSTOM_SEARCH_ENGINE_ID")
@@ -85,8 +84,8 @@ def searchContent(urls, searchQuery, maxDepth, depth: int = 0, checkedURL=None, 
         checkedURL = []
     if results is None:
         results = {
-            'raw': pd.DataFrame(columns=['URL', 'Title', 'Content']),
-            'clean': pd.DataFrame(columns=['URL', 'Title', 'Content'])
+            'Related': pd.DataFrame(columns=['URL', 'Title', 'Content']),
+            'Unrelated': pd.DataFrame(columns=['URL', 'Title', 'Content'])
         }
     if depth > maxDepth:
         return
@@ -112,12 +111,18 @@ def searchContent(urls, searchQuery, maxDepth, depth: int = 0, checkedURL=None, 
             elif response.status_code == 200:  # if the response is 200, then extract the page content
                 content, links, page_Title = utils.getWebpageData(response) # get the page title,content, and links
                 pageSummary = utils.PageResult(searchQuery, content) # get the page summary based on the search query
-                fullSummary = 'Website: '+ page_Title + '\n'+ 'url: '+ url + '\n' + 'Summary: '+ pageSummary + '\n'
-                utils.addToFile(fullSummary,searchQuery) ## add all the raw results to the file
-                results['raw'] = pd.concat([results['raw'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
+                #fullSummary = 'Website: '+ page_Title + '\n'+ 'url: '+ url + '\n' + 'Summary: '+ pageSummary + '\n'
+                
                 if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
-                    utils.addToFile(fullSummary,f"{searchQuery}_clean") ## add filtered result to the file
-                    results['clean'] = pd.concat([results['clean'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
+                    #utils.addToFile(fullSummary,f"{searchQuery}_related") ## add filtered result to the file
+                    results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
+                    utils.updateExcel(searchQuery, "Related", results['Related'])                
+                else:
+                    #utils.addToFile(fullSummary,f"{searchQuery}_unrelated") ## add all the raw results to the file
+                    results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
+                    utils.updateExcel(searchQuery, "Unrelated", results['Unrelated'])
+
+
                 print("\u2714\uFE0F", colored(' Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
                 print(colored('\U0001F9D0 Seaching for additonal relavent website on this page...', 'yellow', attrs=['bold']))
                 # Get the highly relevant links from the page and make them into asbolute URLs
