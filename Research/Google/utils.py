@@ -97,7 +97,8 @@ def relaventURL(url, searchQuery, links):
         ]
         ## pass the list of message to GPT
         links = convert_to_absolute(url, links)
-        token = num_tokens_from_string(' '.join(links))
+        linksString = ' '.join(links)
+        token = num_tokens_from_string(linksString)
         if token <= 3500:
             urlMessage = "Question: " + searchQuery + "\nLinks:" + ' '.join(links)
             relaventURLs = singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
@@ -108,7 +109,7 @@ def relaventURL(url, searchQuery, links):
             else:
                 return None
         else:
-            relaventURLs = LinksBreakUp(url, searchQuery, links) # split the links into subarrays of 3000 tokens
+            relaventURLs = LinksBreakUp(token, searchQuery, linksString) # split the links into subarrays of 3000 tokens
             list_strings = re.findall(r'\[.*?\]', relaventURLs) # Extract all the strings that are enclosed in square brackets into a list
             if list_strings: 
                 extracted_lists = [ast.literal_eval(list_string) for list_string in list_strings] # Convert the strings into lists
@@ -120,12 +121,10 @@ def relaventURL(url, searchQuery, links):
         print(f"An error occurred in LinksBreakUp: {e}")
         return None
     
-def LinksBreakUp(url, searchQuery, links): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
+def LinksBreakUp(token, searchQuery, linksString): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
     try:
-        linksString = ' '.join(links)
         relaventURLs = ' '
-        tokenNumber = num_tokens_from_string(linksString)
-        sectionNumber = math.ceil(tokenNumber/3000)
+        sectionNumber = math.ceil(token/3000)
         cutoffIndex = math.ceil(len(linksString)/sectionNumber)
         #print(links)
         for i in range(sectionNumber):
