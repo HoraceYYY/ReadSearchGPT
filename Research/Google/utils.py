@@ -99,10 +99,10 @@ def relaventURL(url, searchQuery, links):
         links = convert_to_absolute(url, links)
         linksString = ' '.join(links)
         token = num_tokens_from_string(linksString)
+        pattern = re.compile(r'\[.*?\]')
         if token <= 3500:
             urlMessage = "Question: " + searchQuery + "\nLinks:" + ' '.join(links)
             relaventURLs = singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
-            pattern = r'\[.*?\]' ## regex to extract the list of urls from the string in case gpt returns extra text
             relaventURLs = re.search(pattern, relaventURLs)
             if relaventURLs:
                 relaventURLs = ast.literal_eval(relaventURLs.group())
@@ -110,7 +110,7 @@ def relaventURL(url, searchQuery, links):
                 return None
         else:
             relaventURLs = LinksBreakUp(token, searchQuery, linksString) # split the links into subarrays of 3000 tokens
-            list_strings = re.findall(r'\[.*?\]', relaventURLs) # Extract all the strings that are enclosed in square brackets into a list
+            list_strings = re.findall(pattern, relaventURLs) # Extract all the strings that are enclosed in square brackets into a list
             if list_strings: 
                 extracted_lists = [ast.literal_eval(list_string) for list_string in list_strings] # Convert the strings into lists
                 relaventURLs = [item for sublist in extracted_lists for item in sublist] # Flatten the 2D list into a 1D list
