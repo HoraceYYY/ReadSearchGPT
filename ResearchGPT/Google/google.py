@@ -81,7 +81,7 @@ def google_official_search(query: str, num_results: int = 8) -> str | list[str]:
 ## take the url and look for information in the page
 def searchContent(urls, SearchTopic, SearchObjectives, maxDepth, depth: int = 0, checkedURL=None, results=None):
     if checkedURL is None:
-        checkedURL = []
+        checkedURL = set()
     if results is None:
         results = {
             'Related': pd.DataFrame(columns=['URL', 'Title', 'Content']),
@@ -90,8 +90,9 @@ def searchContent(urls, SearchTopic, SearchObjectives, maxDepth, depth: int = 0,
     if depth > maxDepth:
         return
     for url in urls:
-        if utils.is_url_in_list(url,checkedURL) == False: ## don't check the same url twice
-            checkedURL.append(url) # add the url to the checked list
+        wrapped_url = utils.Url(url)
+        if wrapped_url not in checkedURL: ## don't check the same url twice
+            checkedURL.add(wrapped_url) # add the url to the checked list
             print(colored('\n\U0001F9D0 Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
             headers = {
                 'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
