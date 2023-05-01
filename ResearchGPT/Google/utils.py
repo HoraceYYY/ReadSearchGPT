@@ -88,7 +88,7 @@ def is_url_in_list(target_url, url_list):
             return True
     return False
 
-def relaventURL(url, searchQuery, links):
+def relaventURL(url, SearchTopic, links):
     try:
         messages = [
             {"role": "system", 
@@ -101,7 +101,7 @@ def relaventURL(url, searchQuery, links):
         token = num_tokens_from_string(linksString)
         pattern = re.compile(r'\[.*?\]')
         if token <= 3500:
-            urlMessage = "Question: " + searchQuery + "\nLinks:" + ' '.join(links)
+            urlMessage = "Question: " + SearchTopic + "\nLinks:" + ' '.join(links)
             relaventURLs = singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
             relaventURLs = re.search(pattern, relaventURLs)
             if relaventURLs:
@@ -109,7 +109,7 @@ def relaventURL(url, searchQuery, links):
             else:
                 return None
         else:
-            relaventURLs = LinksBreakUp(token, searchQuery, linksString) # split the links into subarrays of 3000 tokens
+            relaventURLs = LinksBreakUp(token, SearchTopic, linksString) # split the links into subarrays of 3000 tokens
             list_strings = re.findall(pattern, relaventURLs) # Extract all the strings that are enclosed in square brackets into a list
             if list_strings: 
                 extracted_lists = [ast.literal_eval(list_string) for list_string in list_strings] # Convert the strings into lists
@@ -121,7 +121,7 @@ def relaventURL(url, searchQuery, links):
         print(f"An error occurred in LinksBreakUp: {e}")
         return None
     
-def LinksBreakUp(token, searchQuery, linksString): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
+def LinksBreakUp(token, SearchTopic, linksString): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
     try:
         relaventURLs = ' '
         sectionNumber = math.ceil(token/3000)
@@ -137,7 +137,7 @@ def LinksBreakUp(token, searchQuery, linksString): # convert the list of links i
                 "content": "you are a link checking ai. you are designed to check if the list of the links from the webpage of the current link is relevant to the question I ask.\
             I will gave you 2 pieces of information: Question, Links. Based on the question I give you, you will return me the links that is extremely relevant to the question as a python array only, otherwise,  return 'NONE'"}
         ]
-            urlMessage = "Question: " + searchQuery + "\nLinks:" + section
+            urlMessage = "Question: " + SearchTopic + "\nLinks:" + section
             relaventURLs += singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
             # print(relaventURLs)
             # print('\n')
@@ -165,23 +165,24 @@ def addToFile(content, name):
         file.write("\n")
 
 #break up the content of long webpages into smaller chunks and pass each into GPT3.5 to avoid the token limit and return the summary of the whole webpage
-def pageBreakUp(searchQuery, content): 
+def pageBreakUp(SearchObjectives, content): 
     pageSummary = ''
     sectionNum = math.ceil(num_tokens_from_string(content) // 3500) + 1 
     cutoffIndex = math.ceil(len(content) // sectionNum)
     for i in range(sectionNum): #split the content into multiple section and use a new GPT3.5 for each section to avoid the token limit
         section_messages = [
             {"role": "system", 
-            "content": "You are a question and answer AI. You will answer the question I ask you based on the Content I give you."}
+            "content": "You are a searching AI. You will search the Query from the Content I provide you.\
+            If the content does not contain the queried information, reply'4b76bd04151ea7384625746cecdb8ab293f261d4' and do not summarize the content."}
             ]
         start_index = i * cutoffIndex
         end_index = (i + 1) * cutoffIndex
         section = content[start_index:end_index]
-        pageMessage = "Question: " + searchQuery + "\nContent:" + section
+        pageMessage = "Query: " + SearchObjectives + "\nContent:" + section
         pageSummary += singleGPT(section_messages,pageMessage)
     return pageSummary
 
-def PageResult(searchQuery, content):
+def PageResult(SearchObjectives, content):
     messages = [
         {"role": "system", 
         "content": "You are a searching AI. You will search the Query from the Content I provide you.\
@@ -189,11 +190,11 @@ def PageResult(searchQuery, content):
         ]
     pageSummary = ''
     if num_tokens_from_string(content) <= 4000: #if the content is less than 4000 tokens, pass the whole content to GPT
-        pageMessage = "Query: " + searchQuery + "\nContent:" + content
+        pageMessage = "Query: " + SearchObjectives + "\nContent:" + content
         pageSummary = singleGPT(messages,pageMessage)
     else: #split the webpage content into multiple section to avoid the token limit
-        pageSummary = pageBreakUp(searchQuery, content) #split the webpage content into multiple section and return the summary of the whole webpage
-        pageSummary = "Query: " + searchQuery + "\nContent:" + pageSummary 
+        pageSummary = pageBreakUp(SearchObjectives, content) #split the webpage content into multiple section and return the summary of the whole webpage
+        pageSummary = "Query: " + SearchObjectives + "\nContent:" + pageSummary 
         pageSummary = singleGPT(messages,pageSummary)
     
     return pageSummary

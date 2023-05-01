@@ -78,7 +78,7 @@ def google_official_search(query: str, num_results: int = 8) -> str | list[str]:
     #return safe_google_results(search_results_links)
 
 ## take the url and look for information in the page
-def searchContent(urls, searchQuery, maxDepth, depth: int = 0, checkedURL=None, results=None):
+def searchContent(urls, SearchObjectives, SearchTopic, maxDepth, depth: int = 0, checkedURL=None, results=None):
     if checkedURL is None:
         checkedURL = []
     if results is None:
@@ -109,31 +109,31 @@ def searchContent(urls, searchQuery, maxDepth, depth: int = 0, checkedURL=None, 
                 utils.download_pdf(url)
             elif response.status_code == 200:  # if the response is 200, then extract the page content
                 content, links, page_Title = utils.getWebpageData(response) # get the page title,content, and links
-                pageSummary = utils.PageResult(searchQuery, content) # get the page summary based on the search query
+                pageSummary = utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
                 #fullSummary = 'Website: '+ page_Title + '\n'+ 'url: '+ url + '\n' + 'Summary: '+ pageSummary + '\n'
                 
                 if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
                     #utils.addToFile(fullSummary,f"{searchQuery}_related") ## add filtered result to the file
                     results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
-                    utils.updateExcel(searchQuery, "Related", results['Related'])                
+                    utils.updateExcel(SearchTopic, "Related", results['Related'])                
                 else:
                     #utils.addToFile(fullSummary,f"{searchQuery}_unrelated") ## add all the raw results to the file
                     results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
-                    utils.updateExcel(searchQuery, "Unrelated", results['Unrelated'])
+                    utils.updateExcel(SearchTopic, "Unrelated", results['Unrelated'])
 
 
                 print("\u2714\uFE0F", colored(' Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
                 if depth != maxDepth:
                     print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
                     # Get the highly relevant links from the page and make them into asbolute URLs
-                    relaventURLs = utils.relaventURL(url,searchQuery, links)
+                    relaventURLs = utils.relaventURL(url,SearchTopic, links)
                     if relaventURLs == None:
                         print("\u2714\uFE0F", colored(' No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
                         continue
                     else:
                         print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')
                         # recursively call the function to check the relavent links
-                        searchContent(relaventURLs, searchQuery, maxDepth, depth + 1, checkedURL, results)
+                        searchContent(relaventURLs, SearchObjectives, SearchTopic, maxDepth, depth + 1, checkedURL, results)
                 else:
                     print(colored('\u2714\uFE0F  Maximum depth reached. No additional websites from this page will be searched.\n', 'green', attrs=['bold']))
                     continue

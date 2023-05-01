@@ -5,9 +5,19 @@ import utils, math
 import openai
 from dotenv import load_dotenv
 
-def load_text_file(file_name):
-    with open(file_name, "r") as file:
-        return file.read()
+from termcolor import colored
+
+objectives_input = [input(colored(f"Objective {i + 1}: ", "blue", attrs=["bold"])) for i in range(3)]
+non_empty_objectives = [f"{i + 1}. {obj}" for i, obj in enumerate(objectives_input) if obj]
+objectives = "\n".join(non_empty_objectives)
+
+print("Objectives:")
+print(objectives)
+
+
+# def load_text_file(file_name):
+#     with open(file_name, "r") as file:
+#         return file.read()
 
 # print(utils.num_tokens_from_string(load_text_file("Appian software overview/ modules and clientele_clean.txt")))
 
