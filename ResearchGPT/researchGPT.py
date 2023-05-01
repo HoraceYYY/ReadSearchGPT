@@ -4,9 +4,6 @@ from termcolor import colored
 
 
 if __name__ == "__main__":
-
-
-    # get user input from terminal
         
     topic = input(colored("What would you like to search:", "blue", attrs=["bold", "underline"]) + " ")
     print(colored("\nPlease list 3 outcomes your would like to achieve!", "blue",attrs=["bold", "underline"]))
@@ -17,7 +14,7 @@ if __name__ == "__main__":
     #GPTsearchQuery = google.searchTitle(full_topic)
     #searchQuery = utils.searchQueryOverride(GPTsearchQuery)
     resultLinks = google.google_official_search(topic)
-    results = google.searchContent(resultLinks, objectives, maxDepth)
+    results = google.searchContent(resultLinks, topic, objectives, maxDepth)
            
     print("\U0001F4AF\U0001F4AF\U0001F4AF SEARCH COMPLETED! \n\U0001F603\U0001F603\U0001F603 Have a wonderful day!\n\n") 
 

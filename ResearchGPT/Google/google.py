@@ -1,6 +1,6 @@
 import os, json, requests, sys, requests
-import pandas as pd
 from dotenv import load_dotenv
+import pandas as pd
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from termcolor import colored
@@ -35,6 +35,7 @@ def google_official_search(query: str, num_results: int = 8) -> str | list[str]:
     try:
         print(colored("\n\U0001F9D0 Searching...", 'yellow',attrs=["bold"]))
         # Get the Google API key and Custom Search Engine ID from the config file
+        load_dotenv()  # Load the .env file
         api_key = os.getenv("GOOGLE_API_KEY")
         custom_search_engine_id = os.getenv("CUSTOM_SEARCH_ENGINE_ID")
 
@@ -78,7 +79,7 @@ def google_official_search(query: str, num_results: int = 8) -> str | list[str]:
     #return safe_google_results(search_results_links)
 
 ## take the url and look for information in the page
-def searchContent(urls, SearchObjectives, SearchTopic, maxDepth, depth: int = 0, checkedURL=None, results=None):
+def searchContent(urls, SearchTopic, SearchObjectives, maxDepth, depth: int = 0, checkedURL=None, results=None):
     if checkedURL is None:
         checkedURL = []
     if results is None:
