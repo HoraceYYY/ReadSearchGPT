@@ -189,7 +189,7 @@ def PageResult(SearchObjectives, content):
          If the content does not contain the queried information, reply'4b76bd04151ea7384625746cecdb8ab293f261d4' and do not summarize the content."}
         ]
     pageSummary = ''
-    if num_tokens_from_string(content) <= 4000: #if the content is less than 4000 tokens, pass the whole content to GPT
+    if num_tokens_from_string(content) <= 3500: #if the content is less than 3500 tokens, pass the whole content to GPT
         pageMessage = "Query: " + SearchObjectives + "\nContent:" + content
         pageSummary = singleGPT(messages,pageMessage)
     else: #split the webpage content into multiple section to avoid the token limit

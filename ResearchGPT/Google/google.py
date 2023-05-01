@@ -22,7 +22,7 @@ def searchTitle(searchTpoic):
     return searchQuery
 
 ## take the google search query and return the top 8 results URL
-def google_official_search(query: str, num_results: int = 8) -> str | list[str]:
+def google_official_search(query: str, num_results: int = 10) -> str | list[str]:
     """Return the results of a Google search using the official Google API
 
     Args:
