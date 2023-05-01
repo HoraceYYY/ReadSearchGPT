@@ -14,7 +14,7 @@ def searchTitle(searchTpoic):
         {"role": "system", 
         "content": "You are a research assistant who will help me generate a search query based on the research topic and target outcomes I provide. \
         Your summary should be a single search query that I can put into google search.\
-        Only return me the search query without " " so that I can put in the google search."}
+        reply me the result without including 'Search Query'."}
     ]
     searchQuery = utils.singleGPT(messages, searchTpoic)
     searchQuery = searchQuery.replace('"', '')
@@ -124,23 +124,26 @@ def searchContent(urls, searchQuery, maxDepth, depth: int = 0, checkedURL=None, 
 
 
                 print("\u2714\uFE0F", colored(' Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
-                print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
-                # Get the highly relevant links from the page and make them into asbolute URLs
-                relaventURLs = utils.relaventURL(url,searchQuery, links)
-                if relaventURLs == None:
-                    print("\u2714\uFE0F", colored(' No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
-                    continue
+                if depth != maxDepth:
+                    print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
+                    # Get the highly relevant links from the page and make them into asbolute URLs
+                    relaventURLs = utils.relaventURL(url,searchQuery, links)
+                    if relaventURLs == None:
+                        print("\u2714\uFE0F", colored(' No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
+                        continue
+                    else:
+                        print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')
+                        # recursively call the function to check the relavent links
+                        searchContent(relaventURLs, searchQuery, maxDepth, depth + 1, checkedURL, results)
                 else:
-                    print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')
-                    # recursively call the function to check the relavent links
-                    searchContent(relaventURLs, searchQuery, maxDepth, depth + 1, checkedURL, results)
+                    print(colored('\u2714\uFE0F  Maximum depth reached. No additional websites from this page will be searched.\n', 'green', attrs=['bold']))
+                    continue
             else: # if the response is not 200, then exit
                 print(f"Failed to fetch the page. Status code: {response.status_code}")
                 exit()
         else:
-            print('URL already checked: ', url, '\n\n')
+            print(colored('\U0001F9D0 URL already checked:', 'green', attrs=['bold']), f' {url}')
+            print(colored('\u2714\uFE0F  Skip to the next website.\n', 'green', attrs=['bold']))
             continue
     
     return results
-
-            

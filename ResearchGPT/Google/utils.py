@@ -1,4 +1,4 @@
-import requests, os, re, time, shutil, openai, ast, tiktoken, math, openpyxl
+import requests, os, re, time, shutil, openai, ast, tiktoken, math
 from termcolor import colored
 from dotenv import load_dotenv
 from urllib.parse import urljoin

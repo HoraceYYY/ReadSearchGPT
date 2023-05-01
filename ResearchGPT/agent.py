@@ -20,6 +20,6 @@ if __name__ == "__main__":
     resultLinks = google.google_official_search(searchQuery)
     results = google.searchContent(resultLinks,searchQuery, maxDepth)
             # Save the DataFrames to an Excel file with separate sheets
-    print("'\U0001F4AF' SEARCH COMPLETED! Have a wonderful day \U0001F603\n\n") 
+    print("\U0001F4AF\U0001F4AF\U0001F4AF SEARCH COMPLETED! \n\U0001F603\U0001F603\U0001F603 Have a wonderful day!\n\n") 
 
 
