@@ -132,4 +132,5 @@ dmypy.json
 .DS_Store
 ResearchGPT/Results/
 ResearchGPT/Downloaded_files/
+ResearchGPT/Results Archive/
 .download
