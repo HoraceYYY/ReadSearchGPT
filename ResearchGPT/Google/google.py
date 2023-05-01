@@ -12,9 +12,8 @@ import utils
 def searchTitle(searchTpoic):
     messages = [
         {"role": "system", 
-        "content": "You are a research assistant who will help me generate a search query based on the research topic and target outcomes I provide. \
-        Your summary should be a single search query that I can put into google search.\
-        reply me the result without including 'Search Query'."}
+        "content": "You are a research assistant who will help me summarize the research topic and target outcomes I provide into 1 sentence.\
+        Your summary should be a single query that I can put into google search. Reply me the result without including 'Research Query'."}
     ]
     searchQuery = utils.singleGPT(messages, searchTpoic)
     searchQuery = searchQuery.replace('"', '')

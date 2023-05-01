@@ -10,10 +10,10 @@ if __name__ == "__main__":
 
     topic = input(colored("What would you like to search:", "blue", attrs=["bold", "underline"]) + " ")
     print(colored("\nPlease list 3 outcomes your would like to achieve!", "blue",attrs=["bold", "underline"]))
-    outcome1 = input(colored("Outcome 1: ", "blue", attrs=["bold"]))
-    outcome2 = input(colored("Outcome 2: ", "blue", attrs=["bold"]))
-    outcome3 = input(colored("Outcome 3: ", "blue", attrs=["bold"]))
-    full_topic = "Research Topic: " + topic + "\nTarget Outcome 1: " + outcome1 + "\nTarget Outcome 2: " + outcome2 + "\nTarget Outcome 3: " + outcome3
+    outcome1 = input(colored("Objective 1: ", "blue", attrs=["bold"]))
+    outcome2 = input(colored("Objective 2: ", "blue", attrs=["bold"]))
+    outcome3 = input(colored("Onjective 3: ", "blue", attrs=["bold"]))
+    full_topic = "Search Topic: " + topic + "\n Search Objective: " + outcome1 + "\nTargeted Research Outcome 2: " + outcome2 + "\nTargeted Research Outcome 3: " + outcome3
     maxDepth = utils.searchType()
     GPTsearchQuery = google.searchTitle(full_topic)
     searchQuery = utils.searchQueryOverride(GPTsearchQuery)
