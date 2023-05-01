@@ -9,7 +9,7 @@ if __name__ == "__main__":
     print(colored("\nPlease list 3 outcomes your would like to achieve!", "blue",attrs=["bold", "underline"]))
     objectives_input = [input(colored(f"Objective {i + 1}: ", "blue", attrs=["bold"])) for i in range(3)]
     non_empty_objectives = [f"{i + 1}. {obj}" for i, obj in enumerate(objectives_input) if obj]
-    objectives = "\n".join(non_empty_objectives)
+    objectives = topic + "\n"+ "\n".join(non_empty_objectives)
     maxDepth = utils.searchType()
     #GPTsearchQuery = google.searchTitle(full_topic)
     #searchQuery = utils.searchQueryOverride(GPTsearchQuery)

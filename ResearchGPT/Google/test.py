@@ -6,10 +6,10 @@ import openai
 from dotenv import load_dotenv
 
 from termcolor import colored
-
+topic = input(colored("What would you like to search:", "blue", attrs=["bold", "underline"]) + " ")
 objectives_input = [input(colored(f"Objective {i + 1}: ", "blue", attrs=["bold"])) for i in range(3)]
 non_empty_objectives = [f"{i + 1}. {obj}" for i, obj in enumerate(objectives_input) if obj]
-objectives = "\n".join(non_empty_objectives)
+objectives = topic + "\n"+ "\n".join(non_empty_objectives)
 
 print("Objectives:")
 print(objectives)

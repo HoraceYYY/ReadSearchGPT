@@ -134,7 +134,7 @@ def searchContent(urls, SearchTopic, SearchObjectives, maxDepth, depth: int = 0,
                     else:
                         print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')
                         # recursively call the function to check the relavent links
-                        searchContent(relaventURLs, SearchObjectives, SearchTopic, maxDepth, depth + 1, checkedURL, results)
+                        searchContent(relaventURLs, SearchTopic, SearchObjectives, maxDepth, depth + 1, checkedURL, results)
                 else:
                     print(colored('\u2714\uFE0F  Maximum depth reached. No additional websites from this page will be searched.\n', 'green', attrs=['bold']))
                     continue
