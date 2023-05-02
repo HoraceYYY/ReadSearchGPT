@@ -51,6 +51,7 @@ def convert_to_absolute(base_url, urls):
         absolute_urls.append(absolute_url)
     return absolute_urls
 
+# this function is not used anymore because it is replaced by the class URL
 def urls_are_same(url1, url2):
     parsed_url1 = urlparse(url1)
     parsed_url2 = urlparse(url2)
@@ -83,6 +84,7 @@ def urls_are_same(url1, url2):
     return (scheme1 == scheme2 and domain1 == domain2 and path1 == path2 and
             query_params1 == query_params2 and fragment1 == fragment2)
 
+# this function is not used anymore because it is replaced by the class URL
 def is_url_in_list(target_url, url_list):
     for url in url_list:
         if urls_are_same(target_url, url):
@@ -153,6 +155,11 @@ def num_tokens_from_string(string: str, encoding_name = 'cl100k_base' ) -> int:
     num_tokens = len(encoding.encode(string))
     return num_tokens
 
+def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=3500):
+    """Truncate a string to have `max_tokens` according to the given encoding."""
+    encoding = tiktoken.get_encoding(encoding_name)
+    return encoding.encode(text)[:max_tokens]
+
 def createFile(content,name):
     file_name = f"{name}.txt"
     with open(file_name, 'w') as file:
@@ -168,7 +175,7 @@ def addToFile(content, name):
 #break up the content of long webpages into smaller chunks and pass each into GPT3.5 to avoid the token limit and return the summary of the whole webpage
 def pageBreakUp(SearchObjectives, content): 
     pageSummary = ''
-    sectionNum = math.ceil(num_tokens_from_string(content) // 3500) + 1 
+    sectionNum = math.ceil(num_tokens_from_string(content) // 3000) + 1 
     cutoffIndex = math.ceil(len(content) // sectionNum)
     for i in range(sectionNum): #split the content into multiple section and use a new GPT3.5 for each section to avoid the token limit
         section_messages = [
@@ -181,6 +188,8 @@ def pageBreakUp(SearchObjectives, content):
         section = content[start_index:end_index]
         pageMessage = "Query: " + SearchObjectives + "\nContent:" + section
         pageSummary += singleGPT(section_messages,pageMessage)
+    if num_tokens_from_string(pageSummary) > 3500: #if the summary is still too long, truncate it to 3500 tokens
+        pageSummary = truncate_text_tokens(pageSummary)
     return pageSummary
 
 def PageResult(SearchObjectives, content):
@@ -189,15 +198,17 @@ def PageResult(SearchObjectives, content):
         "content": "You are a searching AI. You will search the Query from the Content I provide you.\
          If the content does not contain the queried information, reply'4b76bd04151ea7384625746cecdb8ab293f261d4' and do not summarize the content."}
         ]
+
     pageSummary = ''
     if num_tokens_from_string(content) <= 3500: #if the content is less than 3500 tokens, pass the whole content to GPT
         pageMessage = "Query: " + SearchObjectives + "\nContent:" + content
         pageSummary = singleGPT(messages,pageMessage)
     else: #split the webpage content into multiple section to avoid the token limit
         pageSummary = pageBreakUp(SearchObjectives, content) #split the webpage content into multiple section and return the summary of the whole webpage
+        #print("pageSummary: ",pageSummary)
         pageSummary = "Query: " + SearchObjectives + "\nContent:" + pageSummary 
         pageSummary = singleGPT(messages,pageSummary)
-    
+
     return pageSummary
 
 def searchType():
