@@ -109,7 +109,7 @@ def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, d
             if (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
                 utils.download_pdf(url)
             elif response.status_code == 200:  # if the response is 200, then extract the page content
-                content, links, page_Title = utils.getWebpageData(response, searchDomain) # get the page title,content, and links
+                content, links, page_Title = utils.getWebpageData(response, searchDomain,url) # get the page title,content, and links
                 pageSummary = utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
                 #fullSummary = 'Website: '+ page_Title + '\n'+ 'url: '+ url + '\n' + 'Summary: '+ pageSummary + '\n'
                 

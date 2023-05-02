@@ -1,11 +1,9 @@
 import requests, os, re, time, shutil, openai, ast, tiktoken, math
 from termcolor import colored
-from dotenv import load_dotenv
-from urllib.parse import urljoin
-from urllib.parse import urlparse, parse_qs, unquote
+from dotenv import load_dotenv 
 from bs4 import BeautifulSoup
 import pandas as pd
-from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin
+from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin, parse_qs, unquote
 
 def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.5-turbo'):
     load_dotenv()
