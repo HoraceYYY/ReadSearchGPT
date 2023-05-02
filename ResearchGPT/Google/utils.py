@@ -84,7 +84,7 @@ def is_url_in_list(target_url, url_list):
             return True
     return False
 
-def relaventURL( SearchTopic, links):
+def relaventURL(SearchTopic, links):
     try:
         messages = [
             {"role": "system", 
@@ -234,7 +234,10 @@ def getWebpageData(response, searchDomain, url):
         link = a_tag.get('href')
         if link:
             absolute_url = urljoin(url, link)
-            links.append(absolute_url)
+            if searchDomain == 'none':
+                links.append(absolute_url)
+            elif searchDomain != 'none' and Url(absolute_url).is_from_domain(searchDomain):
+                links.append(absolute_url)
     
     title_tag = soup.find('title')
     page_Title = title_tag.text if title_tag else None
