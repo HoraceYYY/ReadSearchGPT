@@ -126,7 +126,7 @@ def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, d
                 if depth != maxDepth:
                     print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
                     # Get the highly relevant links from the page and make them into asbolute URLs
-                    relaventURLs = utils.relaventURL(url,SearchTopic, links)
+                    relaventURLs = utils.relaventURL(SearchTopic, links)
                     if relaventURLs == None:
                         print("\u2714\uFE0F", colored(' No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
                         continue

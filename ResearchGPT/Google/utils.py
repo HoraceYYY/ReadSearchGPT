@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 from urllib.parse import urlparse, parse_qs, unquote
 from bs4 import BeautifulSoup
 import pandas as pd
-from urllib.parse import urlparse, parse_qsl, unquote_plus
+from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin
 
 def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.5-turbo'):
     load_dotenv()
@@ -43,13 +43,6 @@ def download_pdf(url):
     with open(output_path, 'wb') as output_file:
         shutil.copyfileobj(response.raw, output_file)
     print(colored(f'PDF downloaded and saved to {output_path}'), 'green', attrs=['bold'])
-
-def convert_to_absolute(base_url, urls):
-    absolute_urls = []
-    for url in urls:
-        absolute_url = urljoin(base_url, ''.join(url))
-        absolute_urls.append(absolute_url)
-    return absolute_urls
 
 # this function is not used anymore because it is replaced by the class URL
 def urls_are_same(url1, url2):
@@ -91,7 +84,7 @@ def is_url_in_list(target_url, url_list):
             return True
     return False
 
-def relaventURL(url, SearchTopic, links):
+def relaventURL( SearchTopic, links):
     try:
         messages = [
             {"role": "system", 
@@ -99,7 +92,6 @@ def relaventURL(url, SearchTopic, links):
             I will gave you 2 pieces of information: Question, Links. Based on the question I give you, you will return me the links that is extremely relevant to the question as a python array only, otherwise,  return 'NONE'"}
         ]
         ## pass the list of message to GPT
-        links = convert_to_absolute(url, links)
         linksString = ' '.join(links)
         token = num_tokens_from_string(linksString)
         pattern = re.compile(r'\[.*?\]')
@@ -228,7 +220,7 @@ def searchType():
     elif searchType == "thorough":
         return 2
 
-def getWebpageData(response, searchDomain):
+def getWebpageData(response, searchDomain, url):
     page_content = response.text
     # extract the page content
     soup = BeautifulSoup(page_content, 'html.parser')
@@ -241,7 +233,8 @@ def getWebpageData(response, searchDomain):
     for a_tag in soup.find_all('a'):
         link = a_tag.get('href')
         if link:
-            links.append(link)
+            absolute_url = urljoin(url, link)
+            links.append(absolute_url)
     
     title_tag = soup.find('title')
     page_Title = title_tag.text if title_tag else None
