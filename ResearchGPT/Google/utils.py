@@ -228,7 +228,7 @@ def searchType():
     elif searchType == "thorough":
         return 2
 
-def getWebpageData(response):
+def getWebpageData(response, searchDomain):
     page_content = response.text
     # extract the page content
     soup = BeautifulSoup(page_content, 'html.parser')
@@ -242,6 +242,7 @@ def getWebpageData(response):
         link = a_tag.get('href')
         if link:
             links.append(link)
+    
     title_tag = soup.find('title')
     page_Title = title_tag.text if title_tag else None
     return clean_text, links, page_Title
@@ -276,7 +277,11 @@ def searchQueryOverride(searchQuery):
         return manualsearchQuery
     else:
         return searchQuery
-   
+
+def get_domain(url):
+    parts = urlparse(url)
+    return parts.netloc
+
 class Url(object):
     '''A url object that can be compared with other url orbjects
     without regard to the vagaries of encoding, escaping, and ordering
@@ -294,3 +299,8 @@ class Url(object):
 
     def __hash__(self):
         return hash(self.parts)
+    
+    def is_from_domain(self, domain):
+        return self.parts.netloc == domain
+    
+    

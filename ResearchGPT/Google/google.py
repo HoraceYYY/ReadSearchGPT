@@ -7,7 +7,6 @@ from termcolor import colored
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import utils
 
-
 ## take the user input and covnert into a google search query
 def searchTitle(searchTpoic):
     messages = [
@@ -79,7 +78,7 @@ def google_official_search(query: str, num_results: int = 10) -> str | list[str]
     #return safe_google_results(search_results_links)
 
 ## take the url and look for information in the page
-def searchContent(urls, SearchTopic, SearchObjectives, maxDepth, depth: int = 0, checkedURL=None, results=None):
+def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, depth: int = 0, checkedURL=None, results=None):
     if checkedURL is None:
         checkedURL = set()
     if results is None:
@@ -110,7 +109,7 @@ def searchContent(urls, SearchTopic, SearchObjectives, maxDepth, depth: int = 0,
             if (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
                 utils.download_pdf(url)
             elif response.status_code == 200:  # if the response is 200, then extract the page content
-                content, links, page_Title = utils.getWebpageData(response) # get the page title,content, and links
+                content, links, page_Title = utils.getWebpageData(response, searchDomain) # get the page title,content, and links
                 pageSummary = utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
                 #fullSummary = 'Website: '+ page_Title + '\n'+ 'url: '+ url + '\n' + 'Summary: '+ pageSummary + '\n'
                 
@@ -123,7 +122,6 @@ def searchContent(urls, SearchTopic, SearchObjectives, maxDepth, depth: int = 0,
                     results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
                     utils.updateExcel(SearchTopic, "Unrelated", results['Unrelated'])
 
-
                 print("\u2714\uFE0F", colored(' Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
                 if depth != maxDepth:
                     print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
@@ -135,7 +133,7 @@ def searchContent(urls, SearchTopic, SearchObjectives, maxDepth, depth: int = 0,
                     else:
                         print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')
                         # recursively call the function to check the relavent links
-                        searchContent(relaventURLs, SearchTopic, SearchObjectives, maxDepth, depth + 1, checkedURL, results)
+                        searchContent(relaventURLs, SearchTopic, SearchObjectives, searchDomain, maxDepth, depth + 1, checkedURL, results)
                 else:
                     print(colored('\u2714\uFE0F  Maximum depth reached. No additional websites from this page will be searched.\n', 'green', attrs=['bold']))
                     continue
@@ -146,5 +144,6 @@ def searchContent(urls, SearchTopic, SearchObjectives, maxDepth, depth: int = 0,
             print(colored('\U0001F9D0 URL already checked:', 'green', attrs=['bold']), f' {url}')
             print(colored('\u2714\uFE0F  Skip to the next website.\n', 'green', attrs=['bold']))
             continue
+        
     
     return results
