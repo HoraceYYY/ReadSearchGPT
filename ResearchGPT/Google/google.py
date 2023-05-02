@@ -7,7 +7,7 @@ from termcolor import colored
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import utils
 
-## take the user input and covnert into a google search query
+## this function is not used anymore
 def searchTitle(searchTpoic):
     messages = [
         {"role": "system", 
@@ -32,6 +32,7 @@ def google_official_search(query: str, num_results: int = 10) -> str | list[str]
         str: The results of the search.
     """
     try:
+        print(colored("\nSearch Query Created:", 'blue',attrs=["bold", "underline"]), f" {query}")
         print(colored("\n\U0001F9D0 Searching...", 'yellow',attrs=["bold"]))
         # Get the Google API key and Custom Search Engine ID from the config file
         load_dotenv()  # Load the .env file

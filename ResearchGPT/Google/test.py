@@ -14,34 +14,38 @@ from termcolor import colored
 
 
 
-# url = 'https://www.zendesk.com/company/events/'
-# headers = {
-#     'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
-# }
-# try:
-#     response = requests.get(url, headers=headers)
+url = 'https://appian.com/products/platform/overview.html'
+headers = {
+    'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
+}
+try:
+    response = requests.get(url, headers=headers)
     
-# except Exception as e:
-#     print(f"An error occurred: {e}")
-#      # if the url is not valid, then skip for the rest of the for loop
+except Exception as e:
+    print(f"An error occurred: {e}")
+     # if the url is not valid, then skip for the rest of the for loop
 
 
-# if (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
-#     utils.download_pdf(url)
-# elif response.status_code == 200:  # if the response is 200, then extract the page content
-#     page_content = response.text
-#     # extract the page content
-#     soup = BeautifulSoup(page_content, 'html.parser')
-#     for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract
-#         script.decompose()
-#     text_content = soup.get_text(separator=' ') # Extract all the text content using the get_text() method
-#     clean_text = ' '.join(text_content.split()) # Clean up the extracted text by removing extra whitespace, line breaks, and other unnecessary characters
-#     # find all the links in the page
-    
-#  # get result from the page; check question and contect of the page in gpt3.5 -> summary + url + webpage title
-#     pageSummary = utils.PageResult("ai chatbot for customer support", clean_text)
-#     print(pageSummary)
+if (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
+    utils.download_pdf(url)
+elif response.status_code == 200:  # if the response is 200, then extract the page content
+    page_content = response.text
+    # extract the page content
+    soup = BeautifulSoup(page_content, 'html.parser')
+    for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract
+        script.decompose()
+    text_content = soup.get_text(separator=' ') # Extract all the text content using the get_text() method
+    clean_text = ' '.join(text_content.split()) # Clean up the extracted text by removing extra whitespace, line breaks, and other unnecessary characters
+    # find all the links in the page
+    links = []
+    for a_tag in soup.find_all('a'):
+        link = a_tag.get('href')
+        if link:
+            absolute_url = urljoin(url, link)
+            links.append(absolute_url)
+ # get result from the page; check question and contect of the page in gpt3.5 -> summary + url + webpage title
+    relaventURLs = utils.relaventURL("Appian Intelligent Automation", links)
+    print(relaventURLs)
 
-absolute_url = urljoin('https://www.zendesk.com/', '/company/events/')
-print(absolute_url)
+
     
