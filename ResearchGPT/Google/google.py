@@ -4,10 +4,11 @@ import pandas as pd
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from termcolor import colored
+from collections import deque
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import utils
 
-## this function is not used anymore
+## this function is not used anymo
 def searchTitle(searchTpoic):
     messages = [
         {"role": "system", 
@@ -86,11 +87,13 @@ def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, d
         results = {
             'Related': pd.DataFrame(columns=['URL', 'Title', 'Content']),
             'Unrelated': pd.DataFrame(columns=['URL', 'Title', 'Content'])
-        }
-    if depth > maxDepth:
-        return
-    for url in urls:
+            }
+    queue = deque([(url, depth) for url in urls]) # create a queue to store the urls and its depth
+
+    while queue:
+        url, current_depth = queue.popleft() # pop the first url in the queue
         wrapped_url = utils.Url(url)
+
         if wrapped_url not in checkedURL: ## don't check the same url twice
             checkedURL.add(wrapped_url) # add the url to the checked list
             print(colored('\n\U0001F9D0 Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
@@ -112,39 +115,35 @@ def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, d
             elif response.status_code == 200:  # if the response is 200, then extract the page content
                 content, links, page_Title = utils.getWebpageData(response, searchDomain,url) # get the page title,content, and links
                 pageSummary = utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
-                #fullSummary = 'Website: '+ page_Title + '\n'+ 'url: '+ url + '\n' + 'Summary: '+ pageSummary + '\n'
                 
                 if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
-                    #utils.addToFile(fullSummary,f"{searchQuery}_related") ## add filtered result to the file
                     results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
                     utils.updateExcel(SearchTopic, "Related", results['Related'])                
                 else:
-                    #utils.addToFile(fullSummary,f"{searchQuery}_unrelated") ## add all the raw results to the file
                     results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
                     utils.updateExcel(SearchTopic, "Unrelated", results['Unrelated'])
 
                 print("\u2714\uFE0F", colored(' Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
-                if depth != maxDepth:
+                if depth < maxDepth:
                     print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
-                    # Get the highly relevant links from the page and make them into asbolute URLs
-                    relaventURLs = utils.relaventURL(SearchTopic, links)
-                    if relaventURLs == None:
+                    relaventURLs = utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
+                    if relaventURLs:
+                        for next_url in relaventURLs:
+                            queue.append((next_url, current_depth + 1)) # Enqueue the relevant URLs with an increased depth
+                        print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')
+                    else:
                         print("\u2714\uFE0F", colored(' No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
                         continue
-                    else:
-                        print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')
-                        # recursively call the function to check the relavent links
-                        searchContent(relaventURLs, SearchTopic, SearchObjectives, searchDomain, maxDepth, depth + 1, checkedURL, results)
                 else:
                     print(colored('\u2714\uFE0F  Maximum depth reached. No additional websites from this page will be searched.\n', 'green', attrs=['bold']))
                     continue
             else: # if the response is not 200, then exit
                 print(f"Failed to fetch the page. Status code: {response.status_code}")
-                exit()
+                continue
         else:
             print(colored('\U0001F9D0 URL already checked:', 'green', attrs=['bold']), f' {url}')
             print(colored('\u2714\uFE0F  Skip to the next website.\n', 'green', attrs=['bold']))
-            continue
+        
         
     
     return results
