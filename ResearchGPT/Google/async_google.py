@@ -131,9 +131,9 @@ async def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDe
         if wrapped_url not in checkedURL: ## don't check the same url twice
             checkedURL.add(wrapped_url) # add the url to the checked list
             response = await utils.fetch_url(url) # fetch the url
-            tasks = [process_url_content(url, response, searchDomain, SearchObjectives, SearchTopic, results, current_depth)]
+            tasks = [await process_url_content(url, response, searchDomain, SearchObjectives, SearchTopic, results, current_depth)]
             if current_depth < maxDepth:
-                tasks.append(process_relavent_urls(url, response, searchDomain, SearchTopic, maxDepth, current_depth, checkedURL, queue))
+                tasks.append(await process_relavent_urls(url, response, searchDomain, SearchTopic, maxDepth, current_depth, checkedURL, queue))
                 await asyncio.gather(*tasks)
         else:
             print(colored('\U0001F9D0 URL already checked:', 'green', attrs=['bold']), f' {url}')
