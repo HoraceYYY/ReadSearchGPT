@@ -134,6 +134,4 @@ def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, d
             print(colored('\U0001F9D0 URL already checked:', 'green', attrs=['bold']), f' {url}')
             print(colored('\u2714\uFE0F  Skip to the next website.\n', 'green', attrs=['bold']))
         
-        
-    
     return results
