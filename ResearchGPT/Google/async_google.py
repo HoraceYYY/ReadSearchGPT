@@ -1,4 +1,4 @@
-import os, json, requests, sys, requests
+import os, json, sys, asyncio
 from dotenv import load_dotenv
 import pandas as pd
 from googleapiclient.discovery import build
@@ -79,15 +79,50 @@ def google_official_search(query: str, num_results: int = 10) -> str | list[str]
     return search_results_links
     #return safe_google_results(search_results_links)
 
-## take the url and look for information in the page
-def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, current_depth: int = 0, checkedURL=None, results=None):
-    if checkedURL is None:
-        checkedURL = set()
-    if results is None:
-        results = {
-            'Related': pd.DataFrame(columns=['URL', 'Title', 'Content']),
-            'Unrelated': pd.DataFrame(columns=['URL', 'Title', 'Content'])
-            }
+
+async def process_url_content(url, response, searchDomain, SearchObjectives, SearchTopic, results, current_depth):
+    
+    if response is None: # if the response is none, then skip it
+        return
+    elif (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
+        utils.download_pdf(url)
+    elif response.status_code == 200:  # if the response is 200, then extract the page content
+        print(colored('\n\U0001F9D0 Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
+        content, page_Title = utils.getWebpageData(response, searchDomain,url) # get the page title,content, and links
+        pageSummary = utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
+        
+        if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
+            results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
+            utils.updateExcel(SearchTopic, "Related", results['Related'])                
+        else:
+            results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
+            utils.updateExcel(SearchTopic, "Unrelated", results['Unrelated'])
+
+        print("\u2714\uFE0F", colored(' Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', current_depth)
+    return 
+
+async def process_relavent_urls(url, response, searchDomain, SearchTopic, maxDepth, current_depth, checkedURL, queue):
+    if response is None: # if the response is none, then skip it
+        return
+    else:
+        print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
+        links = utils.getWebpageLinks(response, searchDomain, url)
+        relaventURLs = utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
+        if relaventURLs:
+            for next_url in relaventURLs:
+                queue.append((next_url, current_depth + 1)) # Enqueue the relevant URLs with an increased depth
+            print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')
+        else:
+            print("\u2714\uFE0F", colored(' No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
+    return
+
+async def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, current_depth: int = 0):
+
+    checkedURL = set() # create a set to store the checked urls
+    results = {
+        'Related': pd.DataFrame(columns=['URL', 'Title', 'Content']),
+        'Unrelated': pd.DataFrame(columns=['URL', 'Title', 'Content'])
+        } # create a dictionary to store the results
     queue = deque([(url, current_depth) for url in urls]) # create a queue to store the urls and its depth
 
     while queue:
@@ -95,42 +130,12 @@ def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, c
         wrapped_url = utils.Url(url)
         if wrapped_url not in checkedURL: ## don't check the same url twice
             checkedURL.add(wrapped_url) # add the url to the checked list
-            response = utils.fetch_url(url) # fetch the url
-            if response is None: # if the response is none, then skip it
-                continue
-            elif (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
-                utils.download_pdf(url)
-            elif response.status_code == 200:  # if the response is 200, then extract the page content
-                print(colored('\n\U0001F9D0 Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
-                content, links, page_Title = utils.getWebpageData(response, searchDomain,url) # get the page title,content, and links
-                pageSummary = utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
-                
-                if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
-                    results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
-                    utils.updateExcel(SearchTopic, "Related", results['Related'])                
-                else:
-                    results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
-                    utils.updateExcel(SearchTopic, "Unrelated", results['Unrelated'])
-
-                print("\u2714\uFE0F", colored(' Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', current_depth)
-                if current_depth < maxDepth:
-                    print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
-                    relaventURLs = utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
-                    if relaventURLs:
-                        for next_url in relaventURLs:
-                            queue.append((next_url, current_depth + 1)) # Enqueue the relevant URLs with an increased depth
-                        print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')
-                    else:
-                        print("\u2714\uFE0F", colored(' No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
-                        continue
-                else:
-                    print(colored('\u2714\uFE0F  Maximum depth reached. No additional websites from this page will be searched.\n', 'green', attrs=['bold']))
-                    continue
-            else: # if the response is not 200, then skip it. This line should never be reached since the fetch_url function will return None if the response is not 200
-                print(f"Failed to fetch the page. Status code: {response.status_code}")
-                continue
+            response = await utils.fetch_url(url) # fetch the url
+            tasks = [process_url_content(url, response, searchDomain, SearchObjectives, SearchTopic, results, current_depth)]
+            if current_depth < maxDepth:
+                tasks.append(process_relavent_urls(url, response, searchDomain, SearchTopic, maxDepth, current_depth, checkedURL, queue))
+                await asyncio.gather(*tasks)
         else:
             print(colored('\U0001F9D0 URL already checked:', 'green', attrs=['bold']), f' {url}')
             print(colored('\u2714\uFE0F  Skip to the next website.\n', 'green', attrs=['bold']))
-        
     return results

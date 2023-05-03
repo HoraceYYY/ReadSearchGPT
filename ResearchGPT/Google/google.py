@@ -102,7 +102,7 @@ def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, c
                 utils.download_pdf(url)
             elif response.status_code == 200:  # if the response is 200, then extract the page content
                 print(colored('\n\U0001F9D0 Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
-                content, links, page_Title = utils.getWebpageData(response, searchDomain,url) # get the page title,content, and links
+                content, page_Title = utils.getWebpageData(response, searchDomain,url) # get the page title,content
                 pageSummary = utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
                 
                 if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
@@ -115,6 +115,7 @@ def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, c
                 print("\u2714\uFE0F", colored(' Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', current_depth)
                 if current_depth < maxDepth:
                     print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
+                    links = utils.getWebpageLinks(response, searchDomain, url)
                     relaventURLs = utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
                     if relaventURLs:
                         for next_url in relaventURLs:

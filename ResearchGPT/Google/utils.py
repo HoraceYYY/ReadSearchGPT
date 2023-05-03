@@ -53,7 +53,7 @@ async def fetch_url(url):
         try:
             async with session.get(url, headers=headers) as response:
                 if response.status == 200:
-                    return await response.text()
+                    return await response
                 else:
                     print(f"Failed to fetch the page. Status code: {response.status}")
                     return None
@@ -251,15 +251,28 @@ def searchType():
     elif searchType == "thorough":
         return 2
 
-def getWebpageData(response, searchDomain, url):
+def parseHTML(response):
     page_content = response.text
     # extract the page content
     soup = BeautifulSoup(page_content, 'html.parser')
+    return soup
+
+
+def getWebpageData(response, searchDomain, url):
+    soup = parseHTML(response)
     for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract
         script.decompose()
     text_content = soup.get_text(separator=' ') # Extract all the text content using the get_text() method
     clean_text = ' '.join(text_content.split()) # Clean up the extracted text by removing extra whitespace, line breaks, and other unnecessary characters
     # find all the links in the page
+    
+    
+    title_tag = soup.find('title')
+    page_Title = title_tag.text if title_tag else None
+    return clean_text, page_Title
+
+def getWebpageLinks(response, searchDomain, url):
+    soup = parseHTML(response)
     links = []
     for a_tag in soup.find_all('a'):
         link = a_tag.get('href')
@@ -269,10 +282,7 @@ def getWebpageData(response, searchDomain, url):
                 links.append(absolute_url)
             elif searchDomain != 'none' and Url(absolute_url).is_from_domain(searchDomain):
                 links.append(absolute_url)
-    
-    title_tag = soup.find('title')
-    page_Title = title_tag.text if title_tag else None
-    return clean_text, links, page_Title
+    return links
 
 def updateExcel(excel_name, excelsheet, data):
     folder_path = 'Results'

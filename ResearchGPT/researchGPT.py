@@ -1,10 +1,11 @@
-from Google import google
+from Google import google, async_google
 from Google import utils
 from termcolor import colored
-import time
+import time, asyncio
 
 
 if __name__ == "__main__":
+    program = input('Enter "1" to run asycn or "0" to run linear: ')
     start_time = time.time()
     topic = input(colored("What would you like to search:", "blue", attrs=["bold", "underline"]) + " ")
     print(colored("\nPlease list 3 outcomes your would like to achieve!", "blue",attrs=["bold", "underline"]))
@@ -20,7 +21,14 @@ if __name__ == "__main__":
         searchDomain = utils.get_domain(searchDomain)
         topic = topic + " site:" + searchDomain
     resultLinks = google.google_official_search(topic)
-    results = google.searchContent(resultLinks, topic, objectives, searchDomain, maxDepth)
+    
+    if program == "1":
+        results = asyncio.run(async_google.searchContent(resultLinks, topic, objectives, searchDomain, maxDepth))
+    elif program == "0":
+        results = google.searchContent(resultLinks, topic, objectives, searchDomain, maxDepth)
+    else:
+        print("Invalid input.")
+        exit()
            
     print("\U0001F4AF\U0001F4AF\U0001F4AF SEARCH COMPLETED! \n\U0001F603\U0001F603\U0001F603 Have a wonderful day!\n\n") 
     end_time = time.time()
