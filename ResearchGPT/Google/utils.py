@@ -28,6 +28,22 @@ def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.
 
     return response["choices"][0]["message"]["content"]
 
+def fetch_url(url):
+    headers = {
+        'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
+    }
+    
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return response
+        else:
+            print(f"Failed to fetch the page. Status code: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
+
 def download_pdf(url):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'}
     response = requests.get(url, headers=headers, stream=True)
