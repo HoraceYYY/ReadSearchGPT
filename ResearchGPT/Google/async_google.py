@@ -85,18 +85,18 @@ async def process_url_content(url, response, searchDomain, SearchObjectives, Sea
     if response is None: # if the response is none, then skip it
         return
     elif (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
-        utils.download_pdf(url)
+        await async_utils.download_pdf(url)
     elif response.status_code == 200:  # if the response is 200, then extract the page content
         print(colored('\n\U0001F9D0 Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
-        content, page_Title = utils.getWebpageData(response, searchDomain,url) # get the page title,content, and links
-        pageSummary = utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
+        content, page_Title = await async_utils.getWebpageData(response) # get the page title,content, and links
+        pageSummary = await async_utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
         
         if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
             results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
-            utils.updateExcel(SearchTopic, "Related", results['Related'])                
+            await async_utils.updateExcel(SearchTopic, "Related", results['Related'])                
         else:
             results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
-            utils.updateExcel(SearchTopic, "Unrelated", results['Unrelated'])
+            await async_utils.updateExcel(SearchTopic, "Unrelated", results['Unrelated'])
 
         print("\u2714\uFE0F", colored(' Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', current_depth)
     return 
@@ -107,7 +107,7 @@ async def process_relavent_urls(url, response, searchDomain, SearchTopic, maxDep
     else:
         print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
         links = async_utils.getWebpageLinks(response, searchDomain, url)
-        relaventURLs = async_utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
+        relaventURLs = await async_utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
         if relaventURLs:
             for next_url in relaventURLs:
                 queue.append((next_url, current_depth + 1)) # Enqueue the relevant URLs with an increased depth
@@ -131,9 +131,9 @@ async def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDe
         if wrapped_url not in checkedURL: ## don't check the same url twice
             checkedURL.add(wrapped_url) # add the url to the checked list
             response = await async_utils.fetch_url(url) # fetch the url
-            tasks = [await process_url_content(url, response, searchDomain, SearchObjectives, SearchTopic, results, current_depth)]
+            tasks = [process_url_content(url, response, searchDomain, SearchObjectives, SearchTopic, results, current_depth)]
             if current_depth < maxDepth:
-                tasks.append(await process_relavent_urls(url, response, searchDomain, SearchTopic, maxDepth, current_depth, checkedURL, queue))
+                tasks.append(process_relavent_urls(url, response, searchDomain, SearchTopic, maxDepth, current_depth, checkedURL, queue))
                 await asyncio.gather(*tasks)
         else:
             print(colored('\U0001F9D0 URL already checked:', 'green', attrs=['bold']), f' {url}')

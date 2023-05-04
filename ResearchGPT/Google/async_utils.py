@@ -1,20 +1,24 @@
-import requests, os, re, time, shutil, openai, ast, tiktoken, math, aiohttp
+import requests, os, re, time, shutil, openai, ast, tiktoken, math, asyncio, aiofiles
+from aiohttp import ClientSession
 from termcolor import colored
 from dotenv import load_dotenv 
 from bs4 import BeautifulSoup
 import pandas as pd
 from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin, parse_qs, unquote
 
-def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.5-turbo'):
+# see https://github.com/openai/openai-python for async api details
+async def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.5-turbo'):
     load_dotenv()
     openai.organization = os.getenv("OPENAI_ORG")
     openai.api_key = os.getenv("OPENAI_API_KEY")
+    openai.aiosession.set(ClientSession())
     systemMessages.append({"role": "user", "content":userMessage})
     success = False
     response = None
+    
     while not success:
         try:
-            response = openai.ChatCompletion.create(
+            response = await openai.ChatCompletion.acreate(
                 model=model,
                 messages=systemMessages,
                 temperature=temperature,
@@ -24,33 +28,16 @@ def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.
         except Exception as e:
             print(f"An error occurred: {e}")
             print("Retrying in 5 seconds...")
-            time.sleep(5)
+            await asyncio.sleep(5)
 
     return response["choices"][0]["message"]["content"]
-    
-
-def fetch_url(url):
-    headers = {
-        'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
-    }
-    
-    try:
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            return response
-        else:
-            print(f"Failed to fetch the page. Status code: {response.status_code}")
-            return None
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return None
-# async version of fetch_url   
+      
 async def fetch_url(url):
     headers = {
         'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
     }
     
-    async with aiohttp.ClientSession() as session:
+    async with ClientSession() as session:
         try:
             async with session.get(url, headers=headers) as response:
                 if response.status == 200:
@@ -62,19 +49,38 @@ async def fetch_url(url):
             print(f"An error occurred: {e}")
             return None
 
-def download_pdf(url):
+async def download_pdf(url):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'}
-    response = requests.get(url, headers=headers, stream=True)
-    response.raise_for_status()
-    ## create download folder
-    folder_path = 'Downloaded_files'
-    os.makedirs(folder_path, exist_ok=True)
-    ## set name and path fo the pdf
-    file_name = os.path.basename(url)
-    output_path = os.path.join(folder_path, file_name)
-    with open(output_path, 'wb') as output_file:
-        shutil.copyfileobj(response.raw, output_file)
-    print(colored(f'PDF downloaded and saved to {output_path}'), 'green', attrs=['bold'])
+    async with ClientSession() as session:
+        async with session.get(url, headers=headers) as response:
+            response.raise_for_status()
+            ## create download folder
+            folder_path = 'Downloaded_files'
+            os.makedirs(folder_path, exist_ok=True)
+            ## set name and path for the pdf
+            file_name = os.path.basename(url)
+            output_path = os.path.join(folder_path, file_name)
+            async with aiofiles.open(output_path, 'wb') as output_file:
+                while True:
+                    chunk = await response.content.read(1024)
+                    if not chunk:
+                        break
+                    await output_file.write(chunk)
+            print(colored(f'PDF downloaded and saved to {output_path}'), 'green', attrs=['bold'])
+
+# def download_pdf(url):
+#     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'}
+#     response = requests.get(url, headers=headers, stream=True)
+#     response.raise_for_status()
+#     ## create download folder
+#     folder_path = 'Downloaded_files'
+#     os.makedirs(folder_path, exist_ok=True)
+#     ## set name and path fo the pdf
+#     file_name = os.path.basename(url)
+#     output_path = os.path.join(folder_path, file_name)
+#     with open(output_path, 'wb') as output_file:
+#         shutil.copyfileobj(response.raw, output_file)
+#     print(colored(f'PDF downloaded and saved to {output_path}'), 'green', attrs=['bold'])
 
 # this function is not used anymore because it is replaced by the class URL
 def urls_are_same(url1, url2):
@@ -116,7 +122,7 @@ def is_url_in_list(target_url, url_list):
             return True
     return False
 
-def relaventURL(SearchTopic, links):
+async def relaventURL(SearchTopic, links):
     try:
         messages = [
             {"role": "system", 
@@ -129,14 +135,14 @@ def relaventURL(SearchTopic, links):
         pattern = re.compile(r'\[.*?\]')
         if token <= 3500:
             urlMessage = "Question: " + SearchTopic + "\nLinks:" + ' '.join(links)
-            relaventURLs = singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
+            relaventURLs = await singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
             relaventURLs = re.search(pattern, relaventURLs)
             if relaventURLs:
                 relaventURLs = ast.literal_eval(relaventURLs.group())
             else:
                 return None
         else:
-            relaventURLs = LinksBreakUp(token, SearchTopic, linksString) # split the links into subarrays of 3000 tokens
+            relaventURLs = await LinksBreakUp(token, SearchTopic, linksString) # split the links into subarrays of 3000 tokens
             list_strings = re.findall(pattern, relaventURLs) # Extract all the strings that are enclosed in square brackets into a list
             if list_strings: 
                 extracted_lists = [ast.literal_eval(list_string) for list_string in list_strings] # Convert the strings into lists
@@ -148,7 +154,7 @@ def relaventURL(SearchTopic, links):
         print(f"An error occurred in LinksBreakUp: {e}")
         return None
     
-def LinksBreakUp(token, SearchTopic, linksString): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
+async def LinksBreakUp(token, SearchTopic, linksString): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
     try:
         relaventURLs = ' '
         sectionNumber = math.ceil(token/3000)
@@ -165,7 +171,7 @@ def LinksBreakUp(token, SearchTopic, linksString): # convert the list of links i
             I will gave you 2 pieces of information: Question, Links. Based on the question I give you, you will return me the links that is extremely relevant to the question as a python array only, otherwise,  return 'NONE'"}
         ]
             urlMessage = "Question: " + SearchTopic + "\nLinks:" + section
-            relaventURLs += singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
+            relaventURLs += await singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
             # print(relaventURLs)
             # print('\n')
         return relaventURLs # return a text string of the links with potentially some text from GPT3.5
@@ -184,12 +190,13 @@ def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=3500):
     encoding = tiktoken.get_encoding(encoding_name)
     return encoding.encode(text)[:max_tokens]
 
+# this function is not used anymore because output is not text
 def createFile(content,name):
     file_name = f"{name}.txt"
     with open(file_name, 'w') as file:
         file.write(content)
         file.write("\n\n\n")
-
+# this function is not used anymore because output is not text
 def addToFile(content, name):
     file_name = f"{name}.txt"
     with open(file_name, 'a') as file:
@@ -197,7 +204,7 @@ def addToFile(content, name):
         file.write("\n")
 
 #break up the content of long webpages into smaller chunks and pass each into GPT3.5 to avoid the token limit and return the summary of the whole webpage
-def pageBreakUp(SearchObjectives, content): 
+async def pageBreakUp(SearchObjectives, content): 
     pageSummary = ''
     sectionNum = math.ceil(num_tokens_from_string(content) // 3000) + 1 
     cutoffIndex = math.ceil(len(content) // sectionNum)
@@ -211,12 +218,12 @@ def pageBreakUp(SearchObjectives, content):
         end_index = (i + 1) * cutoffIndex
         section = content[start_index:end_index]
         pageMessage = "Query: " + SearchObjectives + "\nContent:" + section
-        pageSummary += singleGPT(section_messages,pageMessage)
+        pageSummary += await singleGPT(section_messages,pageMessage)
     if num_tokens_from_string(pageSummary) > 3500: #if the summary is still too long, truncate it to 3500 tokens
         pageSummary = truncate_text_tokens(pageSummary)
     return pageSummary
 
-def PageResult(SearchObjectives, content):
+async def PageResult(SearchObjectives, content):
     messages = [
         {"role": "system", 
         "content": "You are a searching AI. You will search the Query from the Content I provide you.\
@@ -226,12 +233,12 @@ def PageResult(SearchObjectives, content):
     pageSummary = ''
     if num_tokens_from_string(content) <= 3500: #if the content is less than 3500 tokens, pass the whole content to GPT
         pageMessage = "Query: " + SearchObjectives + "\nContent:" + content
-        pageSummary = singleGPT(messages,pageMessage)
+        pageSummary = await singleGPT(messages,pageMessage)
     else: #split the webpage content into multiple section to avoid the token limit
-        pageSummary = pageBreakUp(SearchObjectives, content) #split the webpage content into multiple section and return the summary of the whole webpage
+        pageSummary = await pageBreakUp(SearchObjectives, content) #split the webpage content into multiple section and return the summary of the whole webpage
         #print("pageSummary: ",pageSummary)
         pageSummary = "Query: " + SearchObjectives + "\nContent:" + pageSummary 
-        pageSummary = singleGPT(messages,pageSummary)
+        pageSummary = await singleGPT(messages,pageSummary)
 
     return pageSummary
 
@@ -259,15 +266,13 @@ def parseHTML(response):
     return soup
 
 
-def getWebpageData(response, searchDomain, url):
+def getWebpageData(response):
     soup = parseHTML(response)
     for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract
         script.decompose()
     text_content = soup.get_text(separator=' ') # Extract all the text content using the get_text() method
     clean_text = ' '.join(text_content.split()) # Clean up the extracted text by removing extra whitespace, line breaks, and other unnecessary characters
     # find all the links in the page
-    
-    
     title_tag = soup.find('title')
     page_Title = title_tag.text if title_tag else None
     return clean_text, page_Title
@@ -285,29 +290,58 @@ def getWebpageLinks(response, searchDomain, url):
                 links.append(absolute_url)
     return links
 
-def updateExcel(excel_name, excelsheet, data):
+# def updateExcel(excel_name, excelsheet, data):
+#     folder_path = 'Results'
+#     os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
+
+#     file_name = f"{folder_path}/{excel_name}.xlsx"  # Create the Excel file name
+#     if os.path.isfile(file_name): # Check if the file exists
+#         with pd.ExcelFile(file_name) as xls: # If the file exists, read the existing Excel file
+#             if excelsheet in xls.sheet_names: # Check if the sheet exists in the Excel file
+#                 sheet_data = {} # Create a dictionary to store all the sheets because they will be overwritten
+#                 for sheet in xls.sheet_names: # Read all the sheets and store them in the dictionary
+#                     if sheet == excelsheet:
+#                         sheet_data[sheet] = data.copy() # Overwrite the specified sheet with the updated data
+#                     else:
+#                         sheet_data[sheet] = pd.read_excel(xls, sheet_name=sheet) # Store the data of the other sheets
+#                 with pd.ExcelWriter(file_name) as writer:  # Write all the sheets to the Excel file
+#                     for sheet, df in sheet_data.items():
+#                         df.to_excel(writer, sheet_name=sheet, index=False)
+#             else: # If the sheet doesn't exist, write the new data as a new sheet
+#                 with pd.ExcelWriter(file_name, mode='a') as writer:
+#                     data.to_excel(writer, sheet_name=excelsheet, index=False)
+#     else: # If the file doesn't exist, write the new data as a new sheet  
+#         data.to_excel(file_name, sheet_name=excelsheet, index=False)
+#     return
+
+#async version of updateExcel
+async def updateExcel(excel_name, excelsheet, data):
     folder_path = 'Results'
     os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
 
     file_name = f"{folder_path}/{excel_name}.xlsx"  # Create the Excel file name
     if os.path.isfile(file_name): # Check if the file exists
-        with pd.ExcelFile(file_name) as xls: # If the file exists, read the existing Excel file
+        async with asyncio.to_thread(pd.ExcelFile, file_name) as xls: # If the file exists, read the existing Excel file
             if excelsheet in xls.sheet_names: # Check if the sheet exists in the Excel file
                 sheet_data = {} # Create a dictionary to store all the sheets because they will be overwritten
                 for sheet in xls.sheet_names: # Read all the sheets and store them in the dictionary
                     if sheet == excelsheet:
                         sheet_data[sheet] = data.copy() # Overwrite the specified sheet with the updated data
                     else:
-                        sheet_data[sheet] = pd.read_excel(xls, sheet_name=sheet) # Store the data of the other sheets
-                with pd.ExcelWriter(file_name) as writer:  # Write all the sheets to the Excel file
+                        async with asyncio.to_thread(pd.read_excel, xls, sheet_name=sheet) as sheet_df:
+                            sheet_data[sheet] = sheet_df # Store the data of the other sheets
+                async with asyncio.to_thread(pd.ExcelWriter, file_name) as writer:  # Write all the sheets to the Excel file
                     for sheet, df in sheet_data.items():
                         df.to_excel(writer, sheet_name=sheet, index=False)
             else: # If the sheet doesn't exist, write the new data as a new sheet
-                with pd.ExcelWriter(file_name, mode='a') as writer:
+                async with asyncio.to_thread(pd.ExcelWriter, file_name, mode='a') as writer:
                     data.to_excel(writer, sheet_name=excelsheet, index=False)
     else: # If the file doesn't exist, write the new data as a new sheet  
         data.to_excel(file_name, sheet_name=excelsheet, index=False)
+    return
 
+
+# this function is not used as we are not getting user overwrite anymore
 def searchQueryOverride(searchQuery):
     overide = input(colored("\nWould you like to override the search query? (y/n):", "blue", attrs=["bold","underline"]) + " ").lower()
     if overide == "y":
