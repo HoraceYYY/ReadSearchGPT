@@ -27,6 +27,7 @@ def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.
             time.sleep(5)
 
     return response["choices"][0]["message"]["content"]
+    
 
 def fetch_url(url):
     headers = {
@@ -43,6 +44,23 @@ def fetch_url(url):
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
+# async version of fetch_url   
+async def fetch_url(url):
+    headers = {
+        'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
+    }
+    
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get(url, headers=headers) as response:
+                if response.status == 200:
+                    return await response
+                else:
+                    print(f"Failed to fetch the page. Status code: {response.status}")
+                    return None
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
 
 def download_pdf(url):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'}

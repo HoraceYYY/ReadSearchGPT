@@ -6,7 +6,7 @@ from googleapiclient.errors import HttpError
 from termcolor import colored
 from collections import deque
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-import utils
+import async_utils
 
 ## this function is not used anymo
 def searchTitle(searchTpoic):
@@ -106,8 +106,8 @@ async def process_relavent_urls(url, response, searchDomain, SearchTopic, maxDep
         return
     else:
         print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
-        links = utils.getWebpageLinks(response, searchDomain, url)
-        relaventURLs = utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
+        links = async_utils.getWebpageLinks(response, searchDomain, url)
+        relaventURLs = async_utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
         if relaventURLs:
             for next_url in relaventURLs:
                 queue.append((next_url, current_depth + 1)) # Enqueue the relevant URLs with an increased depth
@@ -127,10 +127,10 @@ async def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDe
 
     while queue:
         url, current_depth = queue.popleft() # pop the first url in the queue
-        wrapped_url = utils.Url(url)
+        wrapped_url = async_utils.Url(url)
         if wrapped_url not in checkedURL: ## don't check the same url twice
             checkedURL.add(wrapped_url) # add the url to the checked list
-            response = await utils.fetch_url(url) # fetch the url
+            response = await async_utils.fetch_url(url) # fetch the url
             tasks = [await process_url_content(url, response, searchDomain, SearchObjectives, SearchTopic, results, current_depth)]
             if current_depth < maxDepth:
                 tasks.append(await process_relavent_urls(url, response, searchDomain, SearchTopic, maxDepth, current_depth, checkedURL, queue))
