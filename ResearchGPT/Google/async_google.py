@@ -9,13 +9,13 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import async_utils
 
 ## this function is not used anymo
-def searchTitle(searchTpoic):
+async def searchTitle(searchTpoic):
     messages = [
         {"role": "system", 
         "content": "You are a research assistant who will help me summarize the research topic and target outcomes I provide into 1 sentence.\
         Your summary should be a single query that I can put into google search. Reply me the result without including 'Research Query'."}
     ]
-    searchQuery = utils.singleGPT(messages, searchTpoic)
+    searchQuery = await async_utils.singleGPT(messages, searchTpoic)
     searchQuery = searchQuery.replace('"', '')
     print(colored("\nSearch Query Created:", 'blue',attrs=["bold", "underline"]), f" {searchQuery}")
     
