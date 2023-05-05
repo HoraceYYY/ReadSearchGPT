@@ -70,8 +70,9 @@ def google_official_search(query: str, num_results: int = 10) -> str | list[str]
 async def url_consumer(consumer_queue, consumer_checked_list, SearchObjectives, SearchTopic, results, producer_done):
     while not producer_done[0] or not consumer_queue.empty():
         url, depth = await consumer_queue.get()
-        if url not in consumer_checked_list:
-            consumer_checked_list.add(url)
+        wrapped_url = async_utils.Url(url)
+        if wrapped_url not in consumer_checked_list:
+            consumer_checked_list.add(wrapped_url)
             soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
             
             if soup is None: # if the response is none, then skip it
@@ -100,8 +101,9 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
         url, depth = await producer_queue.get()
 
         if depth < max_depth:
-            if url not in producer_checked_list:
-                producer_checked_list.add(url)
+            wrapped_url = async_utils.Url(url)
+            if wrapped_url not in producer_checked_list:
+                producer_checked_list.add(wrapped_url)
                 print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
                 soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
                 if status_code == 200: 
@@ -110,7 +112,6 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
                     if relaventURLs:  
                         print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')  
                         for new_url in relaventURLs:
-                            new_url = async_utils.Url(new_url)
                             await producer_queue.put((new_url, depth + 1))
                             await consumer_queue.put((new_url, depth + 1))
                     else:
@@ -123,15 +124,15 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
 
 async def main(search_results_links, SearchTopic, SearchObjectives, searchDomain, max_depth):
 
-    producer_queue = asyncio.Queue()
-    consumer_queue = asyncio.Queue()
+    producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
+    consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
 
     for url in search_results_links:
         await producer_queue.put((url, 0))
         await consumer_queue.put((url, 0))
 
-    producer_checked_list = set()
-    consumer_checked_list = set()
+    producer_checked_list = set() #all urls here are wrapped
+    consumer_checked_list = set() #all urls here are wrapped
     
     results = {
         'Related': pd.DataFrame(columns=['URL', 'Title', 'Content']),

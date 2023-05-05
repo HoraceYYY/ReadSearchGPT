@@ -283,4 +283,3 @@ class Url(object):
     def is_from_domain(self, domain):
         return self.parts.netloc == domain
     
-    
