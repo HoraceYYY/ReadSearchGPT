@@ -200,12 +200,6 @@ def searchType():
     elif searchType == "thorough":
         return 2
 
-async def parseHTML(response):
-    page_content = await response.text()
-    # extract the page content
-    soup = BeautifulSoup(page_content, 'html.parser')
-    return soup
-
 async def getWebpageData(soup):
     for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract
         script.decompose()
@@ -248,11 +242,18 @@ async def updateExcel(excel_name, excelsheet, data):
             writer = await asyncio.to_thread(pd.ExcelWriter, file_name)  # Write all the sheets to the Excel file
             for sheet, df in sheet_data.items():
                 await asyncio.to_thread(df.to_excel, writer, sheet_name=sheet, index=False)
-            await asyncio.to_thread(writer.save)
+        #     await asyncio.to_thread(writer.save)
+        # else:  # If the sheet doesn't exist, write the new data as a new sheet
+        #     writer = await asyncio.to_thread(pd.ExcelWriter, file_name, mode='a')
+        #     await asyncio.to_thread(data.to_excel, writer, sheet_name=excelsheet, index=False)
+        #     await asyncio.to_thread(writer.save)
+            workbook = writer.book
+            await asyncio.to_thread(workbook.save, file_name)
         else:  # If the sheet doesn't exist, write the new data as a new sheet
             writer = await asyncio.to_thread(pd.ExcelWriter, file_name, mode='a')
             await asyncio.to_thread(data.to_excel, writer, sheet_name=excelsheet, index=False)
-            await asyncio.to_thread(writer.save)
+            workbook = writer.book
+            await asyncio.to_thread(workbook.save, file_name)
     else:  # If the file doesn't exist, write the new data as a new sheet
         await asyncio.to_thread(data.to_excel, file_name, sheet_name=excelsheet, index=False)
     return
