@@ -14,18 +14,17 @@ if __name__ == "__main__":
     objectives = topic + "\n"+ "\n".join(non_empty_objectives)
     print(colored("\nIf there is a domain you would like to search within, paste any link from the domain. Otherwise enter 'None'.", "blue", attrs=["bold", "underline"]))
     searchDomain = input(colored("Search Domain: ", "blue", attrs=["bold"])).lower()
-    maxDepth = utils.searchType()
-    #GPTsearchQuery = google.searchTitle(full_topic)
-    #searchQuery = utils.searchQueryOverride(GPTsearchQuery)
+    max_depth = utils.searchType()
+
     if searchDomain != "none":
         searchDomain = utils.get_domain(searchDomain)
         topic = topic + " site:" + searchDomain
     resultLinks = google.google_official_search(topic)
     
     if program == "1":
-        results = asyncio.run(async_google.searchContent(resultLinks, topic, objectives, searchDomain, maxDepth))
+        results = asyncio.run(async_google.main(resultLinks, topic, objectives, searchDomain, max_depth))
     elif program == "0":
-        results = google.searchContent(resultLinks, topic, objectives, searchDomain, maxDepth)
+        results = google.searchContent(resultLinks, topic, objectives, searchDomain, max_depth)
     else:
         print("Invalid input.")
         exit()

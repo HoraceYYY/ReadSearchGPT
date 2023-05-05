@@ -8,18 +8,6 @@ from collections import deque
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import async_utils
 
-## this function is not used anymo
-async def searchTitle(searchTpoic):
-    messages = [
-        {"role": "system", 
-        "content": "You are a research assistant who will help me summarize the research topic and target outcomes I provide into 1 sentence.\
-        Your summary should be a single query that I can put into google search. Reply me the result without including 'Research Query'."}
-    ]
-    searchQuery = await async_utils.singleGPT(messages, searchTpoic)
-    searchQuery = searchQuery.replace('"', '')
-    print(colored("\nSearch Query Created:", 'blue',attrs=["bold", "underline"]), f" {searchQuery}")
-    
-    return searchQuery
 
 ## take the google search query and return the top 8 results URL
 def google_official_search(query: str, num_results: int = 10) -> str | list[str]:
@@ -79,66 +67,86 @@ def google_official_search(query: str, num_results: int = 10) -> str | list[str]
     return search_results_links
     #return safe_google_results(search_results_links)
 
+async def url_consumer(consumer_queue, consumer_checked_list, SearchObjectives, SearchTopic, results, producer_done):
+    while not producer_done[0] or not consumer_queue.empty():
+        url, depth = await consumer_queue.get()
+        if url not in consumer_checked_list:
+            consumer_checked_list.add(url)
+            response = await async_utils.fetch_url(url) # fetch the url
+            
+            if response is None: # if the response is none, then skip it
+                continue
+            elif (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
+                await async_utils.download_pdf(url)
+            elif response.status_code == 200:
+                print(colored('\n\U0001F9D0 Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
+                content, page_Title = await async_utils.getWebpageData(response) # get the page title,content, and links
+                pageSummary = await async_utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
+                
+                if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
+                    results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
+                    await async_utils.updateExcel(SearchTopic, "Related", results['Related'])                
+                else:
+                    results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
+                    await async_utils.updateExcel(SearchTopic, "Unrelated", results['Unrelated'])
 
-async def process_url_content(url, response, searchDomain, SearchObjectives, SearchTopic, results, current_depth):
+                print("\u2714\uFE0F", colored(' Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
+        else:
+            print(colored('\u2714\uFE0F The content in this URL has already been checked:', 'green', attrs=['bold']), f' {url}')
+            print(colored('\u2714\uFE0F  Skip to the next website.\n', 'green', attrs=['bold']))
+
+async def url_producer(producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchTopic, max_depth, producer_done):
+    while not producer_queue.empty():
+        url, depth = await producer_queue.get()
+
+        if depth < max_depth:
+            if url not in producer_checked_list:
+                producer_checked_list.add(url)
+                print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
+                response = await async_utils.fetch_url(url) # fetch the url
+                links = async_utils.getWebpageLinks(response, searchDomain, url)
+                relaventURLs = await async_utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
+                if relaventURLs:  
+                    print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')  
+                    for new_url in relaventURLs:
+                        new_url = async_utils.Url(new_url)
+                        await producer_queue.put((new_url, depth + 1))
+                        await consumer_queue.put((new_url, depth + 1))
+                else:
+                    print("\u2714\uFE0F", colored(' No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
+            else:
+                print(colored('\u2714\uFE0F URLs on this page have already been checked:', 'green', attrs=['bold']), f' {url}')
+                print(colored('\u2714\uFE0F  Skip to the next website.\n', 'green', attrs=['bold']))
+    producer_done[0] = True  # Signal the consumer that the producer is done
+
+
+async def main(search_results_links, SearchTopic, SearchObjectives, searchDomain, max_depth):
+
+    producer_queue = asyncio.Queue()
+    consumer_queue = asyncio.Queue()
+
+    for url in search_results_links:
+        await producer_queue.put((url, 0))
+        await consumer_queue.put((url, 0))
+
+    producer_checked_list = set()
+    consumer_checked_list = set()
     
-    if response is None: # if the response is none, then skip it
-        return
-    elif (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
-        await async_utils.download_pdf(url)
-    elif response.status_code == 200:  # if the response is 200, then extract the page content
-        print(colored('\n\U0001F9D0 Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
-        content, page_Title = await async_utils.getWebpageData(response) # get the page title,content, and links
-        pageSummary = await async_utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
-        
-        if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
-            results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
-            await async_utils.updateExcel(SearchTopic, "Related", results['Related'])                
-        else:
-            results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
-            await async_utils.updateExcel(SearchTopic, "Unrelated", results['Unrelated'])
-
-        print("\u2714\uFE0F", colored(' Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', current_depth)
-    return 
-
-async def process_relavent_urls(url, response, searchDomain, SearchTopic, maxDepth, current_depth, checkedURL, queue):
-    if response is None: # if the response is none, then skip it
-        return
-    else:
-        print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
-        links = async_utils.getWebpageLinks(response, searchDomain, url)
-        relaventURLs = await async_utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
-        if relaventURLs:
-            for next_url in relaventURLs:
-                queue.append((next_url, current_depth + 1)) # Enqueue the relevant URLs with an increased depth
-            print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')
-        else:
-            print("\u2714\uFE0F", colored(' No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
-    return
-
-async def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, current_depth: int = 0):
-
-    checkedURL = set() # create a set to store the checked urls
     results = {
         'Related': pd.DataFrame(columns=['URL', 'Title', 'Content']),
         'Unrelated': pd.DataFrame(columns=['URL', 'Title', 'Content'])
-        } # create a dictionary to store the results
-    queue = deque([(url, current_depth) for url in urls]) # create a queue to store the urls and its depth
+        }
+    
+    producer_done = [False]
 
-    while queue:
-        url, current_depth = queue.popleft() # pop the first url in the queue
-        wrapped_url = async_utils.Url(url)
-        if wrapped_url not in checkedURL: ## don't check the same url twice
-            checkedURL.add(wrapped_url) # add the url to the checked list
-            response = await async_utils.fetch_url(url) # fetch the url
-            tasks = [process_url_content(url, response, searchDomain, SearchObjectives, SearchTopic, results, current_depth)]
-            if current_depth < maxDepth:
-                tasks.append(process_relavent_urls(url, response, searchDomain, SearchTopic, maxDepth, current_depth, checkedURL, queue))
-                await asyncio.gather(*tasks)
-        else:
-            print(colored('\U0001F9D0 URL already checked:', 'green', attrs=['bold']), f' {url}')
-            print(colored('\u2714\uFE0F  Skip to the next website.\n', 'green', attrs=['bold']))
-    return results
+    num_producers = 1
+    num_consumers = 1
+
+    producer_tasks = [asyncio.create_task(url_producer(producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchTopic, max_depth, producer_done)) for _ in range(num_producers)]
+    consumer_tasks = [asyncio.create_task(url_consumer(consumer_queue, consumer_checked_list, SearchObjectives, SearchTopic, results, producer_done)) for _ in range(num_consumers)]
+
+    await asyncio.gather(*(producer_tasks + consumer_tasks))
+
 
 
 """"
@@ -170,8 +178,8 @@ consumer function(consumer queue, consumer checked list):
             skip to the next url
 
 main function:       
-    create a producer queue and initialize it with the urls from google
-    create a consumer queue and initialize it with the urls from google
+    create a producer queue and initialize it with the urls from google. url should be wrapped before push
+    create a consumer queue and initialize it with the urls from google. url should be wrapped before push
     create a empty producer checked list as a set
     create a empty consumer checked list as a set
 
