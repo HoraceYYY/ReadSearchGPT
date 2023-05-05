@@ -117,7 +117,7 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
                     else:
                         print("\u2714\uFE0F", colored(f' Producer: No additional relavent webisites found on {url}.\n', 'green', attrs=['bold']))
                 else:
-                    print("\U0001F6AB", colored(f' Consumer: Website did not respond. Error code: {status_code}.','red',attrs=['bold']), ' Current Depth: ', depth, ' URL:', url)
+                    print("\U0001F6AB", colored(f' Producer: Website did not respond. Error code: {status_code}.','red',attrs=['bold']), ' Current Depth: ', depth, ' URL:', url , '\n')
             else:
                 print(colored('\u2714\uFE0F Producer: URLs on this page have already been checked:', 'green', attrs=['bold']), f' {url}')
                 print(colored('\u2714\uFE0F  Producer: Skip to the next website.\n', 'green', attrs=['bold']))
