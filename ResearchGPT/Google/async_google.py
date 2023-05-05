@@ -93,7 +93,7 @@ async def url_consumer(consumer_queue, consumer_checked_list, SearchObjectives, 
             else:
                 print("\U0001F6AB", colored(f' Consumer: Website did not respond. Error code: {status_code}.','red',attrs=['bold']), ' Current Depth: ', depth, ' URL:', url)
         else:
-            print(colored('\u2714\uFE0F Consumer:The content in this URL has already been checked:', 'green', attrs=['bold']), f' {url}')
+            print(colored('\u2714\uFE0F  Consumer:The content in this URL has already been checked:', 'green', attrs=['bold']), f' {url}')
             print(colored('\u2714\uFE0F  Consumer: Skip to the next website.\n', 'green', attrs=['bold']))
 
 async def url_producer(producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchTopic, max_depth, producer_done):
@@ -104,7 +104,7 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
             wrapped_url = async_utils.Url(url)
             if wrapped_url not in producer_checked_list:
                 producer_checked_list.add(wrapped_url)
-                print(colored('\U0001F9D0 Producer: Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
+                print(colored(f'\U0001F9D0 Producer: Seaching for additonal relavent websites on {url}', 'yellow', attrs=['bold']))
                 soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
                 if status_code == 200: 
                     links = await async_utils.getWebpageLinks(soup, searchDomain, url)
@@ -115,7 +115,7 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
                             await producer_queue.put((new_url, depth + 1))
                             await consumer_queue.put((new_url, depth + 1))
                     else:
-                        print("\u2714\uFE0F", colored(' Producer: No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
+                        print("\u2714\uFE0F", colored(f' Producer: No additional relavent webisites found on {url}.\n', 'green', attrs=['bold']))
                 else:
                     print("\U0001F6AB", colored(f' Consumer: Website did not respond. Error code: {status_code}.','red',attrs=['bold']), ' Current Depth: ', depth, ' URL:', url)
             else:
