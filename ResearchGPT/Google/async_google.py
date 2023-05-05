@@ -74,24 +74,24 @@ async def url_consumer(consumer_queue, consumer_checked_list, SearchObjectives, 
         if wrapped_url not in consumer_checked_list:
             consumer_checked_list.add(wrapped_url)
             soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
-            
-            if soup is None: # if the response is none, then skip it
-                continue
-            elif content_type.lower() == 'application/pdf': # check if the content is pdf and download it
-                await async_utils.download_pdf(url)
-            elif status_code == 200:
-                print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
-                content, page_Title = await async_utils.getWebpageData(soup) # get the page title,content, and links
-                pageSummary = await async_utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
-                
-                if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
-                    results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
-                    await async_utils.updateExcel(SearchTopic, "Related", results['Related'])                
-                else:
-                    results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
-                    await async_utils.updateExcel(SearchTopic, "Unrelated", results['Unrelated'])
+            if status_code == 200:
+                if content_type.lower() == 'application/pdf': # check if the content is pdf and download it
+                    await async_utils.download_pdf(url)
+                elif status_code == 200:
+                    print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
+                    content, page_Title = await async_utils.getWebpageData(soup) # get the page title,content, and links
+                    pageSummary = await async_utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
+                    
+                    if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
+                        results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
+                        await async_utils.updateExcel(SearchTopic, "Related", results['Related'])                
+                    else:
+                        results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
+                        await async_utils.updateExcel(SearchTopic, "Unrelated", results['Unrelated'])
 
-                print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
+                    print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
+            else:
+                print("\U0001F6AB", colored(f' Consumer: Website did not respond. Error code: {status_code}.','red',attrs=['bold']), ' Current Depth: ', depth, ' URL:', url)
         else:
             print(colored('\u2714\uFE0F Consumer:The content in this URL has already been checked:', 'green', attrs=['bold']), f' {url}')
             print(colored('\u2714\uFE0F  Consumer: Skip to the next website.\n', 'green', attrs=['bold']))
@@ -116,6 +116,8 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
                             await consumer_queue.put((new_url, depth + 1))
                     else:
                         print("\u2714\uFE0F", colored(' Producer: No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
+                else:
+                    print("\U0001F6AB", colored(f' Consumer: Website did not respond. Error code: {status_code}.','red',attrs=['bold']), ' Current Depth: ', depth, ' URL:', url)
             else:
                 print(colored('\u2714\uFE0F Producer: URLs on this page have already been checked:', 'green', attrs=['bold']), f' {url}')
                 print(colored('\u2714\uFE0F  Producer: Skip to the next website.\n', 'green', attrs=['bold']))

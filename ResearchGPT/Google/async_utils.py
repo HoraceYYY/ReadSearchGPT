@@ -53,10 +53,10 @@ async def fetch_url(url):
                     return soup, content_type, status_code
                 else:
                     print(f"Failed to fetch the page. Status code: {response.status}")
-                    return None
+                    return None, None, response.status
         except Exception as e:
             print(f"An error occurred: {e}")
-            return None
+            return None, None, e
 
 async def download_pdf(url):
     headers = {'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'}
