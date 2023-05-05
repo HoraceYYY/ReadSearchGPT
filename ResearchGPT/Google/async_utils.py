@@ -13,10 +13,10 @@ async def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='
     openai.api_key = os.getenv("OPENAI_API_KEY")
     openai.aiosession.set(ClientSession())
     systemMessages.append({"role": "user", "content":userMessage})
-    success = False
+    max_retries = 3
     response = None
     
-    while not success:
+    for attempt in range(1, max_retries + 1):
         try:
             response = await openai.ChatCompletion.acreate(
                 model=model,
@@ -24,11 +24,16 @@ async def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='
                 temperature=temperature,
                 top_p=top_p
             )
-            success = True
+            break  # If successful, break out of the loop
         except Exception as e:
-            print(f"An error occurred: {e}")
-            print("Retrying in 5 seconds...")
-            await asyncio.sleep(5)
+            if attempt < max_retries:
+                print(f"An error occurred: {e}")
+                print(f"Retrying in 5 seconds... (attempt {attempt} of {max_retries})")
+                await asyncio.sleep(5)
+            else:
+                print(f"An error occurred: {e}")
+                print(f"Reached the maximum number of retries ({max_retries}). Aborting.")
+                return None  # You can return None or an appropriate default value here
 
     return response["choices"][0]["message"]["content"]
       
