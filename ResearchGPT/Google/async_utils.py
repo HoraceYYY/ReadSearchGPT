@@ -1,5 +1,4 @@
-import requests, os, re, time, shutil, openai, ast, tiktoken, math, asyncio, aiofiles
-from aiohttp import ClientSession
+import requests, os, re, time, shutil, openai, ast, tiktoken, math, asyncio, aiofiles, aiohttp
 from termcolor import colored
 from dotenv import load_dotenv 
 from bs4 import BeautifulSoup
@@ -11,11 +10,11 @@ async def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='
     load_dotenv()
     openai.organization = os.getenv("OPENAI_ORG")
     openai.api_key = os.getenv("OPENAI_API_KEY")
-    openai.aiosession.set(ClientSession())
+    openai.aiosession.set(aiohttp.ClientSession())
     systemMessages.append({"role": "user", "content":userMessage})
     max_retries = 3
     response = None
-    
+
     for attempt in range(1, max_retries + 1):
         try:
             response = await openai.ChatCompletion.acreate(
@@ -42,11 +41,16 @@ async def fetch_url(url):
         'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
     }
     
-    async with ClientSession() as session:
+    async with aiohttp.ClientSession() as session:
         try:
             async with session.get(url, headers=headers) as response:
                 if response.status == 200:
-                    return await response
+                    page_content = await response.text()
+                    # extract the page content
+                    soup = BeautifulSoup(page_content, 'html.parser')
+                    content_type = response.headers.get('Content-Type')
+                    status_code = response.status
+                    return soup, content_type, status_code
                 else:
                     print(f"Failed to fetch the page. Status code: {response.status}")
                     return None
@@ -56,7 +60,7 @@ async def fetch_url(url):
 
 async def download_pdf(url):
     headers = {'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'}
-    async with ClientSession() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as response:
             response.raise_for_status()
             ## create download folder
@@ -202,8 +206,7 @@ async def parseHTML(response):
     soup = BeautifulSoup(page_content, 'html.parser')
     return soup
 
-async def getWebpageData(response):
-    soup = await parseHTML(response)
+async def getWebpageData(soup):
     for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract
         script.decompose()
     text_content = soup.get_text(separator=' ') # Extract all the text content using the get_text() method
@@ -213,8 +216,8 @@ async def getWebpageData(response):
     page_Title = title_tag.text if title_tag else None
     return clean_text, page_Title
 
-async def getWebpageLinks(response, searchDomain, url):
-    soup = await parseHTML(response)
+async def getWebpageLinks(soup, searchDomain, url):
+
     links = []
     for a_tag in soup.find_all('a'):
         link = a_tag.get('href')

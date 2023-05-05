@@ -72,15 +72,15 @@ async def url_consumer(consumer_queue, consumer_checked_list, SearchObjectives, 
         url, depth = await consumer_queue.get()
         if url not in consumer_checked_list:
             consumer_checked_list.add(url)
-            response = await async_utils.fetch_url(url) # fetch the url
+            soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
             
-            if response is None: # if the response is none, then skip it
+            if soup is None: # if the response is none, then skip it
                 continue
-            elif (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
+            elif content_type.lower() == 'application/pdf': # check if the content is pdf and download it
                 await async_utils.download_pdf(url)
-            elif response.status_code == 200:
+            elif status_code == 200:
                 print(colored('\n\U0001F9D0 Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
-                content, page_Title = await async_utils.getWebpageData(response) # get the page title,content, and links
+                content, page_Title = await async_utils.getWebpageData(soup) # get the page title,content, and links
                 pageSummary = await async_utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
                 
                 if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
@@ -103,17 +103,18 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
             if url not in producer_checked_list:
                 producer_checked_list.add(url)
                 print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
-                response = await async_utils.fetch_url(url) # fetch the url
-                links = await async_utils.getWebpageLinks(response, searchDomain, url)
-                relaventURLs = await async_utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
-                if relaventURLs:  
-                    print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')  
-                    for new_url in relaventURLs:
-                        new_url = async_utils.Url(new_url)
-                        await producer_queue.put((new_url, depth + 1))
-                        await consumer_queue.put((new_url, depth + 1))
-                else:
-                    print("\u2714\uFE0F", colored(' No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
+                soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
+                if status_code == 200: 
+                    links = await async_utils.getWebpageLinks(soup, searchDomain, url)
+                    relaventURLs = await async_utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
+                    if relaventURLs:  
+                        print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')  
+                        for new_url in relaventURLs:
+                            new_url = async_utils.Url(new_url)
+                            await producer_queue.put((new_url, depth + 1))
+                            await consumer_queue.put((new_url, depth + 1))
+                    else:
+                        print("\u2714\uFE0F", colored(' No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
             else:
                 print(colored('\u2714\uFE0F URLs on this page have already been checked:', 'green', attrs=['bold']), f' {url}')
                 print(colored('\u2714\uFE0F  Skip to the next website.\n', 'green', attrs=['bold']))
