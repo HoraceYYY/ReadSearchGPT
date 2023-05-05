@@ -139,3 +139,44 @@ async def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDe
             print(colored('\U0001F9D0 URL already checked:', 'green', attrs=['bold']), f' {url}')
             print(colored('\u2714\uFE0F  Skip to the next website.\n', 'green', attrs=['bold']))
     return results
+
+
+""""
+sudo code:
+
+producer function(producer queue, consumer queue, producer checked list, max depth):
+    
+    while queue is not empty:
+        pop the first url in the queue
+        if the depth of the url < max depth:
+            if the url is not in the producer checked list: 
+                add the url to the producer checked list
+                fetch relevant urls from the page
+                add the relevant relevant urls to the producer queue
+                add the relevant relevant urls to the consumer queue
+            else:
+                skip to the next url
+    
+    set flag for signal to consumer that producer is done
+
+consumer function(consumer queue, consumer checked list):
+    
+    while producer is not done and consumer queue is not empty:
+        pop the first url in the queue
+        if the url is not in the consumer checked list:
+            add the url to the consumer checked list
+            fetch the url content and add to excel
+        else:  
+            skip to the next url
+
+main function:       
+    create a producer queue and initialize it with the urls from google
+    create a consumer queue and initialize it with the urls from google
+    create a empty producer checked list as a set
+    create a empty consumer checked list as a set
+
+    create a producer task
+    create a consumer task
+    gather the tasks
+
+"""
