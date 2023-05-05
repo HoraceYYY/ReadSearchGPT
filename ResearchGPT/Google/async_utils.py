@@ -33,7 +33,8 @@ async def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='
                 print(f"An error occurred: {e}")
                 print(f"Reached the maximum number of retries ({max_retries}). Aborting.")
                 return None  # You can return None or an appropriate default value here
-
+    # Close the aiohttp session at the end
+    await openai.aiosession.get().close()
     return response["choices"][0]["message"]["content"]
       
 async def fetch_url(url):
