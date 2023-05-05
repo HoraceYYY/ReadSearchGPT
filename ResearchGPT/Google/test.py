@@ -13,39 +13,42 @@ from termcolor import colored
 # objectives = topic + "\n"+ "\n".join(non_empty_objectives)
 
 
+import os
+import pandas as pd
+import asyncio
 
-url = 'https://appian.com/products/platform/overview.html'
-headers = {
-    'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
-}
-try:
-    response = requests.get(url, headers=headers)
-    
-except Exception as e:
-    print(f"An error occurred: {e}")
-     # if the url is not valid, then skip for the rest of the for loop
+async def updateExcel(excel_name, excelsheet, data):
+    folder_path = 'Results'
+    os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
+
+    file_name = f"{folder_path}/{excel_name}.xlsx"  # Create the Excel file name
+    if os.path.isfile(file_name):  # Check if the file exists
+        xls = await asyncio.to_thread(pd.ExcelFile, file_name)  # If the file exists, read the existing Excel file
+        if excelsheet in xls.sheet_names:  # Check if the sheet exists in the Excel file
+            sheet_data = {}  # Create a dictionary to store all the sheets because they will be overwritten
+            for sheet in xls.sheet_names:  # Read all the sheets and store them in the dictionary
+                if sheet == excelsheet:
+                    sheet_data[sheet] = data.copy()  # Overwrite the specified sheet with the updated data
+                else:
+                    sheet_df = await asyncio.to_thread(pd.read_excel, xls, sheet_name=sheet)
+                    sheet_data[sheet] = sheet_df  # Store the data of the other sheets
+
+            writer = await asyncio.to_thread(pd.ExcelWriter, file_name)  # Write all the sheets to the Excel file
+            for sheet, df in sheet_data.items():
+                await asyncio.to_thread(df.to_excel, writer, sheet_name=sheet, index=False)
+            await asyncio.to_thread(writer.save)
+        else:  # If the sheet doesn't exist, write the new data as a new sheet
+            writer = await asyncio.to_thread(pd.ExcelWriter, file_name, mode='a')
+            await asyncio.to_thread(data.to_excel, writer, sheet_name=excelsheet, index=False)
+            await asyncio.to_thread(writer.save)
+    else:  # If the file doesn't exist, write the new data as a new sheet
+        await asyncio.to_thread(data.to_excel, file_name, sheet_name=excelsheet, index=False)
+    return
+
+# Some sample data for testing
+data = pd.DataFrame({'A': [1, 2], 'B': [3, 4]})
+
+asyncio.run(updateExcel('test_file', 'Sheet1', data))
 
 
-if (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
-    utils.download_pdf(url)
-elif response.status_code == 200:  # if the response is 200, then extract the page content
-    page_content = response.text
-    # extract the page content
-    soup = BeautifulSoup(page_content, 'html.parser')
-    for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract
-        script.decompose()
-    text_content = soup.get_text(separator=' ') # Extract all the text content using the get_text() method
-    clean_text = ' '.join(text_content.split()) # Clean up the extracted text by removing extra whitespace, line breaks, and other unnecessary characters
-    # find all the links in the page
-    links = []
-    for a_tag in soup.find_all('a'):
-        link = a_tag.get('href')
-        if link:
-            absolute_url = urljoin(url, link)
-            links.append(absolute_url)
- # get result from the page; check question and contect of the page in gpt3.5 -> summary + url + webpage title
-    relaventURLs = utils.relaventURL("Appian Intelligent Automation", links)
-    print(relaventURLs)
 
-
-    
