@@ -104,7 +104,7 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
                 producer_checked_list.add(url)
                 print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
                 response = await async_utils.fetch_url(url) # fetch the url
-                links = async_utils.getWebpageLinks(response, searchDomain, url)
+                links = await async_utils.getWebpageLinks(response, searchDomain, url)
                 relaventURLs = await async_utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
                 if relaventURLs:  
                     print("\u2714\uFE0F", colored(' Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')  

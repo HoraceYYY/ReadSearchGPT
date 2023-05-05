@@ -68,60 +68,6 @@ async def download_pdf(url):
                     await output_file.write(chunk)
             print(colored(f'PDF downloaded and saved to {output_path}', 'green', attrs=['bold']))
 
-def download_pdf(url):
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'}
-    response = requests.get(url, headers=headers, stream=True)
-    response.raise_for_status()
-    ## create download folder
-    folder_path = 'Downloaded_files'
-    os.makedirs(folder_path, exist_ok=True)
-    ## set name and path fo the pdf
-    file_name = os.path.basename(url)
-    output_path = os.path.join(folder_path, file_name)
-    with open(output_path, 'wb') as output_file:
-        shutil.copyfileobj(response.raw, output_file)
-    print(colored(f'PDF downloaded and saved to {output_path}'), 'green', attrs=['bold'])
-
-# this function is not used anymore because it is replaced by the class URL
-def urls_are_same(url1, url2):
-    parsed_url1 = urlparse(url1)
-    parsed_url2 = urlparse(url2)
-
-    # Normalize the scheme (e.g., treat 'http' and 'https' as equivalent)
-    scheme1 = parsed_url1.scheme.lower()
-    scheme2 = parsed_url2.scheme.lower()
-
-    if scheme1 in ('http', 'https'):
-        scheme1 = 'http'
-    if scheme2 in ('http', 'https'):
-        scheme2 = 'http'
-
-    # Compare the netloc (domain and port) after converting to lowercase and removing 'www.'
-    domain1 = parsed_url1.netloc.lower().replace("www.", "")
-    domain2 = parsed_url2.netloc.lower().replace("www.", "")
-
-    # Compare the path, after removing any trailing slashes and decoding URL-encoded characters
-    path1 = unquote(parsed_url1.path.rstrip("/"))
-    path2 = unquote(parsed_url2.path.rstrip("/"))
-
-    # Compare query parameters
-    query_params1 = parse_qs(parsed_url1.query)
-    query_params2 = parse_qs(parsed_url2.query)
-
-    # Compare fragments
-    fragment1 = unquote(parsed_url1.fragment)
-    fragment2 = unquote(parsed_url2.fragment)
-
-    return (scheme1 == scheme2 and domain1 == domain2 and path1 == path2 and
-            query_params1 == query_params2 and fragment1 == fragment2)
-
-# this function is not used anymore because it is replaced by the class URL
-def is_url_in_list(target_url, url_list):
-    for url in url_list:
-        if urls_are_same(target_url, url):
-            return True
-    return False
-
 async def relaventURL(SearchTopic, links):
     try:
         messages = [
@@ -190,20 +136,6 @@ def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=3500):
     encoding = tiktoken.get_encoding(encoding_name)
     return encoding.encode(text)[:max_tokens]
 
-# this function is not used anymore because output is not text
-def createFile(content,name):
-    file_name = f"{name}.txt"
-    with open(file_name, 'w') as file:
-        file.write(content)
-        file.write("\n\n\n")
-
-# this function is not used anymore because output is not text
-def addToFile(content, name):
-    file_name = f"{name}.txt"
-    with open(file_name, 'a') as file:
-        file.write(content)
-        file.write("\n")
-
 #break up the content of long webpages into smaller chunks and pass each into GPT3.5 to avoid the token limit and return the summary of the whole webpage
 async def pageBreakUp(SearchObjectives, content): 
     pageSummary = ''
@@ -259,14 +191,14 @@ def searchType():
     elif searchType == "thorough":
         return 2
 
-def parseHTML(response):
-    page_content = response.text
+async def parseHTML(response):
+    page_content = await response.text()
     # extract the page content
     soup = BeautifulSoup(page_content, 'html.parser')
     return soup
 
-def getWebpageData(response):
-    soup = parseHTML(response)
+async def getWebpageData(response):
+    soup = await parseHTML(response)
     for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract
         script.decompose()
     text_content = soup.get_text(separator=' ') # Extract all the text content using the get_text() method
@@ -276,8 +208,8 @@ def getWebpageData(response):
     page_Title = title_tag.text if title_tag else None
     return clean_text, page_Title
 
-def getWebpageLinks(response, searchDomain, url):
-    soup = parseHTML(response)
+async def getWebpageLinks(response, searchDomain, url):
+    soup = await parseHTML(response)
     links = []
     for a_tag in soup.find_all('a'):
         link = a_tag.get('href')

@@ -235,7 +235,7 @@ def searchType():
         return 2
 
 def parseHTML(response):
-    page_content = response.text
+    page_content = response.text()
     # extract the page content
     soup = BeautifulSoup(page_content, 'html.parser')
     return soup
