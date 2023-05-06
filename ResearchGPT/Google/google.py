@@ -8,20 +8,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import utils
 
 ## this function is not used anymore
-def searchTitle(searchTpoic):
-    messages = [
-        {"role": "system", 
-        "content": "You are a research assistant who will help me summarize the research topic and target outcomes I provide into 1 sentence.\
-        Your summary should be a single query that I can put into google search. Reply me the result without including 'Research Query'."}
-    ]
-    searchQuery = utils.singleGPT(messages, searchTpoic)
-    searchQuery = searchQuery.replace('"', '')
-    print(colored("\nSearch Query Created:", 'blue',attrs=["bold", "underline"]), f" {searchQuery}")
-    
-    return searchQuery
 
 ## take the google search query and return the top 8 results URL
-def google_official_search(query: str, num_results: int = 10) -> str | list[str]:
+def google_official_search(query: str, num_results: int = 8) -> str | list[str]:
     """Return the results of a Google search using the official Google API
 
     Args:
