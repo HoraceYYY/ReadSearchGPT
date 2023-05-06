@@ -281,6 +281,10 @@ def searchQueryOverride(searchQuery):
 
 def get_domain(url):
     parts = urlparse(url)
+    if not parts.scheme:
+        # Add default scheme (http) if it's missing
+        url = "http://" + url
+        parts = urlparse(url)
     return parts.netloc
 
 class Url(object):

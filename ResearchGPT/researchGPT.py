@@ -1,5 +1,5 @@
 from Google import google, async_google
-from Google import utils
+from Google import utils, async_utils
 from termcolor import colored
 import time, asyncio
 
@@ -12,16 +12,15 @@ if __name__ == "__main__":
     objectives_input = [input(colored(f"Objective {i + 1}: ", "blue", attrs=["bold"])) for i in range(3)]
     non_empty_objectives = [f"{topic}: {obj}" for i, obj in enumerate(objectives_input) if obj]
     objectives = "\n".join(non_empty_objectives) # this is a str for open ai prompts
-    
     print(colored("\nIf there is a domain you would like to search within, paste any link from the domain. Otherwise enter 'None'.", "blue", attrs=["bold", "underline"]))
-    searchDomain = input(colored("Search Domain: ", "blue", attrs=["bold"])).lower()
+    userDomain = input(colored("Search Domain: ", "blue", attrs=["bold"])).lower()
     max_depth = utils.searchType()
 
     resultLinks = []
     for objective in non_empty_objectives:
-        if searchDomain != "none": # if the user wants to search within a domain
-            searchDomain = utils.get_domain(searchDomain)
-            topic = topic + " site:" + searchDomain
+        if userDomain != "none": # if the user wants to search within a domain
+            searchDomain = async_utils.get_domain(userDomain)
+            objective = objective + " site:" + searchDomain
         
         resultLinks += async_google.google_official_search(objective)
 
