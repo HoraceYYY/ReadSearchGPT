@@ -10,9 +10,10 @@ def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.
     openai.organization = os.getenv("OPENAI_ORG")
     openai.api_key = os.getenv("OPENAI_API_KEY")
     systemMessages.append({"role": "user", "content":userMessage})
-    success = False
+    max_retries = 3
     response = None
-    while not success:
+
+    for attempt in range(1, max_retries + 1):
         try:
             response = openai.ChatCompletion.create(
                 model=model,
@@ -20,29 +21,19 @@ def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.
                 temperature=temperature,
                 top_p=top_p
             )
-            success = True
+            break  # If successful, break out of the loop
         except Exception as e:
-            print(f"An error occurred: {e}")
-            print("Retrying in 5 seconds...")
-            time.sleep(5)
+            if attempt < max_retries:
+                print(f"An error occurred: {e}")
+                print(f"Retrying in 5 seconds... (attempt {attempt} of {max_retries})")
+                time.sleep(5)
+            else:
+                print(f"An error occurred: {e}")
+                print(f"Reached the maximum number of retries ({max_retries}). Aborting.")
+                return None  # You can return None or an appropriate default value here
+    # Close the aiohttp session at the end
 
     return response["choices"][0]["message"]["content"]
-
-def fetch_url(url):
-    headers = {
-        'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
-    }
-    
-    try:
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            return response
-        else:
-            print(f"Failed to fetch the page. Status code: {response.status_code}")
-            return None
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return None
 
 def download_pdf(url):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'}
@@ -234,28 +225,15 @@ def searchType():
     elif searchType == "thorough":
         return 2
 
-def parseHTML(response):
-    page_content = response.text()
+def getWebpageData(response, searchDomain, url):
+    page_content = response.text
     # extract the page content
     soup = BeautifulSoup(page_content, 'html.parser')
-    return soup
-
-
-def getWebpageData(response, searchDomain, url):
-    soup = parseHTML(response)
     for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract
         script.decompose()
     text_content = soup.get_text(separator=' ') # Extract all the text content using the get_text() method
     clean_text = ' '.join(text_content.split()) # Clean up the extracted text by removing extra whitespace, line breaks, and other unnecessary characters
     # find all the links in the page
-    
-    
-    title_tag = soup.find('title')
-    page_Title = title_tag.text if title_tag else None
-    return clean_text, page_Title
-
-def getWebpageLinks(response, searchDomain, url):
-    soup = parseHTML(response)
     links = []
     for a_tag in soup.find_all('a'):
         link = a_tag.get('href')
@@ -265,7 +243,10 @@ def getWebpageLinks(response, searchDomain, url):
                 links.append(absolute_url)
             elif searchDomain != 'none' and Url(absolute_url).is_from_domain(searchDomain):
                 links.append(absolute_url)
-    return links
+    
+    title_tag = soup.find('title')
+    page_Title = title_tag.text if title_tag else None
+    return clean_text, links, page_Title
 
 def updateExcel(excel_name, excelsheet, data):
     folder_path = 'Results'
