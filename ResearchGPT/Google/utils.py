@@ -177,13 +177,18 @@ def pageBreakUp(SearchObjectives, content):
     for i in range(sectionNum): #split the content into multiple section and use a new GPT3.5 for each section to avoid the token limit
         section_messages = [
             {"role": "system", 
-            "content": "You are a searching AI. You will search the Query from the Content I provide you.\
-            If the content does not contain the queried information, reply'4b76bd04151ea7384625746cecdb8ab293f261d4' and do not summarize the content."}
-            ]
+            "content": "Extract the target information from the text provided in the next message. \
+You will be given one or two or three target information to look for from the text. \
+You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
+If the text does not contain any of the target information, refrain from summarizing the text and refrain from following the desired format below. Instead of summarizing the task or following the desired format, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
+Otherwise, provide the result in the desired format below with as much detail as possible.\n\n\
+Desired format:\n\
+### One Summarization per Target Information:###\n"}]
+
         start_index = i * cutoffIndex
         end_index = (i + 1) * cutoffIndex
         section = content[start_index:end_index]
-        pageMessage = "Query: " + SearchObjectives + "\nContent:" + section
+        pageMessage = "Important Informtion:\n" + SearchObjectives + "\ntext:\n" + section
         pageSummary += singleGPT(section_messages,pageMessage)
     if num_tokens_from_string(pageSummary) > 3500: #if the summary is still too long, truncate it to 3500 tokens
         pageSummary = truncate_text_tokens(pageSummary)
@@ -192,18 +197,23 @@ def pageBreakUp(SearchObjectives, content):
 def PageResult(SearchObjectives, content):
     messages = [
         {"role": "system", 
-        "content": "You are a searching AI. You will search the Query from the Content I provide you.\
-         If the content does not contain the queried information, reply'4b76bd04151ea7384625746cecdb8ab293f261d4' and do not summarize the content."}
-        ]
+        "content": "Extract the target information from the text provided in the next message. \
+You will be given one or two or three target information to look for from the text. \
+You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
+If the text does not contain any of the target information, refrain from summarizing the text and refrain from following the desired format below. Instead of summarizing the task or following the desired format, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
+Otherwise, provide the result in the desired format below with as much detail as possible.\n\n\
+Desired format:\n\
+### One Summarization per Target Information:###\n"}]
 
+    print(messages[0]["content"])
     pageSummary = ''
     if num_tokens_from_string(content) <= 3500: #if the content is less than 3500 tokens, pass the whole content to GPT
-        pageMessage = "Query: " + SearchObjectives + "\nContent:" + content
+        pageMessage = "Important Informtion:\n" + SearchObjectives + "\ntext:\n" + content
         pageSummary = singleGPT(messages,pageMessage)
     else: #split the webpage content into multiple section to avoid the token limit
         pageSummary = pageBreakUp(SearchObjectives, content) #split the webpage content into multiple section and return the summary of the whole webpage
         #print("pageSummary: ",pageSummary)
-        pageSummary = "Query: " + SearchObjectives + "\nContent:" + pageSummary 
+        pageSummary = "Important Informtion:\n" + SearchObjectives + "\ntext:\n" + pageSummary 
         pageSummary = singleGPT(messages,pageSummary)
 
     return pageSummary
@@ -307,5 +317,4 @@ class Url(object):
     
     def is_from_domain(self, domain):
         return self.parts.netloc == domain
-    
     

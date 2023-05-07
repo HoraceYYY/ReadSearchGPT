@@ -92,10 +92,10 @@ async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, Sea
                     
                     if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
                         results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
-                        file_name = await async_utils.updateExcel(task_id, SearchTopic, "Related", results['Related'])                
+                        await async_utils.updateExcel(task_id, SearchTopic, "Related", results['Related'])                
                     else:
                         results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
-                        file_name = await async_utils.updateExcel(task_id, SearchTopic, "Unrelated", results['Unrelated'])
+                        await async_utils.updateExcel(task_id, SearchTopic, "Unrelated", results['Unrelated'])
 
                     print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
             else:
@@ -103,7 +103,7 @@ async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, Sea
         else:
             print(colored('\u2714\uFE0F  Consumer:The content in this URL has already been checked:', 'green', attrs=['bold']), f' {url}')
             print(colored('\u2714\uFE0F  Consumer: Skip to the next website.\n', 'green', attrs=['bold']))
-    return file_name
+
 
 async def url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchTopic, max_depth, producer_done):
     while not producer_queue.empty():
