@@ -10,7 +10,7 @@ import utils
 ## this function is not used anymore
 
 ## take the google search query and return the top 8 results URL
-def google_official_search(query: str, num_results: int = 8) -> str | list[str]:
+def google_official_search(query: str, searchtype: int) -> str | list[str]:
     """Return the results of a Google search using the official Google API
 
     Args:
@@ -31,6 +31,12 @@ def google_official_search(query: str, num_results: int = 8) -> str | list[str]:
         # Initialize the Custom Search API service
         service = build("customsearch", "v1", developerKey=api_key)
 
+        if searchtype == 1: # this is quick search
+            num_results = 3 # only return top 3 results from google; these are results with >10% click through rate
+        elif searchtype == 2: # this is thorogh search
+            num_results = 5 # return top 5 results from google; these are results with >5% click through rate
+        elif searchtype == 3: # this is deep search
+            num_results = 10 # return top 10 results from google; these are results with >1% click through rate
         # Send the search query and retrieve the results
         result = (
             service.cse()

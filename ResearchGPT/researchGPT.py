@@ -22,7 +22,7 @@ if __name__ == "__main__":
             searchDomain = async_utils.get_domain(userDomain)
             objective = objective + " site:" + searchDomain
         
-        resultLinks += async_google.google_official_search(objective)
+        resultLinks += async_google.google_official_search(objective, max_depth)
 
     if program == "1":
         results = asyncio.run(async_google.main(resultLinks, topic, objectives, searchDomain, max_depth))
