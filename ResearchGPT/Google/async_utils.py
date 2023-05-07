@@ -3,7 +3,7 @@ from termcolor import colored
 from dotenv import load_dotenv 
 from bs4 import BeautifulSoup
 import pandas as pd
-from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin, parse_qs, unquote
+from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin, urldefrag
 
 # see https://github.com/openai/openai-python for async api details
 async def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.5-turbo'):
@@ -222,16 +222,17 @@ async def getWebpageData(soup):
     return clean_text, page_Title
 
 async def getWebpageLinks(soup, searchDomain, url):
-
     links = []
     for a_tag in soup.find_all('a'):
         link = a_tag.get('href')
         if link:
+            link, _ = urldefrag(link) # Remove the fragment from the URL
             absolute_url = urljoin(url, link)
-            if searchDomain == None:
-                links.append(absolute_url)
-            elif searchDomain != None and Url(absolute_url).is_from_domain(searchDomain):
-                links.append(absolute_url)
+            if absolute_url not in links: # Check if the URL is not already in the list since defrag can produce duplicates
+                if searchDomain == 'none':
+                    links.append(absolute_url)
+                elif searchDomain != 'none' and Url(absolute_url).is_from_domain(searchDomain):
+                    links.append(absolute_url)
     return links
 
 async def updateExcel(task_id, excel_name, excelsheet, data):

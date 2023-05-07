@@ -3,7 +3,7 @@ from termcolor import colored
 from dotenv import load_dotenv 
 from bs4 import BeautifulSoup
 import pandas as pd
-from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin, parse_qs, unquote
+from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin, parse_qs, unquote, urldefrag
 
 def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.5-turbo'):
     load_dotenv()
@@ -89,47 +89,44 @@ def is_url_in_list(target_url, url_list):
             return True
     return False
 
-def relaventURL(SearchObjectives, links):
+def relaventURL(promptforURL, links):
     try:
         messages = [
             {"role": "system", 
             "content": "Extract the URLs that are most relevant to the target information from the list of URLs provided in the next message. \
-If there are no URLs that are relevant to the target information, refrain from telling me anything. Instead of returning a message, only return 'NONE'. \
+If there are no URLs that are relevant to the all of the target information, refrain from returning a message. Instead of returning a message, only return 'NONE'. \
 Otherwise, return less than 20 URLs unless there are additional URLs that are still extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
 Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
-Return the links in a python array like this: ['URL', 'URL', ...]"}]
+Make sure to return the result in the formate of comma_separated_list_of_urls."}]
         ## pass the list of message to GPT
+        print(f'links: {len(links)}')
         linksString = ' '.join(links)
         token = num_tokens_from_string(linksString)
-        pattern = re.compile(r'\[.*?\]')
         if token <= 3500:
-            urlMessage = "Target Information: " + SearchObjectives + "\nURLs:" + ' '.join(links)
+            urlMessage = "Target Information:\n" + promptforURL + "\nURLs:\n" + linksString
             relaventURLs = singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
-            print(f'raw: {relaventURLs}')
-            relaventURLs = re.search(pattern, relaventURLs)
-            if relaventURLs:
-                relaventURLs = ast.literal_eval(relaventURLs.group())
-                print(f'list: {relaventURLs}')
-                print(len(relaventURLs))
-            else:
-                return None
         else:
-            relaventURLs = LinksBreakUp(token, SearchObjectives, linksString) # split the links into subarrays of 3000 tokens
-            list_strings = re.findall(pattern, relaventURLs) # Extract all the strings that are enclosed in square brackets into a list
-            if list_strings: 
-                extracted_lists = [ast.literal_eval(list_string) for list_string in list_strings] # Convert the strings into lists
-                relaventURLs = [item for sublist in extracted_lists for item in sublist] # Flatten the 2D list into a 1D list
-            else:
-                return None
-        return relaventURLs   
+            relaventURLs = LinksBreakUp(token, promptforURL, linksString) # split the links into subarrays of 3000 tokens
+
+        #print(f'raw: {relaventURLs}')
+        relaventURLs = [url.strip() for url in relaventURLs.split(',')] # remove the white space from the string and convert the string into a list
+        #print(f'list: {relaventURLs}')
+        #print(len(relaventURLs))
+        filtered_url_list = [url for url in relaventURLs if url != 'NONE']
+        #print(f'filtered list: {filtered_url_list}')
+        #print(len(filtered_url_list))
+        if not filtered_url_list:
+            return None
+        else:
+            return filtered_url_list   
     except Exception as e:
         print(f"An error occurred in LinksBreakUp: {e}")
         return None
     
-def LinksBreakUp(token, SearchTopic, linksString): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
+def LinksBreakUp(token, promptforURL, linksString): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
     try:
-        relaventURLs = ' '
+        relaventURLs_list = []
         sectionNumber = math.ceil(token/3000)
         cutoffIndex = math.ceil(len(linksString)/sectionNumber)
         #print(links)
@@ -140,13 +137,15 @@ def LinksBreakUp(token, SearchTopic, linksString): # convert the list of links i
             #print('sectionToken',num_tokens_from_string(section))
             messages = [
                 {"role": "system", 
-                "content": "you are a link checking ai. you are designed to check if the list of the links from the webpage of the current link is relevant to the question I ask.\
-            I will gave you 2 pieces of information: Question, Links. Based on the question I give you, you will return me the links that is extremely relevant to the question as a python array only, otherwise,  return 'NONE'"}
-        ]
-            urlMessage = "Question: " + SearchTopic + "\nLinks:" + section
-            relaventURLs += singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
-            # print(relaventURLs)
-            # print('\n')
+                "content": "Extract the URLs that are most relevant to the target information from the list of URLs provided in the next message. \
+If there are no URLs that are relevant to the all of the target information, refrain from returning a message. Instead of returning a message, only return 'NONE'. \
+Otherwise, return less than 20 URLs unless there are additional URLs that are still extremely relevant to the target information. \
+The order of relevance is important. The first URL should be the most relevant. \
+Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
+Make sure to return the result in the formate of comma_separated_list_of_urls."}]
+            urlMessage = "Target Information: " + promptforURL + "\nURLs:" + section
+            relaventURLs_list.append(singleGPT(messages,urlMessage, temperature=0.0, top_p=1))
+        relaventURLs = ','.join(relaventURLs_list)
         return relaventURLs # return a text string of the links with potentially some text from GPT3.5
     except Exception as e:
         print(f"An error occurred in LinksBreakUp: {e}")
@@ -249,12 +248,14 @@ def getWebpageData(response, searchDomain, url):
     for a_tag in soup.find_all('a'):
         link = a_tag.get('href')
         if link:
+            link, _ = urldefrag(link) # Remove the fragment from the URL
             absolute_url = urljoin(url, link)
-            if searchDomain == 'none':
-                links.append(absolute_url)
-            elif searchDomain != 'none' and Url(absolute_url).is_from_domain(searchDomain):
-                links.append(absolute_url)
-    
+            if absolute_url not in links: # Check if the URL is not already in the list since defrag can produce duplicates
+                if searchDomain == 'none':
+                    links.append(absolute_url)
+                elif searchDomain != 'none' and Url(absolute_url).is_from_domain(searchDomain):
+                    links.append(absolute_url)
+        
     title_tag = soup.find('title')
     page_Title = title_tag.text if title_tag else None
     return clean_text, links, page_Title
