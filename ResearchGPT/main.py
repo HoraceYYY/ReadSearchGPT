@@ -61,8 +61,9 @@ async def run_task(task_id: str, search: Search):
     userDomain = search.searchDomain
     max_depth = search.get_depth_value()  # Get the integer value of max_depth
 
-    non_empty_objectives = [f"{topic} {obj}" for i, obj in enumerate(objectives_input) if obj]
-    objectives = "\n".join(non_empty_objectives) # this is a str for open ai prompts
+    non_empty_objectives = [f"{topic} {obj}" for obj in objectives_input if obj]
+
+    searchObjectives = "\n".join(non_empty_objectives) # this is a str for open ai prompts
     resultLinks = []
     searchDomain = None
     for objective in non_empty_objectives:
@@ -70,10 +71,11 @@ async def run_task(task_id: str, search: Search):
             searchDomain = async_utils.get_domain(userDomain)
             objective = objective + " site:" + searchDomain
         
-        resultLinks += async_google.google_official_search(objective, max_depth)
+        resultLinks += async_google.google_official_search(searchObjectives, max_depth)
+    
+    promptObjectives = "\n".join(f"{i+1}. {line}" for i, line in enumerate(non_empty_objectives))
 
-
-    await asyncio.create_task(async_google.main(tasks[task_id], task_id, resultLinks, topic, objectives, searchDomain, max_depth))
+    await asyncio.create_task(async_google.main(tasks[task_id], task_id, resultLinks, topic, promptObjectives, searchDomain, max_depth))
     
     end_time = time.time()
     execution_time = end_time - start_time

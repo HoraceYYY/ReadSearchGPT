@@ -82,9 +82,11 @@ async def relaventURL(SearchTopic, links):
     try:
         messages = [
             {"role": "system", 
-            "content": "you are a link checking ai. you are designed to check if the list of the links from the webpage of the current link is relevant to the question I ask.\
-            I will gave you 2 pieces of information: Question, Links. Based on the question I give you, you will return me the links that is extremely relevant to the question as a python array only, otherwise,  return 'NONE'"}
-        ]
+             "content": "Extract less than 10 URLs that are most relevant to the target information from the list of URLs provided in the next message. \
+The order or relevance is important. The first URL should be the most relevant. \
+Return less than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. Refrain from returning more than 20 URLs. \
+Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
+If there are no URLs that are relevant to the target information, return 'NONE'."}]
         ## pass the list of message to GPT
         linksString = ' '.join(links)
         token = num_tokens_from_string(linksString)

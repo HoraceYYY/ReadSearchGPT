@@ -24,7 +24,8 @@ for i, line in enumerate(lines):
 url = "https://www.oracle.com/erp/oracle-vs-sap/differentiators/"
 searchDomain = "none"
 
-print(promptObjectives)
+#print(promptObjectives)
+
 headers = {
     'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
 }
@@ -44,3 +45,4 @@ elif response.status_code == 200:  # if the response is 200, then extract the pa
     content, links, page_Title = utils.getWebpageData(response, searchDomain,url) # get the page title,content, and links
     pageSummary = utils.PageResult(promptObjectives, content) # get the page summary based on the search query
     print(pageSummary)
+    #relaventURLs = utils.relaventURL(promptObjectives, links)

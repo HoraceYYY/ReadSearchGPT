@@ -89,27 +89,34 @@ def is_url_in_list(target_url, url_list):
             return True
     return False
 
-def relaventURL(SearchTopic, links):
+def relaventURL(SearchObjectives, links):
     try:
         messages = [
             {"role": "system", 
-            "content": "you are a link checking ai. you are designed to check if the list of the links from the webpage of the current link is relevant to the question I ask.\
-            I will gave you 2 pieces of information: Question, Links. Based on the question I give you, you will return me the links that is extremely relevant to the question as a python array only, otherwise,  return 'NONE'"}
-        ]
+            "content": "Extract the URLs that are most relevant to the target information from the list of URLs provided in the next message. \
+If there are no URLs that are relevant to the target information, refrain from telling me anything and refrain from following the desired format below, only return 'NONE'. \
+Otherwise, return less than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. \
+The order of relevance is important. The first URL should be the most relevant. \
+Refrain from returning more than 20 URLs. Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \n\n\
+Desired format:\n\
+### ['Most relevent URL', 'second most relevent URL', ...] ###"
+}]
         ## pass the list of message to GPT
         linksString = ' '.join(links)
         token = num_tokens_from_string(linksString)
         pattern = re.compile(r'\[.*?\]')
         if token <= 3500:
-            urlMessage = "Question: " + SearchTopic + "\nLinks:" + ' '.join(links)
+            urlMessage = "Target Information: " + SearchObjectives + "\nURLs:" + ' '.join(links)
             relaventURLs = singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
+            print(f'raw: {relaventURLs}')
             relaventURLs = re.search(pattern, relaventURLs)
             if relaventURLs:
                 relaventURLs = ast.literal_eval(relaventURLs.group())
+                print(f'list: {relaventURLs}')
             else:
                 return None
         else:
-            relaventURLs = LinksBreakUp(token, SearchTopic, linksString) # split the links into subarrays of 3000 tokens
+            relaventURLs = LinksBreakUp(token, SearchObjectives, linksString) # split the links into subarrays of 3000 tokens
             list_strings = re.findall(pattern, relaventURLs) # Extract all the strings that are enclosed in square brackets into a list
             if list_strings: 
                 extracted_lists = [ast.literal_eval(list_string) for list_string in list_strings] # Convert the strings into lists
@@ -180,10 +187,8 @@ def pageBreakUp(SearchObjectives, content):
             "content": "Extract the target information from the text provided in the next message. \
 You will be given one or two or three target information to look for from the text. \
 You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
-If the text does not contain any of the target information, refrain from summarizing the text and refrain from following the desired format below. Instead of summarizing the task or following the desired format, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
-Otherwise, provide the result in the desired format below with as much detail as possible.\n\n\
-Desired format:\n\
-### One Summarization per Target Information:###\n"}]
+If the text does not contain any of the target information, refrain from summarizing the text. Instead of summarizing the task, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
+Otherwise, provide one summarization per target information with as much detail as possible."}]
 
         start_index = i * cutoffIndex
         end_index = (i + 1) * cutoffIndex
@@ -200,12 +205,9 @@ def PageResult(SearchObjectives, content):
         "content": "Extract the target information from the text provided in the next message. \
 You will be given one or two or three target information to look for from the text. \
 You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
-If the text does not contain any of the target information, refrain from summarizing the text and refrain from following the desired format below. Instead of summarizing the task or following the desired format, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
-Otherwise, provide the result in the desired format below with as much detail as possible.\n\n\
-Desired format:\n\
-### One Summarization per Target Information:###\n"}]
+If the text does not contain any of the target information, refrain from summarizing the text. Instead of summarizing the task, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
+Otherwise, provide one summarization per target information with as much detail as possible."}]
 
-    print(messages[0]["content"])
     pageSummary = ''
     if num_tokens_from_string(content) <= 3500: #if the content is less than 3500 tokens, pass the whole content to GPT
         pageMessage = "Important Informtion:\n" + SearchObjectives + "\ntext:\n" + content
