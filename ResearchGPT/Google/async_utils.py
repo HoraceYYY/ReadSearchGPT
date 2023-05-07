@@ -218,9 +218,9 @@ async def getWebpageLinks(soup, searchDomain, url):
         link = a_tag.get('href')
         if link:
             absolute_url = urljoin(url, link)
-            if searchDomain == 'none':
+            if searchDomain == None:
                 links.append(absolute_url)
-            elif searchDomain != 'none' and Url(absolute_url).is_from_domain(searchDomain):
+            elif searchDomain != None and Url(absolute_url).is_from_domain(searchDomain):
                 links.append(absolute_url)
     return links
 

@@ -157,8 +157,8 @@ async def main(task, task_id, search_results_links, SearchTopic, SearchObjective
     num_producers = 1
     num_consumers = 1
 
-    producer_tasks = [asyncio.create_task(url_producer(task,task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchTopic, max_depth, producer_done)) for _ in range(num_producers)]
-    consumer_tasks = [asyncio.create_task(url_consumer(task, consumer_queue, consumer_checked_list, SearchObjectives, SearchTopic, results, producer_done)) for _ in range(num_consumers)]
+    producer_tasks = [asyncio.create_task(url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchTopic, max_depth, producer_done)) for _ in range(num_producers)]
+    consumer_tasks = [asyncio.create_task(url_consumer(task, task_id, consumer_queue, consumer_checked_list, SearchObjectives, SearchTopic, results, producer_done)) for _ in range(num_consumers)]
 
     await asyncio.gather(*(producer_tasks + consumer_tasks))
     

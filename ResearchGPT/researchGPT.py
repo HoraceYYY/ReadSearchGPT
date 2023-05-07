@@ -17,6 +17,7 @@ if __name__ == "__main__":
     max_depth = utils.searchType()
 
     resultLinks = []
+    searchDomain = None
     for objective in non_empty_objectives:
         if userDomain != "none": # if the user wants to search within a domain
             searchDomain = async_utils.get_domain(userDomain)
