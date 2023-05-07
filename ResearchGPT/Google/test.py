@@ -17,7 +17,9 @@ objectives_input = [input(colored(f"Objective {i + 1}: ", "blue", attrs=["bold"]
 non_empty_objectives = [f"{topic}: {obj}" for i, obj in enumerate(objectives_input) if obj]
 objectives = "\n".join(non_empty_objectives) # this is a str for open ai prompts
 promptforURL = f'{topic}: ' + ", ".join([f"{obj}" for obj in objectives_input if obj])
+promptObjectives = "\n".join(f"{i+1}. {topic}: {obj}" for i, obj in enumerate(objectives_input) if obj)
 print(promptforURL)
+print(promptObjectives)
 lines = objectives.split('\n')
 promptObjectives = ''
 # loop over the lines and print each one with a numbered index

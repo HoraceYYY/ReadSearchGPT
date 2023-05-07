@@ -78,43 +78,40 @@ async def download_pdf(url):
                     await output_file.write(chunk)
             print(colored(f'PDF downloaded and saved to {output_path}', 'green', attrs=['bold']))
 
-async def relaventURL(SearchTopic, links):
+async def relaventURL(url_prompt, links):
     try:
         messages = [
             {"role": "system", 
-             "content": "Extract less than 10 URLs that are most relevant to the target information from the list of URLs provided in the next message. \
-The order or relevance is important. The first URL should be the most relevant. \
-Return less than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. Refrain from returning more than 20 URLs. \
-Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
-If there are no URLs that are relevant to the target information, return 'NONE'."}]
+            "content": "Extract the URLs that are most relevant to the target information from the list of URLs provided in the next message. \
+If there are no URLs that are relevant to the all of the target information, refrain from returning a message. Instead of returning a message, only return 'NONE'. \
+Otherwise, return less than 20 URLs unless there are additional URLs that are still extremely relevant to the target information. \
+The order of relevance is important. The first URL should be the most relevant. \
+Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
+Make sure to return the result in the formate of comma_separated_list_of_urls."}]
         ## pass the list of message to GPT
+
         linksString = ' '.join(links)
         token = num_tokens_from_string(linksString)
-        pattern = re.compile(r'\[.*?\]')
         if token <= 3500:
-            urlMessage = "Question: " + SearchTopic + "\nLinks:" + ' '.join(links)
+            urlMessage = "Target Information:\n" + url_prompt + "\nURLs:\n" + linksString
             relaventURLs = await singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
-            relaventURLs = re.search(pattern, relaventURLs)
-            if relaventURLs:
-                relaventURLs = ast.literal_eval(relaventURLs.group())
-            else:
-                return None
         else:
-            relaventURLs = await LinksBreakUp(token, SearchTopic, linksString) # split the links into subarrays of 3000 tokens
-            list_strings = re.findall(pattern, relaventURLs) # Extract all the strings that are enclosed in square brackets into a list
-            if list_strings: 
-                extracted_lists = [ast.literal_eval(list_string) for list_string in list_strings] # Convert the strings into lists
-                relaventURLs = [item for sublist in extracted_lists for item in sublist] # Flatten the 2D list into a 1D list
-            else:
-                return None
-        return relaventURLs   
+            relaventURLs = await LinksBreakUp(token, url_prompt, linksString) # split the links into subarrays of 3000 tokens
+        
+        relaventURLs = [url.strip() for url in relaventURLs.split(',')] # remove the white space from the string and convert the string into a list
+        filtered_url_list = [url for url in relaventURLs if url != 'NONE']
+
+        if not filtered_url_list:
+            return None
+        else:
+            return filtered_url_list   
     except Exception as e:
         print(f"An error occurred in LinksBreakUp: {e}")
         return None
     
-async def LinksBreakUp(token, SearchTopic, linksString): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
+async def LinksBreakUp(token, url_prompt, linksString): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
     try:
-        relaventURLs = ' '
+        relaventURLs_list = []
         sectionNumber = math.ceil(token/3000)
         cutoffIndex = math.ceil(len(linksString)/sectionNumber)
         #print(links)
@@ -125,13 +122,15 @@ async def LinksBreakUp(token, SearchTopic, linksString): # convert the list of l
             #print('sectionToken',num_tokens_from_string(section))
             messages = [
                 {"role": "system", 
-                "content": "you are a link checking ai. you are designed to check if the list of the links from the webpage of the current link is relevant to the question I ask.\
-            I will gave you 2 pieces of information: Question, Links. Based on the question I give you, you will return me the links that is extremely relevant to the question as a python array only, otherwise,  return 'NONE'"}
-        ]
-            urlMessage = "Question: " + SearchTopic + "\nLinks:" + section
-            relaventURLs += await singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
-            # print(relaventURLs)
-            # print('\n')
+                "content": "Extract the URLs that are most relevant to the target information from the list of URLs provided in the next message. \
+If there are no URLs that are relevant to the all of the target information, refrain from returning a message. Instead of returning a message, only return 'NONE'. \
+Otherwise, return less than 20 URLs unless there are additional URLs that are still extremely relevant to the target information. \
+The order of relevance is important. The first URL should be the most relevant. \
+Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
+Make sure to return the result in the formate of comma_separated_list_of_urls."}]
+            urlMessage = "Target Information:\n" + url_prompt + "\nURLs:\n" + section
+            relaventURLs_list.append(await singleGPT(messages,urlMessage, temperature=0.0, top_p=1))
+        relaventURLs = ','.join(relaventURLs_list)
         return relaventURLs # return a text string of the links with potentially some text from GPT3.5
     except Exception as e:
         print(f"An error occurred in LinksBreakUp: {e}")
@@ -149,7 +148,7 @@ def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=3500):
     return encoding.encode(text)[:max_tokens]
 
 #break up the content of long webpages into smaller chunks and pass each into GPT3.5 to avoid the token limit and return the summary of the whole webpage
-async def pageBreakUp(SearchObjectives, content): 
+async def pageBreakUp(content_prompt, content): 
     pageSummary = ''
     sectionNum = math.ceil(num_tokens_from_string(content) // 3000) + 1 
     cutoffIndex = math.ceil(len(content) // sectionNum)
@@ -166,13 +165,13 @@ Desired format:\n\
         start_index = i * cutoffIndex
         end_index = (i + 1) * cutoffIndex
         section = content[start_index:end_index]
-        pageMessage = "Important Informtion:\n" + SearchObjectives + "\ntext:\n" + section
+        pageMessage = "Important Informtion:\n" + content_prompt + "\ntext:\n" + section
         pageSummary += await singleGPT(section_messages,pageMessage)
     if num_tokens_from_string(pageSummary) > 3500: #if the summary is still too long, truncate it to 3500 tokens
         pageSummary = truncate_text_tokens(pageSummary)
     return pageSummary
 
-async def PageResult(SearchObjectives, content):
+async def PageResult(content_prompt, content):
     messages = [
         {"role": "system", 
          "content": "Extract the target information from the text provided in the next message. \
@@ -184,12 +183,12 @@ Desired format:\n\
 ### One Summarization per Target Information:###\n"}]
     pageSummary = ''
     if num_tokens_from_string(content) <= 3500: #if the content is less than 3500 tokens, pass the whole content to GPT
-        pageMessage = "Important Informtion:\n" + SearchObjectives + "\ntext:\n" + content
+        pageMessage = "Important Informtion:\n" + content_prompt + "\ntext:\n" + content
         pageSummary = await singleGPT(messages,pageMessage)
     else: #split the webpage content into multiple section to avoid the token limit
-        pageSummary = await pageBreakUp(SearchObjectives, content) #split the webpage content into multiple section and return the summary of the whole webpage
+        pageSummary = await pageBreakUp(content_prompt, content) #split the webpage content into multiple section and return the summary of the whole webpage
         #print("pageSummary: ",pageSummary)
-        pageSummary = "Important Informtion:\n" + SearchObjectives + "\ntext:\n" + pageSummary 
+        pageSummary = "Important Informtion:\n" + content_prompt + "\ntext:\n" + pageSummary 
         pageSummary = await singleGPT(messages,pageSummary)
 
     return pageSummary
@@ -298,4 +297,11 @@ class Url(object):
     
     def is_from_domain(self, domain):
         return self.parts.netloc == domain
-    
+
+def getContentPrompt(topic, objectives_input):
+    content_prompt = "\n".join(f"{i+1}. {topic} {obj}" for i, obj in enumerate(objectives_input) if obj)
+    return content_prompt
+
+def getURLPrompt(topic, objectives_input):
+    url_prompt = f'{topic}: ' + ", ".join([f"{obj}" for obj in objectives_input if obj])
+    return url_prompt

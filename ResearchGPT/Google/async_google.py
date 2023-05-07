@@ -72,7 +72,7 @@ def google_official_search(query: str, searchtype: int) -> str | list[str]:
     return search_results_links
     #return safe_google_results(search_results_links)
 
-async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, SearchObjectives, SearchTopic, results, producer_done):
+async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, content_prompt, topic, results, producer_done):
     file_name = None
     while not producer_done[0] or not consumer_queue.empty():
         if task['status'] == 'cancelled':
@@ -88,14 +88,14 @@ async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, Sea
                 elif status_code == 200:
                     print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
                     content, page_Title = await async_utils.getWebpageData(soup) # get the page title,content, and links
-                    pageSummary = await async_utils.PageResult(SearchObjectives, content) # get the page summary based on the search query
+                    pageSummary = await async_utils.PageResult(content_prompt, content) # get the page summary based on the search query
                     
                     if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
                         results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
-                        await async_utils.updateExcel(task_id, SearchTopic, "Related", results['Related'])                
+                        await async_utils.updateExcel(task_id, topic, "Related", results['Related'])                
                     else:
                         results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
-                        await async_utils.updateExcel(task_id, SearchTopic, "Unrelated", results['Unrelated'])
+                        await async_utils.updateExcel(task_id, topic, "Unrelated", results['Unrelated'])
 
                     print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
             else:
@@ -105,7 +105,7 @@ async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, Sea
             print(colored('\u2714\uFE0F  Consumer: Skip to the next website.\n', 'green', attrs=['bold']))
 
 
-async def url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchObjectives, max_depth, producer_done):
+async def url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done):
     while not producer_queue.empty():
         if task['status'] == 'cancelled':
             break
@@ -119,7 +119,7 @@ async def url_producer(task, producer_queue, consumer_queue, producer_checked_li
                 soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
                 if status_code == 200: 
                     links = await async_utils.getWebpageLinks(soup, searchDomain, url)
-                    relaventURLs = await async_utils.relaventURL(SearchObjectives, links) # Get the highly relevant links from the page and make them into asbolute URLs
+                    relaventURLs = await async_utils.relaventURL(url_prompt, links) # Get the highly relevant links from the page and make them into asbolute URLs
                     if relaventURLs:  
                         print("\u2714\uFE0F", colored(' Producer: Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')  
                         for new_url in relaventURLs:
@@ -135,10 +135,21 @@ async def url_producer(task, producer_queue, consumer_queue, producer_checked_li
     producer_done[0] = True  # Signal the consumer that the producer is done
 
 
-async def main(task, task_id, search_results_links, SearchTopic, SearchObjectives, searchDomain, max_depth):
+async def main(task, task_id, topic, objectives_inputs, userDomain, max_depth):
 
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
+
+    content_prompt = async_utils.getContentPrompt(topic, objectives_inputs)
+    url_prompt = async_utils.getURLPrompt(topic, objectives_inputs)
+    
+    search_results_links = []
+    non_empty_objectives = [f"{topic} {obj}" for obj in objectives_inputs if obj]
+    for objective in non_empty_objectives:
+        if userDomain != None: # if the user wants to search within a domain. None if the user keep the UI field empty
+            searchDomain = async_utils.get_domain(userDomain)
+            objective = objective + " site:" + searchDomain
+        search_results_links += google_official_search(objective, max_depth)
 
     for url in search_results_links:
         await producer_queue.put((url, 0))
@@ -157,8 +168,8 @@ async def main(task, task_id, search_results_links, SearchTopic, SearchObjective
     num_producers = 1
     num_consumers = 1
 
-    producer_tasks = [asyncio.create_task(url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchObjectives, max_depth, producer_done)) for _ in range(num_producers)]
-    consumer_tasks = [asyncio.create_task(url_consumer(task, task_id, consumer_queue, consumer_checked_list, SearchObjectives, SearchTopic, results, producer_done)) for _ in range(num_consumers)]
+    producer_tasks = [asyncio.create_task(url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done)) for _ in range(num_producers)]
+    consumer_tasks = [asyncio.create_task(url_consumer(task, task_id, consumer_queue, consumer_checked_list, content_prompt, topic, results, producer_done)) for _ in range(num_consumers)]
 
     await asyncio.gather(*(producer_tasks + consumer_tasks))
     
