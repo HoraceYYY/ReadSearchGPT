@@ -12,7 +12,6 @@ class DepthLevel(str, Enum):
     deep = "deep"
 
 class Search(BaseModel):
-    program = 1
     topic: str
     objectives_input: list[str]
     searchDomain: str | None = None
@@ -41,7 +40,6 @@ async def startSearching(background_tasks: BackgroundTasks, search: Search):
 
 async def run_task(task_id: str, search: Search):
     start_time = time.time()
-    program = search.program
     topic = search.topic
     objectives_input = search.objectives_input
     userDomain = search.searchDomain
@@ -57,11 +55,9 @@ async def run_task(task_id: str, search: Search):
         
         resultLinks += async_google.google_official_search(objective, max_depth)
 
-    if program == "1":
-        file_path = asyncio.run(async_google.main(tasks[task_id], task_id, resultLinks, topic, objectives, searchDomain, max_depth))
-    elif program == "0":
-        google.searchContent(resultLinks, topic, objectives, searchDomain, max_depth)
 
+    file_path = asyncio.run(async_google.main(tasks[task_id], task_id, resultLinks, topic, objectives, searchDomain, max_depth))
+    
     end_time = time.time()
     execution_time = end_time - start_time
     
