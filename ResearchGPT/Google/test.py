@@ -43,6 +43,6 @@ if (response.headers.get('content-type','').lower()) == 'application/pdf': # che
     utils.download_pdf(url)
 elif response.status_code == 200:  # if the response is 200, then extract the page content
     content, links, page_Title = utils.getWebpageData(response, searchDomain,url) # get the page title,content, and links
-    pageSummary = utils.PageResult(promptObjectives, content) # get the page summary based on the search query
-    print(pageSummary)
-    #relaventURLs = utils.relaventURL(promptObjectives, links)
+    #pageSummary = utils.PageResult(promptObjectives, content) # get the page summary based on the search query
+    #print(pageSummary)
+    relaventURLs = utils.relaventURL(objectives, links)

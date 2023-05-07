@@ -94,13 +94,11 @@ def relaventURL(SearchObjectives, links):
         messages = [
             {"role": "system", 
             "content": "Extract the URLs that are most relevant to the target information from the list of URLs provided in the next message. \
-If there are no URLs that are relevant to the target information, refrain from telling me anything and refrain from following the desired format below, only return 'NONE'. \
-Otherwise, return less than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. \
+If there are no URLs that are relevant to the target information, refrain from telling me anything. Instead of returning a message, only return 'NONE'. \
+Otherwise, return less than 20 URLs unless there are additional URLs that are still extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
-Refrain from returning more than 20 URLs. Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \n\n\
-Desired format:\n\
-### ['Most relevent URL', 'second most relevent URL', ...] ###"
-}]
+Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
+Return the links in a python array like this: ['URL', 'URL', ...]"}]
         ## pass the list of message to GPT
         linksString = ' '.join(links)
         token = num_tokens_from_string(linksString)
@@ -113,6 +111,7 @@ Desired format:\n\
             if relaventURLs:
                 relaventURLs = ast.literal_eval(relaventURLs.group())
                 print(f'list: {relaventURLs}')
+                print(len(relaventURLs))
             else:
                 return None
         else:

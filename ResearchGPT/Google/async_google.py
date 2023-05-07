@@ -105,7 +105,7 @@ async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, Sea
             print(colored('\u2714\uFE0F  Consumer: Skip to the next website.\n', 'green', attrs=['bold']))
 
 
-async def url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchTopic, max_depth, producer_done):
+async def url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchObjectives, max_depth, producer_done):
     while not producer_queue.empty():
         if task['status'] == 'cancelled':
             break
@@ -119,7 +119,7 @@ async def url_producer(task, producer_queue, consumer_queue, producer_checked_li
                 soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
                 if status_code == 200: 
                     links = await async_utils.getWebpageLinks(soup, searchDomain, url)
-                    relaventURLs = await async_utils.relaventURL(SearchTopic, links) # Get the highly relevant links from the page and make them into asbolute URLs
+                    relaventURLs = await async_utils.relaventURL(SearchObjectives, links) # Get the highly relevant links from the page and make them into asbolute URLs
                     if relaventURLs:  
                         print("\u2714\uFE0F", colored(' Producer: Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')  
                         for new_url in relaventURLs:
@@ -157,7 +157,7 @@ async def main(task, task_id, search_results_links, SearchTopic, SearchObjective
     num_producers = 1
     num_consumers = 1
 
-    producer_tasks = [asyncio.create_task(url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchTopic, max_depth, producer_done)) for _ in range(num_producers)]
+    producer_tasks = [asyncio.create_task(url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchObjectives, max_depth, producer_done)) for _ in range(num_producers)]
     consumer_tasks = [asyncio.create_task(url_consumer(task, task_id, consumer_queue, consumer_checked_list, SearchObjectives, SearchTopic, results, producer_done)) for _ in range(num_consumers)]
 
     await asyncio.gather(*(producer_tasks + consumer_tasks))
