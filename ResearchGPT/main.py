@@ -1,8 +1,8 @@
 from Google import google, async_google
 from Google import utils, async_utils
 from termcolor import colored
-import time, asyncio
-from fastapi import FastAPI
+import time, asyncio, uuid
+from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
 from enum import Enum
 
@@ -28,10 +28,20 @@ class Search(BaseModel):
         return self._depth_mapping.get(self.max_depth, None)
 
 app = FastAPI()
+tasks = {} # this is only a temp solution, it is in memory and not scalable. if system crash, all info in this array will be lost
 
 @app.post("/search/")
-async def startSearching(search: Search):
+async def startSearching(background_tasks: BackgroundTasks, search: Search):
+    task_id = str(uuid.uuid4())
+    tasks[task_id] = {"status": "running", "execution_time": None, "file_path": None}
+
+    background_tasks.add_task(run_task, task_id, search)
+
+    return {"task_id": task_id, "status": "Task has started"}
+
+async def run_task(task_id: str, search: Search):
     start_time = time.time()
+    program = search.program
     topic = search.topic
     objectives_input = search.objectives_input
     userDomain = search.searchDomain
@@ -48,49 +58,29 @@ async def startSearching(search: Search):
         resultLinks += async_google.google_official_search(objective, max_depth)
 
     if program == "1":
-        status, file_path = asyncio.run(async_google.main(resultLinks, topic, objectives, searchDomain, max_depth))
+        file_path = asyncio.run(async_google.main(tasks[task_id], task_id, resultLinks, topic, objectives, searchDomain, max_depth))
     elif program == "0":
         google.searchContent(resultLinks, topic, objectives, searchDomain, max_depth)
 
     end_time = time.time()
     execution_time = end_time - start_time
     
-    return status, execution_time, file_path
+    tasks[task_id]["status"] = "completed"
+    tasks[task_id]["execution_time"] = execution_time
+    tasks[task_id]["file_path"] = file_path
 
 
-
-
-if __name__ == "__main__":
-    program = input('Enter "1" to run asycn or "0" to run linear: ')
-    start_time = time.time()
-    topic = input(colored("What would you like to search:", "blue", attrs=["bold", "underline"]) + " ")
-    print(colored("\nPlease list 3 outcomes your would like to achieve!", "blue",attrs=["bold", "underline"]))
-    objectives_input = [input(colored(f"Objective {i + 1}: ", "blue", attrs=["bold"])) for i in range(3)]
-    non_empty_objectives = [f"{i + 1}. {obj}" for i, obj in enumerate(objectives_input) if obj]
-    objectives = topic + "\n"+ "\n".join(non_empty_objectives)
-    print(colored("\nIf there is a domain you would like to search within, paste any link from the domain. Otherwise enter 'None'.", "blue", attrs=["bold", "underline"]))
-    searchDomain = input(colored("Search Domain: ", "blue", attrs=["bold"])).lower()
-    max_depth = utils.searchType()
-
-    if searchDomain != "none":
-        searchDomain = utils.get_domain(searchDomain)
-        topic = topic + " site:" + searchDomain
-    resultLinks = google.google_official_search(topic)
-    
-    if program == "1":
-        results = asyncio.run(async_google.main(resultLinks, topic, objectives, searchDomain, max_depth))
-    elif program == "0":
-        results = google.searchContent(resultLinks, topic, objectives, searchDomain, max_depth)
+@app.get("/task/{task_id}/status")
+async def task_status(task_id: str):
+    if task_id in tasks:
+        return tasks[task_id]
     else:
-        print("Invalid input.")
-        exit()
-           
-    print("\U0001F4AF\U0001F4AF\U0001F4AF SEARCH COMPLETED! \n\U0001F603\U0001F603\U0001F603 Have a wonderful day!\n\n") 
-    end_time = time.time()
-    execution_time = end_time - start_time
-    hours = int(execution_time // 3600)
-    minutes = int((execution_time % 3600) // 60)
-    seconds = int(execution_time % 60)
-
-    print(f"Execution time: {hours} hours, {minutes} minutes, {seconds} seconds \n\n")
-
+        return {"status": "error", "message": "Task not found"}
+    
+@app.post("/task/{task_id}/stop")
+async def stop_task(task_id: str):
+    if task_id in tasks:
+        tasks[task_id]["status"] = "canceled"
+        return {"status": "Task has been canceled"}
+    else:
+        return {"status": "error", "message": "Task not found"}

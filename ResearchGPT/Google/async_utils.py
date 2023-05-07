@@ -224,8 +224,8 @@ async def getWebpageLinks(soup, searchDomain, url):
                 links.append(absolute_url)
     return links
 
-async def updateExcel(excel_name, excelsheet, data):
-    folder_path = 'Results'
+async def updateExcel(task_id, excel_name, excelsheet, data):
+    folder_path = f'Results/{task_id}'
     os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
 
     file_name = f"{folder_path}/{excel_name}.xlsx"  # Create the Excel file name

@@ -72,9 +72,11 @@ def google_official_search(query: str, searchtype: int) -> str | list[str]:
     return search_results_links
     #return safe_google_results(search_results_links)
 
-async def url_consumer(consumer_queue, consumer_checked_list, SearchObjectives, SearchTopic, results, producer_done):
+async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, SearchObjectives, SearchTopic, results, producer_done):
     file_name = None
     while not producer_done[0] or not consumer_queue.empty():
+        if task['status'] == 'cancelled':
+            break
         url, depth = await consumer_queue.get()
         wrapped_url = async_utils.Url(url)
         if wrapped_url not in consumer_checked_list:
@@ -90,10 +92,10 @@ async def url_consumer(consumer_queue, consumer_checked_list, SearchObjectives, 
                     
                     if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
                         results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
-                        file_name = await async_utils.updateExcel(SearchTopic, "Related", results['Related'])                
+                        file_name = await async_utils.updateExcel(task_id, SearchTopic, "Related", results['Related'])                
                     else:
                         results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
-                        file_name = await async_utils.updateExcel(SearchTopic, "Unrelated", results['Unrelated'])
+                        file_name = await async_utils.updateExcel(task_id, SearchTopic, "Unrelated", results['Unrelated'])
 
                     print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
             else:
@@ -103,8 +105,10 @@ async def url_consumer(consumer_queue, consumer_checked_list, SearchObjectives, 
             print(colored('\u2714\uFE0F  Consumer: Skip to the next website.\n', 'green', attrs=['bold']))
     return file_name
 
-async def url_producer(producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchTopic, max_depth, producer_done):
+async def url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchTopic, max_depth, producer_done):
     while not producer_queue.empty():
+        if task['status'] == 'cancelled':
+            break
         url, depth = await producer_queue.get()
 
         if depth < max_depth:
@@ -131,9 +135,7 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
     producer_done[0] = True  # Signal the consumer that the producer is done
 
 
-async def main(search_results_links, SearchTopic, SearchObjectives, searchDomain, max_depth):
-
-    status = "Searching has initiated!"
+async def main(task, task_id, search_results_links, SearchTopic, SearchObjectives, searchDomain, max_depth):
 
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
@@ -155,17 +157,15 @@ async def main(search_results_links, SearchTopic, SearchObjectives, searchDomain
     num_producers = 1
     num_consumers = 1
 
-    producer_tasks = [asyncio.create_task(url_producer(producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchTopic, max_depth, producer_done)) for _ in range(num_producers)]
-    consumer_tasks = [asyncio.create_task(url_consumer(consumer_queue, consumer_checked_list, SearchObjectives, SearchTopic, results, producer_done)) for _ in range(num_consumers)]
-
-    status = "Search is in progress!"
+    producer_tasks = [asyncio.create_task(url_producer(task,task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, SearchTopic, max_depth, producer_done)) for _ in range(num_producers)]
+    consumer_tasks = [asyncio.create_task(url_consumer(task, consumer_queue, consumer_checked_list, SearchObjectives, SearchTopic, results, producer_done)) for _ in range(num_consumers)]
 
     await asyncio.gather(*(producer_tasks + consumer_tasks))
     
     file_path = consumer_tasks[-1].result()[-1] 
-    status = "Search is complete!"
+ 
     
-    return status, file_path
+    return file_path
 
 """"
 sudo code:
