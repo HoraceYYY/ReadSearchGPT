@@ -257,7 +257,7 @@ async def updateExcel(excel_name, excelsheet, data):
             await asyncio.to_thread(workbook.save, file_name)
     else:  # If the file doesn't exist, write the new data as a new sheet
         await asyncio.to_thread(data.to_excel, file_name, sheet_name=excelsheet, index=False)
-    return
+    return file_name
 
 def get_domain(url):
     parts = urlparse(url)
