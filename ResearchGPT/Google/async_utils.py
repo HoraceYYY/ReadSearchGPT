@@ -83,10 +83,10 @@ async def relaventURL(url_prompt, links):
         messages = [
             {"role": "system", 
             "content": "Extract the URLs that are most relevant to the target information from the list of URLs provided in the next message. \
-If there are no URLs that are relevant to the all of the target information, refrain from returning a message. Instead of returning a message, only return 'NONE'. \
+If there are no URLs that are relevant to any of the target information, refrain from returning a message. Instead of returning a message, only return 'NONE'. \
 Otherwise, return less than 20 URLs unless there are additional URLs that are still extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
-Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
+Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
 Make sure to return the result in the format of comma_separated_list_of_urls. Example result format: 'https://www.example.com, https://www.example.com, https://www.example.com'"}]
         ## pass the list of message to GPT
 
@@ -94,6 +94,7 @@ Make sure to return the result in the format of comma_separated_list_of_urls. Ex
         token = num_tokens_from_string(linksString)
         if token <= 3500:
             urlMessage = "Target Information:\n" + url_prompt + "\nURLs:\n" + linksString
+            print(urlMessage)
             relaventURLs = await singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
         else:
             relaventURLs = await LinksBreakUp(token, url_prompt, linksString) # split the links into subarrays of 3000 tokens
@@ -123,10 +124,10 @@ async def LinksBreakUp(token, url_prompt, linksString): # convert the list of li
             messages = [
                 {"role": "system", 
                  "content": "Extract the URLs that are most relevant to the target information from the list of URLs provided in the next message. \
-If there are no URLs that are relevant to the all of the target information, refrain from returning a message. Instead of returning a message, only return 'NONE'. \
+If there are no URLs that are relevant to any of the target information, refrain from returning a message. Instead of returning a message, only return 'NONE'. \
 Otherwise, return less than 20 URLs unless there are additional URLs that are still extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
-Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
+Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
 Make sure to return the result in the format of comma_separated_list_of_urls. Example result format: 'https://www.example.com, https://www.example.com, https://www.example.com'"}]
             urlMessage = "Target Information:\n" + url_prompt + "\nURLs:\n" + section
             relaventURLs_list.append(await singleGPT(messages,urlMessage, temperature=0.0, top_p=1))
@@ -206,7 +207,7 @@ def searchType():
     elif searchType == "thorough":
         return 2
 
-async def getWebpageData(soup):
+def getWebpageData(soup):
     for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract
         script.decompose()
     text_content = soup.get_text(separator=' ') # Extract all the text content using the get_text() method
@@ -216,7 +217,7 @@ async def getWebpageData(soup):
     page_Title = title_tag.text if title_tag else None
     return clean_text, page_Title
 
-async def getWebpageLinks(soup, searchDomain, url):
+def getWebpageLinks(soup, searchDomain, url):
     links = []
     for a_tag in soup.find_all('a'):
         link = a_tag.get('href')
@@ -224,9 +225,9 @@ async def getWebpageLinks(soup, searchDomain, url):
             link, _ = urldefrag(link) # Remove the fragment from the URL
             absolute_url = urljoin(url, link)
             if absolute_url not in links: # Check if the URL is not already in the list since defrag can produce duplicates
-                if searchDomain == 'none':
+                if searchDomain == None:
                     links.append(absolute_url)
-                elif searchDomain != 'none' and Url(absolute_url).is_from_domain(searchDomain):
+                elif searchDomain != None and Url(absolute_url).is_from_domain(searchDomain):
                     links.append(absolute_url)
     return links
 
@@ -294,10 +295,10 @@ class Url(object):
     def is_from_domain(self, domain):
         return self.parts.netloc == domain
 
-def getContentPrompt(topic, objectives_input):
-    content_prompt = "\n".join(f"{i+1}. {topic} {obj}" for i, obj in enumerate(objectives_input) if obj)
+def getContentPrompt(topic, objectives_inputs):
+    content_prompt = "\n".join(f"{i+1}. {topic} {obj}" for i, obj in enumerate(objectives_inputs) if obj)
     return content_prompt
 
-def getURLPrompt(topic, objectives_input):
-    url_prompt = f'{topic}: ' + ", ".join([f"{obj}" for obj in objectives_input if obj])
+def getURLPrompt(topic, objectives_inputs):
+    url_prompt = f'{topic}: ' + ", ".join([f"{obj}" for obj in objectives_inputs if obj])
     return url_prompt

@@ -7,25 +7,24 @@ from dotenv import load_dotenv
 from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin
 from termcolor import colored
 
-# topic = input(colored("What would you like to search:", "blue", attrs=["bold", "underline"]) + " ")
-# objectives_input = [input(colored(f"Objective {i + 1}: ", "blue", attrs=["bold"])) for i in range(3)]
-# non_empty_objectives = [f"{i + 1}. {obj}" for i, obj in enumerate(objectives_input) if obj]
-# objectives = topic + "\n"+ "\n".join(non_empty_objectives)
+
+def getContentPrompt(topic, objectives_inputs):
+    content_prompt = "\n".join(f"{i+1}. {topic} {obj}" for i, obj in enumerate(objectives_inputs) if obj)
+    return content_prompt
+
+def getURLPrompt(topic, objectives_inputs):
+    url_prompt = f'{topic}: ' + ", ".join([f"{obj}" for obj in objectives_inputs if obj])
+    return url_prompt
+
 topic = input(colored("What would you like to search:", "blue", attrs=["bold", "underline"]) + " ")
 print(colored("\nPlease list 3 outcomes your would like to achieve!", "blue",attrs=["bold", "underline"]))
-objectives_input = [input(colored(f"Objective {i + 1}: ", "blue", attrs=["bold"])) for i in range(3)]
-non_empty_objectives = [f"{topic}: {obj}" for i, obj in enumerate(objectives_input) if obj]
-objectives = "\n".join(non_empty_objectives) # this is a str for open ai prompts
-promptforURL = f'{topic}: ' + ", ".join([f"{obj}" for obj in objectives_input if obj])
-promptObjectives = "\n".join(f"{i+1}. {topic}: {obj}" for i, obj in enumerate(objectives_input) if obj)
-print(promptforURL)
-print(promptObjectives)
-lines = objectives.split('\n')
-promptObjectives = ''
-# loop over the lines and print each one with a numbered index
-for i, line in enumerate(lines):
-    promptObjectives += (f"{i+1}. {line}\n")
-url = "https://appian.com"
+objectives_inputs = [input(colored(f"Objective {i + 1}: ", "blue", attrs=["bold"])) for i in range(3)]
+
+print(getContentPrompt(topic, objectives_inputs))
+print(getURLPrompt(topic, objectives_inputs))
+promptforURL = getURLPrompt(topic, objectives_inputs)
+
+url = "https://www.swfinstitute.org/profiles/venture-capital-firm/north-america"
 searchDomain = "none"
 
 #print(promptObjectives)

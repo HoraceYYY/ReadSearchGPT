@@ -76,7 +76,7 @@ async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, con
     file_name = None
     while not producer_done[0] or not consumer_queue.empty():
         if task['status'] == 'cancelled':
-            break
+            exit()
         url, depth = await consumer_queue.get()
         wrapped_url = async_utils.Url(url)
         if wrapped_url not in consumer_checked_list:
@@ -87,7 +87,7 @@ async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, con
                     await async_utils.download_pdf(url)
                 elif status_code == 200:
                     print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
-                    content, page_Title = await async_utils.getWebpageData(soup) # get the page title,content, and links
+                    content, page_Title = async_utils.getWebpageData(soup) # get the page title,content, and links
                     pageSummary = await async_utils.PageResult(content_prompt, content) # get the page summary based on the search query
                     
                     if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
@@ -108,7 +108,7 @@ async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, con
 async def url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done):
     while not producer_queue.empty():
         if task['status'] == 'cancelled':
-            break
+            exit()
         url, depth = await producer_queue.get()
 
         if depth < max_depth:
@@ -118,7 +118,7 @@ async def url_producer(task, producer_queue, consumer_queue, producer_checked_li
                 print(colored(f'\U0001F9D0 Producer: Seaching for additonal relavent websites on {url}', 'yellow', attrs=['bold']))
                 soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
                 if status_code == 200: 
-                    links = await async_utils.getWebpageLinks(soup, searchDomain, url)
+                    links = async_utils.getWebpageLinks(soup, searchDomain, url)
                     relaventURLs = await async_utils.relaventURL(url_prompt, links) # Get the highly relevant links from the page and make them into asbolute URLs
                     if relaventURLs:  
                         print("\u2714\uFE0F", colored(' Producer: Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')  
@@ -142,7 +142,7 @@ async def main(task, task_id, topic, objectives_inputs, userDomain, max_depth):
 
     content_prompt = async_utils.getContentPrompt(topic, objectives_inputs)
     url_prompt = async_utils.getURLPrompt(topic, objectives_inputs)
-    
+
     search_results_links = []
     searchDomain = None
     non_empty_objectives = [f"{topic} {obj}" for obj in objectives_inputs if obj]

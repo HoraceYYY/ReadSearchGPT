@@ -101,6 +101,7 @@ Refrain from returning more than 30 URLs. Refrain from returning any URL that is
 Make sure to return the result in the formate of comma_separated_list_of_urls."}]
         ## pass the list of message to GPT
         print(f'links: {len(links)}')
+        print(links)
         linksString = ' '.join(links)
         token = num_tokens_from_string(linksString)
         if token <= 3500:
@@ -109,13 +110,13 @@ Make sure to return the result in the formate of comma_separated_list_of_urls."}
         else:
             relaventURLs = LinksBreakUp(token, promptforURL, linksString) # split the links into subarrays of 3000 tokens
 
-        #print(f'raw: {relaventURLs}')
+        print(f'raw: {relaventURLs}')
         relaventURLs = [url.strip() for url in relaventURLs.split(',')] # remove the white space from the string and convert the string into a list
-        #print(f'list: {relaventURLs}')
-        #print(len(relaventURLs))
+        print(f'list: {relaventURLs}')
+        print(len(relaventURLs))
         filtered_url_list = [url for url in relaventURLs if url != 'NONE']
-        #print(f'filtered list: {filtered_url_list}')
-        #print(len(filtered_url_list))
+        print(f'filtered list: {filtered_url_list}')
+        print(len(filtered_url_list))
         if not filtered_url_list:
             return None
         else:
