@@ -305,10 +305,11 @@ def getURLPrompt(query_list):
 async def creatSearchQuery(userAsk):
     messages = [
                 {"role": "system", 
-                 "content": "Generate up to 4 Google search queries using the following text. \
-For each query, utilize specific keywords that accurately represent the topic. \
+                 "content": "Generate less than 4 Google search queries that reflect the search content in the Text provide. \
+For each query, utilize specific keywords that accurately represent the topic of the Text. Refrain from creating related queries that are outside of text's search content. \
 Ensure all queries are mutually exclusive and collectively exhaustive regarding the text's search content. \
-Provide the search queries as a comma-separated list, without additional text. Example result format: 'https://www.example.com, https://www.example.com, https://www.example.com'"}]
+Return the search queries in the format of comma_separated_list_of_queries. Refrain from numbering each item in the list. \
+Example result format: query1, query2, query3, query4 "}]
     
     queryMessage = "Text:\n" + userAsk
     googleQueries = await singleGPT(messages, queryMessage, temperature=0.0, top_p=1)

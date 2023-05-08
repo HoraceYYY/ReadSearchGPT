@@ -73,7 +73,7 @@ def google_official_search(query: str, searchtype: int) -> str | list[str]:
     #return safe_google_results(search_results_links)
 
 async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done):
-    file_name = None
+
     while not producer_done[0] or not consumer_queue.empty():
         if task['status'] == 'cancelled':
             exit()
@@ -139,14 +139,13 @@ async def main(task, task_id, userAsk, userDomain, max_depth):
 
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
-    query_list = async_utils.creatSearchQuery(userAsk)
-
+    
+    query_list = await async_utils.creatSearchQuery(userAsk)
     content_prompt = async_utils.getContentPrompt(query_list)
     url_prompt = async_utils.getURLPrompt(query_list)
 
     search_results_links = []
     searchDomain = None
-    
     for query in query_list:
         if userDomain != None: # if the user wants to search within a domain. None if the user keep the UI field empty
             searchDomain = async_utils.get_domain(userDomain)
