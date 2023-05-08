@@ -142,7 +142,7 @@ If there are no URLs that are relevant to the all of the target information, ref
 Otherwise, return less than 20 URLs unless there are additional URLs that are still extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
 Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
-Make sure to return the result in the formate of comma_separated_list_of_urls."}]
+Make sure to return the result in the format of comma_separated_list_of_urls."}]
             urlMessage = "Target Information: " + promptforURL + "\nURLs:" + section
             relaventURLs_list.append(singleGPT(messages,urlMessage, temperature=0.0, top_p=1))
         relaventURLs = ','.join(relaventURLs_list)

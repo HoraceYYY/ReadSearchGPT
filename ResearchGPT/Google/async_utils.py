@@ -87,7 +87,7 @@ If there are no URLs that are relevant to the all of the target information, ref
 Otherwise, return less than 20 URLs unless there are additional URLs that are still extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
 Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
-Make sure to return the result in the formate of comma_separated_list_of_urls."}]
+Make sure to return the result in the format of comma_separated_list_of_urls. Example result format: 'https://www.example.com, https://www.example.com, https://www.example.com'"}]
         ## pass the list of message to GPT
 
         linksString = ' '.join(links)
@@ -97,7 +97,7 @@ Make sure to return the result in the formate of comma_separated_list_of_urls."}
             relaventURLs = await singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
         else:
             relaventURLs = await LinksBreakUp(token, url_prompt, linksString) # split the links into subarrays of 3000 tokens
-        
+        print(f"\n\n{relaventURLs}\n\n")
         relaventURLs = [url.strip() for url in relaventURLs.split(',')] # remove the white space from the string and convert the string into a list
         filtered_url_list = [url for url in relaventURLs if url != 'NONE']
 
@@ -122,12 +122,12 @@ async def LinksBreakUp(token, url_prompt, linksString): # convert the list of li
             #print('sectionToken',num_tokens_from_string(section))
             messages = [
                 {"role": "system", 
-                "content": "Extract the URLs that are most relevant to the target information from the list of URLs provided in the next message. \
+                 "content": "Extract the URLs that are most relevant to the target information from the list of URLs provided in the next message. \
 If there are no URLs that are relevant to the all of the target information, refrain from returning a message. Instead of returning a message, only return 'NONE'. \
 Otherwise, return less than 20 URLs unless there are additional URLs that are still extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
 Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevent to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
-Make sure to return the result in the formate of comma_separated_list_of_urls."}]
+Make sure to return the result in the format of comma_separated_list_of_urls. Example result format: 'https://www.example.com, https://www.example.com, https://www.example.com'"}]
             urlMessage = "Target Information:\n" + url_prompt + "\nURLs:\n" + section
             relaventURLs_list.append(await singleGPT(messages,urlMessage, temperature=0.0, top_p=1))
         relaventURLs = ','.join(relaventURLs_list)
@@ -158,10 +158,8 @@ async def pageBreakUp(content_prompt, content):
             "content": "Extract the target information from the text provided in the next message. \
 You will be given one or two or three target information to look for from the text. \
 You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
-If the text does not contain any of the target information, refrain from summarizing the text and refrain from following the desired format below. Instead of summarizing the task or following the desired format, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
-Otherwise, provide the result in the desired format below with as much detail as possible.\n\n\
-Desired format:\n\
-### One Summarization per Target Information:###\n"}]
+If the text does not contain any of the target information, refrain from summarizing the text. Instead of summarizing the task, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
+Otherwise, provide one summarization per target information with as much detail as possible."}]
         start_index = i * cutoffIndex
         end_index = (i + 1) * cutoffIndex
         section = content[start_index:end_index]
@@ -177,10 +175,8 @@ async def PageResult(content_prompt, content):
          "content": "Extract the target information from the text provided in the next message. \
 You will be given one or two or three target information to look for from the text. \
 You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
-If the text does not contain any of the target information, refrain from summarizing the text and refrain from following the desired format below. Instead of summarizing the task or following the desired format, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
-Otherwise, provide the result in the desired format below with as much detail as possible.\n\n\
-Desired format:\n\
-### One Summarization per Target Information:###\n"}]
+If the text does not contain any of the target information, refrain from summarizing the text. Instead of summarizing the task, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
+Otherwise, provide one summarization per target information with as much detail as possible."}]
     pageSummary = ''
     if num_tokens_from_string(content) <= 3500: #if the content is less than 3500 tokens, pass the whole content to GPT
         pageMessage = "Important Informtion:\n" + content_prompt + "\ntext:\n" + content
