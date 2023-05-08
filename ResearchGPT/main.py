@@ -12,8 +12,7 @@ class DepthLevel(str, Enum):
     deep = "deep"
 
 class Search(BaseModel):
-    topic: str
-    objectives_inputs: List[str]
+    userAsk: str
     searchDomain: str | None = None
     max_depth: DepthLevel = DepthLevel.quick  # Use the DepthLevel Enum
 
@@ -31,11 +30,10 @@ tasks = {} # this is only a temp solution, it is in memory and not scalable. if 
 
 @app.post("/search/")
 async def startSearching(background_tasks: BackgroundTasks, search: Search):
-    task_id = str(uuid.uuid4())
-    file_path = await create_output_excel_file(task_id, search.topic)
+    task_id = str(uuid.uuid5(uuid.NAMESPACE_DNS,search.userAsk))
+    file_path = await create_output_excel_file(task_id, 'results')
     tasks[task_id] = {"status": "running", "execution_time": None, "file_path": file_path}
     background_tasks.add_task(run_task, task_id, search)
-
     return {"task_id": task_id, "status": "Task has started", "file_path": file_path}
 
 async def create_output_excel_file(task_id, excel_name):
@@ -55,12 +53,11 @@ async def create_output_excel_file(task_id, excel_name):
 
 async def run_task(task_id: str, search: Search):
     start_time = time.time()
-    topic = search.topic
-    objectives_inputs = search.objectives_inputs
+    userAsk = search.userAsk
     userDomain = search.searchDomain
     max_depth = search.get_depth_value()  # Get the integer value of max_depth
 
-    await asyncio.create_task(async_google.main(tasks[task_id], task_id, topic, objectives_inputs, userDomain, max_depth))
+    await asyncio.create_task(async_google.main(tasks[task_id], task_id, userAsk, userDomain, max_depth))
     
     end_time = time.time()
     execution_time = end_time - start_time

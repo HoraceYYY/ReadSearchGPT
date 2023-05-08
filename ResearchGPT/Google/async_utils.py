@@ -294,10 +294,23 @@ class Url(object):
     def is_from_domain(self, domain):
         return self.parts.netloc == domain
 
-def getContentPrompt(topic, objectives_inputs):
-    content_prompt = "\n".join(f"{i+1}. {topic} {obj}" for i, obj in enumerate(objectives_inputs) if obj)
+def getContentPrompt(query_list):
+    content_prompt = "\n".join(f"{i+1}. {obj}" for i, obj in enumerate(query_list))
     return content_prompt
 
-def getURLPrompt(topic, objectives_inputs):
-    url_prompt = f'{topic}: ' + ", ".join([f"{obj}" for obj in objectives_inputs if obj])
+def getURLPrompt(query_list):
+    url_prompt = ", ".join([f"{obj}" for obj in query_list])
     return url_prompt
+
+async def creatSearchQuery(userAsk):
+    messages = [
+                {"role": "system", 
+                 "content": "Generate up to 4 Google search queries using the following text. \
+For each query, utilize specific keywords that accurately represent the topic. \
+Ensure all queries are mutually exclusive and collectively exhaustive regarding the text's search content. \
+Provide the search queries as a comma-separated list, without additional text. Example result format: 'https://www.example.com, https://www.example.com, https://www.example.com'"}]
+    
+    queryMessage = "Text:\n" + userAsk
+    googleQueries = await singleGPT(messages, queryMessage, temperature=0.0, top_p=1)
+    query_list = [query.strip() for query in googleQueries.split(',')] # remove the white space from the string and convert the string into a list
+    return query_list

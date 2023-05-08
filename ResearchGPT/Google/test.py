@@ -8,21 +8,39 @@ from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin
 from termcolor import colored
 
 
-def getContentPrompt(topic, objectives_inputs):
-    content_prompt = "\n".join(f"{i+1}. {topic} {obj}" for i, obj in enumerate(objectives_inputs) if obj)
+def getContentPrompt(query_list):
+    content_prompt = "\n".join(f"{i+1}. {obj}" for i, obj in enumerate(query_list))
     return content_prompt
 
-def getURLPrompt(topic, objectives_inputs):
-    url_prompt = f'{topic}: ' + ", ".join([f"{obj}" for obj in objectives_inputs if obj])
+def getURLPrompt(query_list):
+    url_prompt = ", ".join([f"{obj}" for obj in query_list])
     return url_prompt
 
-topic = input(colored("What would you like to search:", "blue", attrs=["bold", "underline"]) + " ")
-print(colored("\nPlease list 3 outcomes your would like to achieve!", "blue",attrs=["bold", "underline"]))
-objectives_inputs = [input(colored(f"Objective {i + 1}: ", "blue", attrs=["bold"])) for i in range(3)]
+def creatSearchQuery(userAsk):
+    messages = [
+                {"role": "system", 
+                 "content": "Generate up to 4 Google search queries using the following text. \
+For each query, utilize specific keywords that accurately represent the topic. \
+Ensure all queries are mutually exclusive and collectively exhaustive regarding the text's search content. \
+Provide the search queries as a comma-separated list, without additional text. Example result format: 'https://www.example.com, https://www.example.com, https://www.example.com'"}]
+    
+    queryMessage = "Text:\n" + userAsk
+    googleQueries = utils.singleGPT(messages, queryMessage, temperature=0.0, top_p=1)
+    query_list = [query.strip() for query in googleQueries.split(',')] # remove the white space from the string and convert the string into a list
+    return query_list
 
-print(getContentPrompt(topic, objectives_inputs))
-print(getURLPrompt(topic, objectives_inputs))
-promptforURL = getURLPrompt(topic, objectives_inputs)
+
+userAsk = input(colored("What would you like to search:", "blue", attrs=["bold", "underline"]) + " ")
+# print(colored("\nPlease list 3 outcomes your would like to achieve!", "blue",attrs=["bold", "underline"]))
+# objectives_inputs = [input(colored(f"Objective {i + 1}: ", "blue", attrs=["bold"])) for i in range(3)]
+
+query_list = creatSearchQuery(userAsk)
+print(query_list)
+
+
+print(getContentPrompt(query_list))
+print(getURLPrompt(query_list))
+
 
 url = "https://www.swfinstitute.org/profiles/venture-capital-firm/north-america"
 searchDomain = "none"
