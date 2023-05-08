@@ -94,7 +94,6 @@ Make sure to return the result in the format of comma_separated_list_of_urls. Ex
         token = num_tokens_from_string(linksString)
         if token <= 3500:
             urlMessage = "Target Information:\n" + url_prompt + "\nURLs:\n" + linksString
-            print(urlMessage)
             relaventURLs = await singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
         else:
             relaventURLs = await LinksBreakUp(token, url_prompt, linksString) # split the links into subarrays of 3000 tokens
