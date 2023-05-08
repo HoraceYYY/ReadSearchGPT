@@ -84,3 +84,24 @@ async def stop_task(task_id: str):
         return {"status": "Task has been canceled"}
     else:
         return {"status": "error", "message": "Task not found"}
+
+@app.get("/task/{task_id}/download")
+async def download_excel(task_id: str):
+    if task_id in tasks:
+        return tasks[task_id]["file_path"]
+    else:
+        return {"status": "error", "message": "Task not found"}
+    
+@app.get("/task/{task_id}/delete")
+async def delete_excel(task_id: str):
+    if task_id in tasks:
+        file_path = tasks[task_id]["file_path"]
+        os.remove(file_path)
+        tasks[task_id]["status"] = "deleted"
+        return {"status": "Excel file has been deleted"}
+    else:
+        return {"status": "error", "message": "Task not found"}
+
+@app.get("/task/get_all_tasks")
+async def get_all_tasks():
+    return tasks

@@ -144,6 +144,7 @@ async def main(task, task_id, topic, objectives_inputs, userDomain, max_depth):
     url_prompt = async_utils.getURLPrompt(topic, objectives_inputs)
     
     search_results_links = []
+    searchDomain = None
     non_empty_objectives = [f"{topic} {obj}" for obj in objectives_inputs if obj]
     for objective in non_empty_objectives:
         if userDomain != None: # if the user wants to search within a domain. None if the user keep the UI field empty
@@ -173,10 +174,6 @@ async def main(task, task_id, topic, objectives_inputs, userDomain, max_depth):
 
     await asyncio.gather(*(producer_tasks + consumer_tasks))
     
-    file_path = consumer_tasks[-1].result()[-1] 
- 
-    
-    return file_path
 
 """"
 sudo code:
