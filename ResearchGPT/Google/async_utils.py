@@ -1,4 +1,4 @@
-import requests, os, re, time, shutil, openai, ast, tiktoken, math, asyncio, aiofiles, aiohttp
+import os,  openai, tiktoken, math, asyncio, aiofiles, aiohttp
 from termcolor import colored
 from dotenv import load_dotenv 
 from bs4 import BeautifulSoup

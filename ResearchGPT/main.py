@@ -1,5 +1,4 @@
 from Google import async_google
-from Google import async_utils
 import time, asyncio, uuid, os
 from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
@@ -65,7 +64,6 @@ async def run_task(task_id: str, search: Search):
     
     end_time = time.time()
     execution_time = end_time - start_time
-    
     tasks[task_id]["status"] = "completed"
     tasks[task_id]["execution_time"] = execution_time
 
