@@ -98,7 +98,7 @@ Make sure to return the result in the format of comma_separated_list_of_urls. Ex
             relaventURLs = await singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
         else:
             relaventURLs = await LinksBreakUp(token, url_prompt, linksString) # split the links into subarrays of 3000 tokens
-        print(f"\n\n{relaventURLs}\n\n")
+
         relaventURLs = [url.strip() for url in relaventURLs.split(',')] # remove the white space from the string and convert the string into a list
         filtered_url_list = [url for url in relaventURLs if url != 'NONE']
 
