@@ -30,7 +30,7 @@ tasks = {} # this is only a temp solution, it is in memory and not scalable. if 
 
 @app.post("/search/")
 async def startSearching(background_tasks: BackgroundTasks, search: Search):
-    task_id = str(uuid.uuid5(uuid.NAMESPACE_DNS,search.userAsk))
+    task_id = str(uuid.uuid4())
     file_path = await create_output_excel_file(task_id, 'results')
     tasks[task_id] = {"status": "running", "execution_time": None, "file_path": file_path}
     background_tasks.add_task(run_task, task_id, search)

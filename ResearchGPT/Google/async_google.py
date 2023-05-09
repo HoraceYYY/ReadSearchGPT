@@ -76,7 +76,7 @@ async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, con
 
     while not producer_done[0] or not consumer_queue.empty():
         if task['status'] == 'cancelled':
-            exit()
+            raise asyncio.CancelledError
         url, depth = await consumer_queue.get()
         wrapped_url = async_utils.Url(url)
         if wrapped_url not in consumer_checked_list:
@@ -108,7 +108,7 @@ async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, con
 async def url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done):
     while not producer_queue.empty():
         if task['status'] == 'cancelled':
-            exit()
+            raise asyncio.CancelledError
         url, depth = await producer_queue.get()
 
         if depth < max_depth:
@@ -172,8 +172,14 @@ async def main(task, task_id, userAsk, userDomain, max_depth):
     producer_tasks = [asyncio.create_task(url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done)) for _ in range(num_producers)]
     consumer_tasks = [asyncio.create_task(url_consumer(task, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done)) for _ in range(num_consumers)]
 
-    await asyncio.gather(*(producer_tasks + consumer_tasks))
-    
+    all_tasks = producer_tasks + consumer_tasks
+
+    try:
+        await asyncio.gather(*all_tasks, return_exceptions=True)
+    except asyncio.CancelledError:
+        for task in all_tasks:
+            task.cancel()
+        await asyncio.gather(*all_tasks, return_exceptions=True)
 
 """"
 sudo code:

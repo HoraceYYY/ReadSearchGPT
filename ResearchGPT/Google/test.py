@@ -42,7 +42,7 @@ print(getContentPrompt(query_list))
 print(getURLPrompt(query_list))
 
 
-url = "https://www.swfinstitute.org/profiles/venture-capital-firm/north-america"
+url = "https://www.oracle.com/a/ocom/docs/industries/retail/order-management-cloud-service.pdf"
 searchDomain = "none"
 
 #print(promptObjectives)
@@ -58,12 +58,9 @@ try:
 
 except Exception as e:
     print(f"An error occurred: {e}")
-   
+
+print(response.headers.get('content-type','').lower())   
 
 if (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
     utils.download_pdf(url)
-elif response.status_code == 200:  # if the response is 200, then extract the page content
-    content, links, page_Title = utils.getWebpageData(response, searchDomain,url) # get the page title,content, and links
-    #pageSummary = utils.PageResult(promptObjectives, content) # get the page summary based on the search query
-    #print(pageSummary)
-    relaventURLs = utils.relaventURL(promptforURL, links)
+    print("PDF downloaded")
