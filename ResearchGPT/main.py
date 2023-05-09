@@ -1,4 +1,4 @@
-from Google import async_google
+from Google import async_google, async_utils
 import time, asyncio, uuid, os
 from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
@@ -11,8 +11,11 @@ class DepthLevel(str, Enum):
     thorough = "thorough"
     deep = "deep"
 
-class Search(BaseModel):
+class SearchRequest(BaseModel):
     userAsk: str
+
+class Search(BaseModel):
+    searchqueries: List[str]
     searchDomain: str | None = None
     max_depth: DepthLevel = DepthLevel.quick  # Use the DepthLevel Enum
 
@@ -27,6 +30,11 @@ class Search(BaseModel):
 
 app = FastAPI()
 tasks = {} # this is only a temp solution, it is in memory and not scalable. if system crash, all info in this array will be lost
+
+@app.post("/queries/")
+async def create_search_query(searchrequest: SearchRequest):
+    searchqueries = await async_utils.createSearchQuery(searchrequest.userAsk)
+    return searchqueries
 
 @app.post("/search/")
 async def startSearching(background_tasks: BackgroundTasks, search: Search):
@@ -53,11 +61,11 @@ async def create_output_excel_file(task_id, excel_name):
 
 async def run_task(task_id: str, search: Search):
     start_time = time.time()
-    userAsk = search.userAsk
+    searchqueries = search.searchqueries
     userDomain = search.searchDomain
     max_depth = search.get_depth_value()  # Get the integer value of max_depth
 
-    await asyncio.create_task(async_google.main(tasks, task_id, userAsk, userDomain, max_depth))
+    await asyncio.create_task(async_google.main(tasks, task_id, searchqueries, userDomain, max_depth))
     
     end_time = time.time()
     execution_time = end_time - start_time

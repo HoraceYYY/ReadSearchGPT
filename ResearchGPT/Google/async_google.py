@@ -136,18 +136,18 @@ async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_
     producer_done[0] = True  # Signal the consumer that the producer is done
     print(colored('\u2714\uFE0F  Producer: Done!','green',attrs=['bold']))
 
-async def main(tasks, task_id, userAsk, userDomain, max_depth):
+async def main(tasks, task_id, searchqueries, userDomain, max_depth):
 
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     
-    query_list = await async_utils.creatSearchQuery(userAsk)
-    content_prompt = async_utils.getContentPrompt(query_list)
-    url_prompt = async_utils.getURLPrompt(query_list)
+
+    content_prompt = async_utils.getContentPrompt(searchqueries)
+    url_prompt = async_utils.getURLPrompt(searchqueries)
 
     search_results_links = []
     searchDomain = None
-    for query in query_list:
+    for query in searchqueries:
         if userDomain != None: # if the user wants to search within a domain. None if the user keep the UI field empty
             searchDomain = async_utils.get_domain(userDomain)
             query = query + " site:" + searchDomain

@@ -193,23 +193,6 @@ Otherwise, provide one summarization per target information with as much detail 
 
     return pageSummary
 
-# def searchType():
-#     valid_inputs = ["quick", "deep", "thorough"]
-
-#     while True:
-#         searchType = input(colored("\nEnter search type (Quick, Thorough, Deep):", "blue", attrs=["bold","underline"])+ " ").lower()
-#         if searchType in valid_inputs:
-#             break
-#         else:
-#             print("Invalid input! Please enter one of following: 'Quick', 'Thorough', 'Deep'.")
-    
-#     if searchType == "quick":
-#         return 1
-#     elif searchType == "deep":
-#         return 3
-#     elif searchType == "thorough":
-#         return 2
-
 def getWebpageData(soup):
     for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract
         script.decompose()
@@ -306,7 +289,7 @@ def getURLPrompt(query_list):
     url_prompt = ", ".join([f"{obj}" for obj in query_list])
     return url_prompt
 
-async def creatSearchQuery(userAsk):
+async def createSearchQuery(userAsk):
     messages = [
                 {"role": "system", 
                  "content": "Generate less than 4 Google search queries that reflect the search content in the Text provide. \
