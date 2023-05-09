@@ -313,8 +313,8 @@ Example result format: query1, query2, query3, query4 "}]
     
     queryMessage = "Text:\n" + userAsk
     googleQueries = await singleGPT(messages, queryMessage, temperature=0.0, top_p=1)
-    print(googleQueries)
+    # print(googleQueries)
     query_list = [query.strip() for query in googleQueries.split(',')] # remove the white space from the string and convert the string into a list
-    print(query_list)
-    input('Press Enter to continue...')
+    # print(query_list)
+    # input('Press Enter to continue...')
     return query_list
