@@ -8,20 +8,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import utils
 
 ## this function is not used anymore
-def searchTitle(searchTpoic):
-    messages = [
-        {"role": "system", 
-        "content": "You are a research assistant who will help me summarize the research topic and target outcomes I provide into 1 sentence.\
-        Your summary should be a single query that I can put into google search. Reply me the result without including 'Research Query'."}
-    ]
-    searchQuery = utils.singleGPT(messages, searchTpoic)
-    searchQuery = searchQuery.replace('"', '')
-    print(colored("\nSearch Query Created:", 'blue',attrs=["bold", "underline"]), f" {searchQuery}")
-    
-    return searchQuery
 
 ## take the google search query and return the top 8 results URL
-def google_official_search(query: str, num_results: int = 10) -> str | list[str]:
+def google_official_search(query: str, searchtype: int) -> str | list[str]:
     """Return the results of a Google search using the official Google API
 
     Args:
@@ -42,6 +31,12 @@ def google_official_search(query: str, num_results: int = 10) -> str | list[str]
         # Initialize the Custom Search API service
         service = build("customsearch", "v1", developerKey=api_key)
 
+        if searchtype == 1: # this is quick search
+            num_results = 3 # only return top 3 results from google; these are results with >10% click through rate
+        elif searchtype == 2: # this is thorogh search
+            num_results = 5 # return top 5 results from google; these are results with >5% click through rate
+        elif searchtype == 3: # this is deep search
+            num_results = 10 # return top 10 results from google; these are results with >1% click through rate
         # Send the search query and retrieve the results
         result = (
             service.cse()
@@ -127,7 +122,7 @@ def searchContent(urls, SearchTopic, SearchObjectives, searchDomain, maxDepth, d
                 if depth != maxDepth:
                     print(colored('\U0001F9D0 Seaching for additonal relavent websites on this page...', 'yellow', attrs=['bold']))
                     # Get the highly relevant links from the page and make them into asbolute URLs
-                    relaventURLs = utils.relaventURL(SearchTopic, links)
+                    relaventURLs = utils.relaventURL(SearchObjectives, links)
                     if relaventURLs == None:
                         print("\u2714\uFE0F", colored(' No additional relavent webisites found on this page.\n', 'green', attrs=['bold']))
                         continue
