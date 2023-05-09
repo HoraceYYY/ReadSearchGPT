@@ -45,16 +45,20 @@ async def fetch_url(url):
     async with aiohttp.ClientSession(timeout=timeout) as session:
         try:
             async with session.get(url, headers=headers) as response:
-                if response.status == 200:
+                content_type = response.headers.get('Content-Type', '').split(';')[0].strip()
+                status_code = response.status
+
+                if status_code == 200:
+                    if content_type.lower() == 'application/pdf':
+                        return None, content_type, status_code
+
                     page_content = await response.text()
                     # extract the page content
                     soup = BeautifulSoup(page_content, 'html.parser')
-                    content_type = response.headers.get('Content-Type')
-                    status_code = response.status
                     return soup, content_type, status_code
                 else:
-                    print(f"Failed to fetch the page. Status code: {response.status}")
-                    return None, None, response.status
+                    print(f"Failed to fetch the page. Status code: {status_code}")
+                    return None, None, status_code
         except Exception as e:
             print(f"An error occurred: {type(e)} - {e}")
             return None, None, e

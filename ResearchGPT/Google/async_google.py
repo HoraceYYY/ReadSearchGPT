@@ -116,7 +116,9 @@ async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_
                 producer_checked_list.add(wrapped_url)
                 print(colored(f'\U0001F9D0 Producer: Seaching for additonal relavent websites on {url}', 'yellow', attrs=['bold']))
                 soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
-                if status_code == 200: 
+                if status_code == 200:
+                    if content_type.lower() == 'application/pdf': # check if the content is pdf, if so, skip to the next url
+                        continue
                     links = async_utils.getWebpageLinks(soup, searchDomain, url)
                     relaventURLs = await async_utils.relaventURL(url_prompt, links) # Get the highly relevant links from the page and make them into asbolute URLs
                     if relaventURLs:  
