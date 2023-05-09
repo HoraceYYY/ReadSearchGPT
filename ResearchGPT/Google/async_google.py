@@ -73,7 +73,6 @@ def google_official_search(query: str, searchtype: int) -> str | list[str]:
     #return safe_google_results(search_results_links)
 
 async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done):
-
     while not producer_done[0] or not consumer_queue.empty():
         if tasks[task_id]["status"] == 'canceled':
             raise asyncio.CancelledError
@@ -85,19 +84,19 @@ async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, co
             if status_code == 200:
                 if content_type.lower() == 'application/pdf': # check if the content is pdf and download it
                     await async_utils.download_pdf(url)
-                elif status_code == 200:
-                    print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
-                    content, page_Title = async_utils.getWebpageData(soup) # get the page title,content, and links
-                    pageSummary = await async_utils.PageResult(content_prompt, content) # get the page summary based on the search query
-                    
-                    if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
-                        results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
-                        await async_utils.updateExcel(task_id, "results", "Related", results['Related'])                
-                    else:
-                        results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
-                        await async_utils.updateExcel(task_id, "results", "Unrelated", results['Unrelated'])
+                    continue
+                print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
+                content, page_Title = async_utils.getWebpageData(soup) # get the page title,content, and links
+                pageSummary = await async_utils.PageResult(content_prompt, content) # get the page summary based on the search query
+                
+                if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
+                    results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
+                    await async_utils.updateExcel(task_id, "results", "Related", results['Related'])                
+                else:
+                    results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
+                    await async_utils.updateExcel(task_id, "results", "Unrelated", results['Unrelated'])
 
-                    print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
+                print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
             else:
                 print("\U0001F6AB", colored(f' Consumer: Website did not respond. Error code: {status_code}.','red',attrs=['bold']), ' Current Depth: ', depth, ' URL:', url)
         else:
