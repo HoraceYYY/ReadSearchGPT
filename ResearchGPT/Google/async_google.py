@@ -31,11 +31,11 @@ def google_official_search(query: str, searchtype: int) -> str | list[str]:
         service = build("customsearch", "v1", developerKey=api_key)
 
         if searchtype == 1: # this is quick search
-            num_results = 1 # only return top 3 results from google; these are results with >10% click through rate
+            num_results = 3 # only return top 3 results from google; these are results with >10% click through rate
         elif searchtype == 2: # this is thorogh search
-            num_results = 1 # return top 5 results from google; these are results with >5% click through rate
+            num_results = 5 # return top 5 results from google; these are results with >5% click through rate
         elif searchtype == 3: # this is deep search
-            num_results = 1 # return top 10 results from google; these are results with >1% click through rate
+            num_results = 10 # return top 10 results from google; these are results with >1% click through rate
         # Send the search query and retrieve the results
         result = (
             service.cse()
@@ -72,10 +72,10 @@ def google_official_search(query: str, searchtype: int) -> str | list[str]:
     return search_results_links
     #return safe_google_results(search_results_links)
 
-async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done):
+async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done):
 
     while not producer_done[0] or not consumer_queue.empty():
-        if task['status'] == 'cancelled':
+        if tasks[task_id]["status"] == 'canceled':
             raise asyncio.CancelledError
         url, depth = await consumer_queue.get()
         wrapped_url = async_utils.Url(url)
@@ -105,9 +105,9 @@ async def url_consumer(task, task_id, consumer_queue, consumer_checked_list, con
             print(colored('\u2714\uFE0F  Consumer: Skip to the next website.\n', 'green', attrs=['bold']))
 
 
-async def url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done):
+async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done):
     while not producer_queue.empty():
-        if task['status'] == 'cancelled':
+        if tasks[task_id]["status"] == 'canceled':
             raise asyncio.CancelledError
         url, depth = await producer_queue.get()
 
@@ -133,9 +133,9 @@ async def url_producer(task, producer_queue, consumer_queue, producer_checked_li
                 print(colored('\u2714\uFE0F Producer: URLs on this page have already been checked:', 'green', attrs=['bold']), f' {url}')
                 print(colored('\u2714\uFE0F  Producer: Skip to the next website.\n', 'green', attrs=['bold']))
     producer_done[0] = True  # Signal the consumer that the producer is done
+    print(colored('\u2714\uFE0F  Producer: Done!','green',attrs=['bold']))
 
-
-async def main(task, task_id, userAsk, userDomain, max_depth):
+async def main(tasks, task_id, userAsk, userDomain, max_depth):
 
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
@@ -169,8 +169,8 @@ async def main(task, task_id, userAsk, userDomain, max_depth):
     num_producers = 1
     num_consumers = 1
 
-    producer_tasks = [asyncio.create_task(url_producer(task, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done)) for _ in range(num_producers)]
-    consumer_tasks = [asyncio.create_task(url_consumer(task, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done)) for _ in range(num_consumers)]
+    producer_tasks = [asyncio.create_task(url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done)) for _ in range(num_producers)]
+    consumer_tasks = [asyncio.create_task(url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done)) for _ in range(num_consumers)]
 
     all_tasks = producer_tasks + consumer_tasks
 

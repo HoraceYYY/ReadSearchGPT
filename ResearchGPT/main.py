@@ -57,7 +57,7 @@ async def run_task(task_id: str, search: Search):
     userDomain = search.searchDomain
     max_depth = search.get_depth_value()  # Get the integer value of max_depth
 
-    await asyncio.create_task(async_google.main(tasks[task_id], task_id, userAsk, userDomain, max_depth))
+    await asyncio.create_task(async_google.main(tasks, task_id, userAsk, userDomain, max_depth))
     
     end_time = time.time()
     execution_time = end_time - start_time
