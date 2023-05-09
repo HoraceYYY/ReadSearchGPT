@@ -41,8 +41,8 @@ async def fetch_url(url):
     headers = {
         'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
     }
-    
-    async with aiohttp.ClientSession() as session:
+    timeout = aiohttp.ClientTimeout(total=10)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
         try:
             async with session.get(url, headers=headers) as response:
                 if response.status == 200:
@@ -56,7 +56,7 @@ async def fetch_url(url):
                     print(f"Failed to fetch the page. Status code: {response.status}")
                     return None, None, response.status
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred: {type(e)} - {e}")
             return None, None, e
 
 async def download_pdf(url):
