@@ -84,9 +84,9 @@ async def relaventURL(url_prompt, links):
             {"role": "system", 
             "content": "Extract the URLs that are most relevant to the target information from the list of URLs provided in the next message. \
 If there are no URLs that are relevant to any of the target information, refrain from returning a message. Instead of returning a message, only return 'NONE'. \
-Otherwise, return less than 20 URLs unless there are additional URLs that are still extremely relevant to the target information. \
+Otherwise, return less than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
-Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
+Refrain from returning more than 15 URLs. Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
 Make sure to return the result in the format of comma_separated_list_of_urls. Example result format: 'https://www.example.com, https://www.example.com, https://www.example.com'"}]
         ## pass the list of message to GPT
 
@@ -124,9 +124,9 @@ async def LinksBreakUp(token, url_prompt, linksString): # convert the list of li
                 {"role": "system", 
                  "content": "Extract the URLs that are most relevant to the target information from the list of URLs provided in the next message. \
 If there are no URLs that are relevant to any of the target information, refrain from returning a message. Instead of returning a message, only return 'NONE'. \
-Otherwise, return less than 20 URLs unless there are additional URLs that are still extremely relevant to the target information. \
+Otherwise, return less than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
-Refrain from returning more than 30 URLs. Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
+Refrain from returning more than 15 URLs. Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
 Make sure to return the result in the format of comma_separated_list_of_urls. Example result format: 'https://www.example.com, https://www.example.com, https://www.example.com'"}]
             urlMessage = "Target Information:\n" + url_prompt + "\nURLs:\n" + section
             relaventURLs_list.append(await singleGPT(messages,urlMessage, temperature=0.0, top_p=1))
@@ -189,22 +189,22 @@ Otherwise, provide one summarization per target information with as much detail 
 
     return pageSummary
 
-def searchType():
-    valid_inputs = ["quick", "deep", "thorough"]
+# def searchType():
+#     valid_inputs = ["quick", "deep", "thorough"]
 
-    while True:
-        searchType = input(colored("\nEnter search type (Quick, Thorough, Deep):", "blue", attrs=["bold","underline"])+ " ").lower()
-        if searchType in valid_inputs:
-            break
-        else:
-            print("Invalid input! Please enter one of following: 'Quick', 'Thorough', 'Deep'.")
+#     while True:
+#         searchType = input(colored("\nEnter search type (Quick, Thorough, Deep):", "blue", attrs=["bold","underline"])+ " ").lower()
+#         if searchType in valid_inputs:
+#             break
+#         else:
+#             print("Invalid input! Please enter one of following: 'Quick', 'Thorough', 'Deep'.")
     
-    if searchType == "quick":
-        return 1
-    elif searchType == "deep":
-        return 3
-    elif searchType == "thorough":
-        return 2
+#     if searchType == "quick":
+#         return 1
+#     elif searchType == "deep":
+#         return 3
+#     elif searchType == "thorough":
+#         return 2
 
 def getWebpageData(soup):
     for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract

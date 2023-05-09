@@ -103,7 +103,7 @@ async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, co
         else:
             print(colored('\u2714\uFE0F  Consumer:The content in this URL has already been checked:', 'green', attrs=['bold']), f' {url}')
             print(colored('\u2714\uFE0F  Consumer: Skip to the next website.\n', 'green', attrs=['bold']))
-
+    print(colored('\u2714\uFE0F  Consumer: Done!','green',attrs=['bold']))
 
 async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done):
     while not producer_queue.empty():

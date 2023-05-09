@@ -63,7 +63,7 @@ async def run_task(task_id: str, search: Search):
     execution_time = end_time - start_time
     tasks[task_id]["status"] = "completed"
     tasks[task_id]["execution_time"] = execution_time
-
+    print(f"Task Completed in {execution_time} seconds")
 
 @app.get("/task/{task_id}/status")
 async def task_status(task_id: str):
