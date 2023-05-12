@@ -19,7 +19,9 @@
 
     <div class="content">
       <h1> (Re)Search For Me </h1>
+      
       <router-view />
+
     </div>
     
     <nav class="navbar">  
@@ -85,6 +87,6 @@ h1 {
   justify-content: flex-start;
   flex-grow: 1;
   gap: 20px;
-  padding-top: 10vh; /* Adjust this value to move content up or down */
+  padding-top: 9vh; /* Adjust this value to move content up or down */
 }
 </style>
