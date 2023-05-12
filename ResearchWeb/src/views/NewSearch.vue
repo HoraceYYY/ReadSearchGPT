@@ -2,8 +2,8 @@
     <div class="container">
       <form @submit.prevent="startSearch">
         <div class="form-row">
-          <label for="searchtopic" class="input-label">What would you like to (re)search?</label>
-          <textarea id="searchtopic" v-model="searchtopic" rows="15" cols="100" wrap="soft" spellcheck="false" class="textbox"></textarea>
+          <label for="userAsk" class="input-label">What would you like to (re)search?</label>
+          <textarea id="userAsk" v-model="userAsk" rows="15" cols="100" wrap="soft" spellcheck="false" class="textbox"></textarea>
         </div>
         <div class="form-row">
           <label for="apikey" class="input-label">Enter Open AI API Key</label>
@@ -22,7 +22,7 @@
   export default {
     data() {
       return {
-        searchtopic: "",
+        userAsk: "",
         apikey: ""
       };
     },
@@ -31,7 +31,7 @@
         try {
           // Perform API call with form data
           const requestData = {
-            searchtopic: this.searchtopic,
+            userAsk: this.userAsk,
             //apikey: this.apikey
           };
 
@@ -41,7 +41,7 @@
           // Handle the response and navigate to another page if needed
           if (response.success) {
             this.$router.push({
-            path: "/nextpage",
+            path: "/query",
             query: { data: JSON.stringify(response.data) } // Pass the data as a query parameter
           });
           } else {

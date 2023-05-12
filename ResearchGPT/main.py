@@ -5,6 +5,8 @@ from pydantic import BaseModel
 from enum import Enum
 from typing import List
 import pandas as pd
+from fastapi.middleware.cors import CORSMiddleware # to allow CORS
+
 
 class DepthLevel(str, Enum):
     quick = "quick"
@@ -29,12 +31,29 @@ class Search(BaseModel):
         return self._depth_mapping.get(self.max_depth, None)
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:5173",  # assuming your Vue.js app is running on port 3000
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 tasks = {} # this is only a temp solution, it is in memory and not scalable. if system crash, all info in this array will be lost
 
 @app.post("/queries/")
 async def create_search_query(searchrequest: SearchRequest):
-    searchqueries = await async_utils.createSearchQuery(searchrequest.userAsk)
-    return searchqueries
+    try:
+        searchqueries = await async_utils.createSearchQuery(searchrequest.userAsk)
+        return {"success": True, "data": searchqueries}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
 
 @app.post("/search/")
 async def startSearching(background_tasks: BackgroundTasks, search: Search):
