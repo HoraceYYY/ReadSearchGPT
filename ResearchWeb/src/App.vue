@@ -20,7 +20,7 @@
     <div class="content">
       <h1> (Re)Search For Me </h1>
       
-      <router-view />
+      <router-view class="router-view-class"/>
 
     </div>
     
@@ -35,21 +35,21 @@
 
 
 <style scoped>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
 
 html, body {
-
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
+
 h1 {
   font-size: 3em; /* Adjust this value to change the size of the text */
 }
 .container {
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -57,11 +57,15 @@ h1 {
 }
 
 .navbar {
+  flex-shrink: 0;
   background-color: #f8f9fa;
   padding: 10px;
+  max-height: 10vh; /* Adjust this value based on your needs */
+  overflow-y: auto; 
 }
 
 .navbar-top {
+  
   display: flex;
   justify-content: space-between;
 }
@@ -72,6 +76,7 @@ h1 {
 }
 
 .navbar-bottom-right {
+  flex-shrink: 0;
   justify-content: flex-end;
 }
 
@@ -87,6 +92,8 @@ h1 {
   justify-content: flex-start;
   flex-grow: 1;
   gap: 20px;
+  overflow-y: auto; 
   padding-top: 9vh; /* Adjust this value to move content up or down */
+  max-height: 80vh;
 }
 </style>
