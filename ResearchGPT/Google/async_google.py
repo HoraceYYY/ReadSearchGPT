@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import async_utils
 
 ## take the google search query and return the top 8 results URL
-def google_official_search(query: str, searchtype: int) -> str | list[str]:
+def google_official_search(query: str, searchWidth: int) -> str | list[str]:
     """Return the results of a Google search using the official Google API
 
     Args:
@@ -30,16 +30,10 @@ def google_official_search(query: str, searchtype: int) -> str | list[str]:
         # Initialize the Custom Search API service
         service = build("customsearch", "v1", developerKey=api_key)
 
-        if searchtype == 1: # this is quick search
-            num_results = 3 # only return top 3 results from google; these are results with >10% click through rate
-        elif searchtype == 2: # this is thorogh search
-            num_results = 5 # return top 5 results from google; these are results with >5% click through rate
-        elif searchtype == 3: # this is deep search
-            num_results = 10 # return top 10 results from google; these are results with >1% click through rate
         # Send the search query and retrieve the results
         result = (
             service.cse()
-            .list(q=query, cx=custom_search_engine_id, num=num_results)
+            .list(q=query, cx=custom_search_engine_id, num=searchWidth)
             .execute()
         )
 
@@ -110,7 +104,7 @@ async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_
             raise asyncio.CancelledError
         url, depth = await producer_queue.get()
 
-        if depth < 1: ## change this to max_depth back later 
+        if depth < max_depth: ## change this to max_depth back later 
             wrapped_url = async_utils.Url(url)
             if wrapped_url not in producer_checked_list:
                 producer_checked_list.add(wrapped_url)
@@ -136,7 +130,7 @@ async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_
     producer_done[0] = True  # Signal the consumer that the producer is done
     print(colored('\u2714\uFE0F  Producer: Done!','green',attrs=['bold']))
 
-async def main(tasks, task_id, searchqueries, userDomain, max_depth):
+async def main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth):
 
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
@@ -151,7 +145,7 @@ async def main(tasks, task_id, searchqueries, userDomain, max_depth):
         if userDomain != None: # if the user wants to search within a domain. None if the user keep the UI field empty
             searchDomain = async_utils.get_domain(userDomain)
             query = query + " site:" + searchDomain
-        search_results_links += google_official_search(query, max_depth)
+        search_results_links += google_official_search(query, searchWidth)
 
     for url in search_results_links:
         await producer_queue.put((url, 0))

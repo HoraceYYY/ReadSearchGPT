@@ -8,10 +8,6 @@ import pandas as pd
 from fastapi.middleware.cors import CORSMiddleware # to allow CORS
 
 
-class DepthLevel(str, Enum):
-    quick = "quick"
-    thorough = "thorough"
-    deep = "deep"
 
 class SearchRequest(BaseModel):
     userAsk: str
@@ -19,16 +15,9 @@ class SearchRequest(BaseModel):
 class Search(BaseModel):
     searchqueries: List[str]
     searchDomain: str | None = None
-    max_depth: DepthLevel  # Use the DepthLevel Enum
+    max_depth: int  # 0 - 3 Use the DepthLevel Enum
+    searchWidth: int # 1-10
 
-    _depth_mapping = {
-        DepthLevel.quick: 1,
-        DepthLevel.thorough: 2,
-        DepthLevel.deep: 3,
-    }
-
-    def get_depth_value(self):
-        return self._depth_mapping.get(self.max_depth, None)
 
 app = FastAPI()
 
@@ -46,7 +35,7 @@ app.add_middleware(
 
 tasks = {} # this is only a temp solution, it is in memory and not scalable. if system crash, all info in this array will be lost
 
-@app.post("/queries/")
+@app.post("/queries/") # currently not used
 async def create_search_query(searchrequest: SearchRequest):
     try:
         searchqueries = await async_utils.createSearchQuery(searchrequest.userAsk)
@@ -55,7 +44,7 @@ async def create_search_query(searchrequest: SearchRequest):
         return {"success": False, "error": str(e)}
 
 
-@app.post("/search/")
+@app.post("/search/") # this is the entry point of the search 
 async def startSearching(background_tasks: BackgroundTasks, search: Search):
     task_id = str(uuid.uuid4())
     file_path = await create_output_excel_file(task_id, 'results')
@@ -82,15 +71,17 @@ async def run_task(task_id: str, search: Search):
     start_time = time.time()
     searchqueries = search.searchqueries
     userDomain = search.searchDomain
-    max_depth = search.get_depth_value()  # Get the integer value of max_depth
+    max_depth = search.max_depth  # Get the integer value of max_depth
+    searchWidth = search.searchWidth
 
-    await asyncio.create_task(async_google.main(tasks, task_id, searchqueries, userDomain, max_depth))
+    await asyncio.create_task(async_google.main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth))
     
     end_time = time.time()
     execution_time = end_time - start_time
     tasks[task_id]["status"] = "completed"
     tasks[task_id]["execution_time"] = execution_time
     print(f"Task Completed in {execution_time} seconds")
+
 
 @app.get("/task/{task_id}/status")
 async def task_status(task_id: str):
