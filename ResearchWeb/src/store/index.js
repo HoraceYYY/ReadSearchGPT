@@ -2,7 +2,7 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    searchQueries: [],
+    searchQueries: [""],
     apiKey: ""
   },
   mutations: {

@@ -25,12 +25,7 @@
 
 <script>
 export default {
-  data() {
-    return {
-      searchqueries: [""],  // Initialize searchqueries with one empty string
-      apikey: ""
-    }
-  },
+
   created() {
     // Initialize data from the Vuex store
     this.searchqueries = this.$store.getters.searchQueries;
