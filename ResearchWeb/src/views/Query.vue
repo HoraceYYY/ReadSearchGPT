@@ -27,7 +27,6 @@
 export default {
   data() {
     return {
-      newItem: "", 
       searchqueries: [""],  // Initialize searchqueries with one empty string
       apikey: ""
     }
@@ -38,27 +37,31 @@ export default {
     },
     addItem() {
     if (this.searchqueries.length < 5) {
-      this.searchqueries.push(this.newItem);
-      this.newItem = "";
+        this.searchqueries.push("");
         }
     },
     search() {
   try {
     // Check if any of the search queries are empty
-    for (let i = 0; i < this.searchqueries.length; i++) {
-      if (this.searchqueries[i].trim() === "") {
-        alert("Please fill in all search query fields before submitting or remove the empty fields.");
-        return;
-      }
-    }
-    // Check if the API key field is empty
     if (this.apikey.trim() === "") {
       alert("Please fill in the API key field before submitting.");
       return;
+    }else{
+        for (let i = 0; i < this.searchqueries.length; i++) {
+            if (this.searchqueries[i].trim() === "") {
+                alert("Please fill in all search query fields before submitting or remove the empty fields.");
+                return;
+            }
     }
-
+    }
     // If all fields are filled in, proceed to the next page
-    this.$router.push({ name: 'SearchPreference', params: { searchqueries: this.searchqueries, apikey: this.apikey } });
+    this.$router.push({ 
+    name: 'SearchPreference', 
+    params: { 
+      searchqueries: this.searchqueries, 
+      apikey: this.apikey 
+    } 
+  });
   } catch (error) {
     console.error(error);
   }
@@ -104,7 +107,7 @@ body {
 
 .text-content p, .input-item input {
   font-family: Arial, sans-serif; /* Substitute with your preferred font */
-  font-size: 16px; /* Adjust size as needed */
+  font-size: 20px; /* Adjust size as needed */
 }
 .text-content p {
   margin-left: -20px;
@@ -139,10 +142,11 @@ body {
 }
 .input-item.extra-input-item {
   margin-left: -20px;
+  width:100% ;
 }
 .input-item input {
     font-style: italic;
-  width: 600px;
+  width:80% ;
   height: 30px;
   border: 1px solid transparent; /* Add transparent border */
   outline: none;

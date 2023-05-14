@@ -13,9 +13,10 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/preference',
+      path: '/preference/:searchqueries?/:apikey?',
       name: 'SearchPreference',
-      component: SearchPreference
+      component: SearchPreference,
+      props: true
     },
     {
       path: '/mysearch',
