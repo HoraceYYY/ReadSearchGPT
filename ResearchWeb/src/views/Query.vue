@@ -31,7 +31,13 @@ export default {
       apikey: ""
     }
   },
+  created() {
+    // Initialize data from the Vuex store
+    this.searchqueries = this.$store.getters.searchQueries;
+    this.apikey = this.$store.getters.apiKey;
+    },
   methods: {
+    
     removeItem(index) {
       this.searchqueries.splice(index, 1);
     },
