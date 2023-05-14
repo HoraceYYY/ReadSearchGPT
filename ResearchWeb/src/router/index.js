@@ -7,15 +7,16 @@ import Terms from '../views/Terms.vue'
 import Privacy from '../views/Privacy.vue'  
 import Query from '../views/Query.vue'
 import Searching from '../views/Searching.vue'
+import SearchPreference from '../views/SearchPreference.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'NewSearch',
-    //   component: NewSearch
-    // },
+    {
+      path: '/preference',
+      name: 'SearchPreference',
+      component: SearchPreference
+    },
     {
       path: '/mysearch',
       name: 'Find My Search',

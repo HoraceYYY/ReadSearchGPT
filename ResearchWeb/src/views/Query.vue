@@ -10,6 +10,11 @@
               <button v-if="index === searchqueries.length - 1 && searchqueries.length < 5" @click="addItem" class="plus-button">+</button>
             </li>
           </ul>
+          <p>Enter Open AI API Key: </p>
+          <div class="input-item extra-input-item">
+            <input v-model="apikey" type="text" class="input" placeholder="API Key..">
+        </div>
+
         </div>
         <div class="button-container">
           <button class="search-button" @click="search">Search</button>
@@ -23,7 +28,8 @@ export default {
   data() {
     return {
       newItem: "", 
-      searchqueries: [""]  // Initialize searchqueries with one empty string
+      searchqueries: [""],  // Initialize searchqueries with one empty string
+      apikey: ""
     }
   },
   methods: {
@@ -34,29 +40,30 @@ export default {
     if (this.searchqueries.length < 5) {
       this.searchqueries.push(this.newItem);
       this.newItem = "";
-    }
-  },
-    async makeAPIcall(requestData) {
-      const response = await fetch("http://127.0.0.1:8000/search", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(requestData)
-      });
-
-      const data = await response.json();
-      return data;
+        }
     },
-    async search() {
-      try {
-        const response = await this.makeAPIcall(this.searchqueries);
-        console.log(response);
-        this.$router.push('/searching');
-      } catch (error) {
-        console.error(error);
+    search() {
+  try {
+    // Check if any of the search queries are empty
+    for (let i = 0; i < this.searchqueries.length; i++) {
+      if (this.searchqueries[i].trim() === "") {
+        alert("Please fill in all search query fields before submitting or remove the empty fields.");
+        return;
       }
     }
+    // Check if the API key field is empty
+    if (this.apikey.trim() === "") {
+      alert("Please fill in the API key field before submitting.");
+      return;
+    }
+
+    // If all fields are filled in, proceed to the next page
+    this.$router.push({ name: 'SearchPreference', params: { searchqueries: this.searchqueries, apikey: this.apikey } });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
   }
 };
 </script>
@@ -108,14 +115,16 @@ body {
 .input-list {
   padding: 0;
   margin: 0;
-  padding-bottom: 20px;
-  padding-top: 5px
+  padding-bottom: 5px;
+  padding-top: 5px;
+  height: 200px;
 }
 
 .input-item {
   list-style: none;
   position: relative;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
+
 }
 
 .input-item::before {
@@ -125,7 +134,12 @@ body {
   top: 50%;
   transform: translateY(-50%);
 }
-
+.input-item.extra-input-item::before {
+  content: ""; /* Overriding the bullet point */
+}
+.input-item.extra-input-item {
+  margin-left: -20px;
+}
 .input-item input {
     font-style: italic;
   width: 600px;
@@ -186,7 +200,7 @@ body {
 }
 
 .search-button {
-  margin-top: 0px;
+  margin-top: -10px;
   padding: 15px 30px;
   font-size: 1.2em;
   cursor: pointer;
