@@ -1,54 +1,62 @@
 <template>
-    <div class="container">
-      <div class="text-content">
-        <p>Here are the search topics I will focus on: </p>
-        <ul class="input-list">
-          <li v-for="(item, index) in apiData" :key="index" class="input-item">
-            <input v-model="apiData[index]" type="text" class="input">
-            <button v-if="index !== 0" @click="removeItem(index)" class="minus-button">-</button>
-            <button v-if="index === apiData.length - 1 && apiData.length < 5" @click="addItem" class="plus-button">+</button>
-          </li>
-        </ul>
-        <p>Feel free to modify the search topic above. Once ready, click 'Search', or 'Start Over' to go back the previous page</p>
+    <div class="main-container">
+      <div class="content-container">
+        <div class="text-content">
+          <p>Enter the search topic below: </p>
+          <ul class="input-list">
+            <li v-for="(item, index) in searchqueries" :key="index" class="input-item">
+              <input v-model="searchqueries[index]" type="text" class="input" placeholder="Enter your search query here...">
+              <button v-if="index !== 0" @click="removeItem(index)" class="minus-button">-</button>
+              <button v-if="index === searchqueries.length - 1 && searchqueries.length < 5" @click="addItem" class="plus-button">+</button>
+            </li>
+          </ul>
+        </div>
+        <div class="button-container">
+          <button class="search-button" @click="search">Search</button>
+        </div>
       </div>
-      <div class="buttons">
-      <button class="search-button">Search</button>
-      <button class="start-over-button">Start Over</button>
-    </div>
     </div>
   </template>
-
 
 <script>
 export default {
   data() {
     return {
-      newItem: "", // For adding new items
-      apiData: []  // Now apiData is a data property
+      newItem: "", 
+      searchqueries: [""]  // Initialize searchqueries with one empty string
     }
-  },
-  created() {
-    // When the component is created, parse the API data and store it in apiData
-    this.apiData = JSON.parse(this.$route.query.data || "[]");
-  },
-  computed: {
-    newItemPlaceholder() {
-      // If newItem is empty, return "Enter new item here.dssds.."
-      // Otherwise, return an empty string
-      return this.newItem === "" ? "Enter new item here.dssds.." : "";
-    },
   },
   methods: {
     removeItem(index) {
-      this.apiData.splice(index, 1);
+      this.searchqueries.splice(index, 1);
     },
     addItem() {
-    
-    if (this.apiData.length < 5) {
-      this.apiData.push(this.newItem);
-      this.newItem = ""; // Clear the input field after adding the item
+    if (this.searchqueries.length < 5) {
+      this.searchqueries.push(this.newItem);
+      this.newItem = "";
     }
-  }
+  },
+    async makeAPIcall(requestData) {
+      const response = await fetch("http://127.0.0.1:8000/search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      const data = await response.json();
+      return data;
+    },
+    async search() {
+      try {
+        const response = await this.makeAPIcall(this.searchqueries);
+        console.log(response);
+        this.$router.push('/searching');
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }
 };
 </script>
@@ -58,20 +66,31 @@ export default {
 body {
     overflow: hidden; /* Prevent scrollbars */
   }
-  
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 1vh; /* Use min-height instead of height */
-    width: 100vw;
-    margin-top: -25vh;
-    padding: 0;
-  }
+  .main-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100vh;
+  padding-top: 50px; /* Adjust this as needed */
+}
+
+.content-container {
+  margin-top: -40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
   .text-content {
   padding-left: 20px;
-  padding-bottom: 60px
+  padding-bottom: 40px
   
    /* This should match the left positioning of .input-item::before */
 }
@@ -81,20 +100,16 @@ body {
   font-size: 16px; /* Adjust size as needed */
 }
 .text-content p {
-    margin-left: -20px;
+  margin-left: -20px;
   font-weight: bold; /* Makes the text bold */
   width: 800px;
-}
-
-.input-item input {
-  font-style: italic; /* Makes the text italic */
 }
 
 .input-list {
   padding: 0;
   margin: 0;
   padding-bottom: 20px;
-  padding-top: 20px
+  padding-top: 5px
 }
 
 .input-item {
@@ -112,10 +127,14 @@ body {
 }
 
 .input-item input {
+    font-style: italic;
   width: 600px;
   height: 30px;
   border: 1px solid transparent; /* Add transparent border */
   outline: none;
+  word-wrap: break-word; /* Add this line */
+  overflow-wrap: break-word; /* Add this line, for better compatibility with different browsers */
+  white-space: pre-wrap; /* Add this line to preserve line breaks and spaces */
 }
 
 .input-item input:focus {
@@ -160,33 +179,27 @@ body {
     color: #ffffff;
   background-color: #0c952c;
 }
-.search-button, .start-over-button {
- margin-top: 30px;
-    margin: 0 40px; /* Increase the left and right margin */
+.search-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-button {
+  margin-top: 0px;
   padding: 15px 30px;
   font-size: 1.2em;
-  
   cursor: pointer;
   transition: background-color 0.3s;
-}
-.start-over-button {
-    border: 2px solid #ff4800;
+  border: 2px solid #0c952c;
   border-radius: 8px;
   background-color: #ffffff;
-  color:  #ff4800;
+  color: #0c952c;
 }
-.search-button{
-    border: 2px solid #0c952c;
-  border-radius: 8px;
-  background-color: #ffffff;
-  color:  #0c952c;
+
+.search-button:hover {
+  background-color: #0c952c;
+  color: #ffffff;
 }
-.search-button:hover{
-background-color: #0c952c;
-  color:  #ffffff;
-}
-.start-over-button:hover {
-    background-color: #ff4800;
-  color:  #ffffff;
-}
+
 </style>

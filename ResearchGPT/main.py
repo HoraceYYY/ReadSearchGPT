@@ -19,7 +19,7 @@ class SearchRequest(BaseModel):
 class Search(BaseModel):
     searchqueries: List[str]
     searchDomain: str | None = None
-    max_depth: DepthLevel = DepthLevel.quick  # Use the DepthLevel Enum
+    max_depth: DepthLevel  # Use the DepthLevel Enum
 
     _depth_mapping = {
         DepthLevel.quick: 1,

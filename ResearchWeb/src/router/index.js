@@ -11,11 +11,11 @@ import Searching from '../views/Searching.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'NewSearch',
-      component: NewSearch
-    },
+    // {
+    //   path: '/',
+    //   name: 'NewSearch',
+    //   component: NewSearch
+    // },
     {
       path: '/mysearch',
       name: 'Find My Search',
@@ -46,7 +46,7 @@ const router = createRouter({
       component: Privacy 
     },
     {
-      path: '/query', 
+      path: '/', 
       name: 'Query',
       component: Query 
     },

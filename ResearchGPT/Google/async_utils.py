@@ -32,7 +32,8 @@ async def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='
             else:
                 print(f"An error occurred: {e}")
                 print(f"Reached the maximum number of retries ({max_retries}). Aborting.")
-                return None  # You can return None or an appropriate default value here
+                await openai.aiosession.get().close()
+                return str(e)  # You can return None or an appropriate default value here
     # Close the aiohttp session at the end
     await openai.aiosession.get().close()
     return response["choices"][0]["message"]["content"]
@@ -101,14 +102,15 @@ Make sure to return the result in the format of comma_separated_list_of_urls. Ex
             relaventURLs = await singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
         else:
             relaventURLs = await LinksBreakUp(token, url_prompt, linksString) # split the links into subarrays of 3000 tokens
+        
+        if relaventURLs:
+            relaventURLs = [url.strip() for url in relaventURLs.split(',')] # remove the white space from the string and convert the string into a list
+            filtered_url_list = [url for url in relaventURLs if url != 'NONE']
 
-        relaventURLs = [url.strip() for url in relaventURLs.split(',')] # remove the white space from the string and convert the string into a list
-        filtered_url_list = [url for url in relaventURLs if url != 'NONE']
-
-        if not filtered_url_list:
-            return None
-        else:
-            return filtered_url_list   
+            if not filtered_url_list:
+                return None
+            else:
+                return filtered_url_list   
     except Exception as e:
         print(f"An error occurred in LinksBreakUp: {e}")
         return None
@@ -146,7 +148,7 @@ def num_tokens_from_string(string: str, encoding_name = 'cl100k_base' ) -> int:
     num_tokens = len(encoding.encode(string))
     return num_tokens
 
-def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=3500):
+def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=3000):
     """Truncate a string to have `max_tokens` according to the given encoding."""
     encoding = tiktoken.get_encoding(encoding_name)
     return encoding.encode(text)[:max_tokens]
@@ -167,9 +169,9 @@ Otherwise, provide one summarization per target information with as much detail 
         start_index = i * cutoffIndex
         end_index = (i + 1) * cutoffIndex
         section = content[start_index:end_index]
-        pageMessage = "Important Informtion:\n" + content_prompt + "\ntext:\n" + section
+        pageMessage = "Important Informtion:\n"+ content_prompt + "\ntext:\n" + section
         pageSummary += await singleGPT(section_messages,pageMessage)
-    if num_tokens_from_string(pageSummary) > 3500: #if the summary is still too long, truncate it to 3500 tokens
+    if num_tokens_from_string(pageSummary) > 3000: #if the summary is still too long, truncate it to 3500 tokens
         pageSummary = truncate_text_tokens(pageSummary)
     return pageSummary
 

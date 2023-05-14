@@ -110,7 +110,7 @@ async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_
             raise asyncio.CancelledError
         url, depth = await producer_queue.get()
 
-        if depth < max_depth:
+        if depth < 1: ## change this to max_depth back later 
             wrapped_url = async_utils.Url(url)
             if wrapped_url not in producer_checked_list:
                 producer_checked_list.add(wrapped_url)

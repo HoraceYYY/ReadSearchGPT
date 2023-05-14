@@ -10,7 +10,7 @@
           <input id="apikey" v-model="apikey" type="text" autocomplete="off" class="textbox">
         </div>
         <div class="center-button">
-          <button type="submit" class="start-button">Start</button>
+          <button type="submit" class="start-button">{{ buttonText }}</button>
         </div>
       </form>
     </div>
@@ -23,17 +23,28 @@
     data() {
       return {
         userAsk: "",
-        apikey: ""
+        apikey: "",
+        buttonText: "Start"  // Initial button text
       };
     },
     methods: {
       async startSearch() {
         try {
           // Perform API call with form data
+          
           const requestData = {
             userAsk: this.userAsk,
             //apikey: this.apikey
           };
+          // chech if userAsk is empty
+          if (this.userAsk === "") {
+            alert("Please enter a question");
+            return;
+          }
+          // if (this.apikey === "") {
+          //   alert("Please enter a question");
+          //   return;
+          // }
 
           // Make the asynchronous API call
           const response = await this.makeAPIcall(requestData);
@@ -51,11 +62,13 @@
         } catch (error) {
           // Handle error or display error message
           console.log(error);
+          this.buttonText = "Start"; 
         }
       },
       async makeAPIcall(requestData) {
         // TODO: Implement your API call logic here using the requestData
         // Example using fetch API:
+        this.buttonText = "Searching...";
         const response = await fetch("http://127.0.0.1:8000/queries", {
           method: "POST",
           headers: {
