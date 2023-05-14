@@ -1,26 +1,30 @@
 <template>
     <div>
       <h1>Search Preference Page</h1>
-      <p>Search queries: {{ searchqueries }}</p>
-      <p>API Key: {{ apikey }}</p>
+      <p>Search queries: {{ SearchQueries }}</p>
+      <p>API Key: {{ apiKey }}</p>
     </div>
-  </template>
+</template>
   
-  <script>
-  export default {
-    props: ['searchqueries', 'apikey'],
+<script>
+export default {
+  
   data() {
     return {
-      // no need to initialize 'searchqueries' and 'apikey' here
+        SearchQueries: [],
+        apiKey: ""
     }
   },
   created() {
-    console.log(this.searchqueries);
-    console.log(this.apikey);
+    this.SearchQueries = JSON.parse(this.$route.query.searchqueries || "[]")
+    this.apiKey = this.$route.query.apikey || ""
   }
 }
-
 </script>
+
+<style scoped>
+</style>
+
 
 <style scoped>
 

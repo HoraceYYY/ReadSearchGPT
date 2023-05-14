@@ -56,9 +56,9 @@ export default {
     }
     // If all fields are filled in, proceed to the next page
     this.$router.push({ 
-    name: 'SearchPreference', 
-    params: { 
-      searchqueries: this.searchqueries, 
+    path: '/preference', 
+    query: { 
+      searchqueries: JSON.stringify(this.searchqueries), 
       apikey: this.apikey 
     } 
   });
