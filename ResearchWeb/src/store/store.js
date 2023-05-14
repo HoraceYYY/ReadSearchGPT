@@ -17,10 +17,10 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    updateSearchQueries({ commit }, searchQueries) {
+    SearchQueries({ commit }, searchQueries) {
       commit('setSearchQueries', searchQueries);
     },
-    updateApiKey({ commit }, apiKey) {
+    ApiKey({ commit }, apiKey) {
       commit('setApiKey', apiKey);
     }
   },

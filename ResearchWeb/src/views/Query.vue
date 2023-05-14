@@ -55,13 +55,9 @@ export default {
     }
     }
     // If all fields are filled in, proceed to the next page
-    this.$router.push({ 
-    path: '/preference', 
-    query: { 
-      searchqueries: JSON.stringify(this.searchqueries), 
-      apikey: this.apikey 
-    } 
-  });
+    this.$store.dispatch('SearchQueries', this.searchqueries);
+    this.$store.dispatch('ApiKey', this.apikey);
+    this.$router.push({ path: '/preference' });
   } catch (error) {
     console.error(error);
   }
