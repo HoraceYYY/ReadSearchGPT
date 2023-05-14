@@ -118,3 +118,13 @@ async def delete_excel(task_id: str):
 @app.get("/task/get_all_tasks")
 async def get_all_tasks():
     return tasks
+
+@app.post("/test")
+def test(search: Search):
+    # print the body of the request and their data type
+    print(search)
+    # print the data type of each field
+    print(type(search.searchqueries))
+    print(type(search.searchDomain))
+    print(type(search.max_depth))
+    print(type(search.searchWidth))
