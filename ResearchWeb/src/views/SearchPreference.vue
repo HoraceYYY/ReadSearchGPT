@@ -4,28 +4,56 @@ import { mapGetters } from 'vuex';
 export default {
     data() {
       return {
-        width: this.width,
-        depth: this.width,
-        domain: "",
         buttonText: "Search"
       };
     },
   computed: {
-    ...mapGetters(['searchQueries', 'apiKey'])
-  },
-  created() {
-    // Initialize data from the Vuex store
-    this.width = 5;
-    this.depth = 1;
-    this.domain = '';    
+    ...mapGetters(['searchQueries', 'apiKey']),
+    width: {
+        get() {
+            return this.$store.state.width;
+        },
+        set(value) {
+            this.$store.dispatch('setWidth', value);
+        }
     },
+    depth: {
+        get() {
+            return this.$store.state.depth;
+        },
+        set(value) {
+            this.$store.dispatch('setDepth', value);
+        }
+    },
+    domain: {
+        get() {
+            return this.$store.state.domain;
+        },
+        set(value) {
+            this.$store.dispatch('setDomain', value);
+        }
+    },
+    jsonData: {
+        get() {
+            return this.$store.state.jsonData;
+        },
+        set(value) {
+            this.$store.dispatch('setJsonData', value);
+        }
+    }
+  },
+
     methods: {
+    startOver() {
+      this.$router.push({ path: '/' });
+    },
     async submitForm() {
       if (!this.validateFormData()) {
         return;
       }
+      // add these lines
 
-      await this.callApi();
+    await this.callApi();
     },
     validateFormData() {
       if (this.depth == 3 && this.domain == "") {
@@ -50,7 +78,6 @@ export default {
             searchQueries: this.searchQueries,
             apiKey: this.apiKey,
         };
-
         try {
             this.buttonText = "Searching...";
             console.log(data);
@@ -69,12 +96,15 @@ export default {
             }
 
             const jsonData = await response.json();
+            await this.$store.dispatch('setJsonData', jsonData);
+
             console.log(jsonData);
+            this.$router.push({ path: '/searching' });
             //handle your response here
         } catch (error) {
             this.buttonText = "Search"
             console.error(error);
-            // handle error here
+            alert(`There is an error duing the search: ${error}`);// handle error here
         }
     },
     }
@@ -90,7 +120,7 @@ export default {
             <span class="tooltip">ℹ️
             <span class="tooltip-text">This sets the number of search engine results for each search topic.</span>
             </span> 
-            Initial Search Result Per Topic: {{ width }}
+            # of Initial Search Results (Per Topic): {{ width }}
         </label>
           <input type="range" id="width" min="1" max="10" v-model="width" class="slider" />
         </div>
@@ -99,12 +129,12 @@ export default {
                 <span class="tooltip">ℹ️
                 <span class="tooltip-text">Level of webpage exploration by following links found on webpages.</span>
                 </span>
-                Additional Search Result:
+                Additional Search results:
             </label>
             <select id="depth" v-model="depth" class="dropdown">
-                <option value="0">None: Only search initial results (~1min, 10s pages)</option>
-                <option value="1">Quick: Search relevant links found from the initial results (>10min, 100s pages)</option>
-                <option value="2">Thorough: Search relevant links from Quick Option (>1h, 1000s pages)</option>
+                <option value="0">None: Only search initial results (~1min, 10s URLs)</option>
+                <option value="1">Quick: Search relevant links found from the initial results (>10min, 100s URLs)</option>
+                <option value="2">Thorough: Search relevant links from Quick Option (>1h, 1000s URLs)</option>
                 <option value="3">Deep: Search relevant links from Thorough Option (do NOT recommend without limiting the search domain) </option>
             </select>
         </div>

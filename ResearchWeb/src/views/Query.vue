@@ -44,16 +44,16 @@ export default {
     search() {
   try {
     // Check if any of the search queries are empty
-    if (this.apikey.trim() === "") {
-      alert("Please fill in the API key field before submitting.");
-      return;
-    }else{
-        for (let i = 0; i < this.searchqueries.length; i++) {
+    for (let i = 0; i < this.searchqueries.length; i++) {
             if (this.searchqueries[i].trim() === "") {
                 alert("Please fill in all search query fields before submitting or remove the empty fields.");
                 return;
             }
     }
+
+    if (this.apikey.trim() === "") {
+      alert("Please fill in the API key field before submitting.");
+      return;
     }
     // If all fields are filled in, proceed to the next page
     this.$store.dispatch('SearchQueries', this.searchqueries);

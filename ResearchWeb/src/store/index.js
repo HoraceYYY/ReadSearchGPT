@@ -3,7 +3,11 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     searchQueries: [""],
-    apiKey: ""
+    apiKey: "",
+    width: 5,
+    depth: 1,
+    domain: "",
+    jsonData: {}
   },
   mutations: {
     setSearchQueries(state, searchQueries) {
@@ -11,7 +15,19 @@ export default createStore({
     },
     setApiKey(state, apiKey) {
       state.apiKey = apiKey;
-    }
+    },
+    setWidth(state, width) {
+      state.width = width;
+    },
+    setDepth(state, depth) {
+      state.depth = depth;
+    },
+    setDomain(state, domain) {
+      state.domain = domain;
+    },
+    setJsonData(state, jsonData) {
+      state.jsonData = jsonData;
+    },
   },
   actions: {
     SearchQueries({ commit }, searchQueries) {
@@ -19,10 +35,26 @@ export default createStore({
     },
     ApiKey({ commit }, apiKey) {
       commit('setApiKey', apiKey);
+    },
+    setWidth({ commit }, width) {
+      commit('setWidth', width);
+    },
+    setDepth({ commit }, depth) {
+      commit('setDepth', depth);
+    },
+    setDomain({ commit }, domain) {
+      commit('setDomain', domain);
+    },
+    setJsonData({ commit }, jsonData) {
+      commit('setJsonData', jsonData);
     }
   },
   getters: {
     searchQueries: state => state.searchQueries,
-    apiKey: state => state.apiKey
+    apiKey: state => state.apiKey,
+    width: state => state.width,
+    depth: state => state.depth,
+    domain: state => state.domain,
+    jsonData: state => state.jsonData,
   }
 })
