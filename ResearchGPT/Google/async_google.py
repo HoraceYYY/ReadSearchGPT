@@ -81,7 +81,7 @@ async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, co
                     continue
                 print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
                 content, page_Title = async_utils.getWebpageData(soup) # get the page title,content, and links
-                pageSummary = await async_utils.PageResult(content_prompt, content) # get the page summary based on the search query
+                pageSummary = await async_utils.PageResult(api_key, content_prompt, content) # get the page summary based on the search query
                 
                 if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
                     results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
