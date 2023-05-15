@@ -12,24 +12,32 @@
           </ul>
           <p>Enter Open AI API Key: </p>
           <div class="input-item extra-input-item">
-            <input v-model="apikey" type="text" class="input" placeholder="API Key..">
+            <input v-model="apiKey" type="text" class="input" placeholder="API Key..">
         </div>
 
         </div>
         <div class="button-container">
-          <button class="search-button" @click="search">Search</button>
+          <button class="search-button" @click="search">{{ buttonText }}</button>
         </div>
       </div>
     </div>
   </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
+    
+    data() {
+      return {
+        buttonText: "Search"
+      };
+    },
 
   created() {
     // Initialize data from the Vuex store
     this.searchqueries = this.$store.getters.searchQueries;
-    this.apikey = this.$store.getters.apiKey;
+    this.apiKey = this.$store.getters.apiKey;
     },
   methods: {
     
@@ -41,7 +49,7 @@ export default {
         this.searchqueries.push("");
         }
     },
-    search() {
+   async search() {
   try {
     // Check if any of the search queries are empty
     for (let i = 0; i < this.searchqueries.length; i++) {
@@ -51,18 +59,57 @@ export default {
             }
     }
 
-    if (this.apikey.trim() === "") {
+    if (this.apiKey.trim() === "") {
       alert("Please fill in the API key field before submitting.");
       return;
     }
     // If all fields are filled in, proceed to the next page
     this.$store.dispatch('SearchQueries', this.searchqueries);
-    this.$store.dispatch('ApiKey', this.apikey);
-    this.$router.push({ path: '/preference' });
+    this.$store.dispatch('ApiKey', this.apiKey);
+
+    this.buttonText = "Checking...";
+
+    const response = await this.callApi();
+    if (response['Open AI Key'] === 'Valid') {
+      this.$router.push({ path: '/preference' });
+    } else {
+      this.buttonText = "Search";
+      alert("Please enter a valid API key");
+      return;
+    }
+
   } catch (error) {
     console.error(error);
   }
-}
+},
+async callApi() {
+    const url = "http://127.0.0.1:8000/testapi";  // replace with your API endpoint
+    const payload = {
+        apiKey: this.apiKey,
+    };
+    try {
+        const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+     
+        return data;
+        //handle your response here
+    } catch (error) {
+        this.buttonText = "Search"
+        console.error(error);
+        alert(`There is an error which cheking the api key: ${error}. Please try again! `);// handle error here
+    }
+},
 
   }
 };

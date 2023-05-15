@@ -1,16 +1,19 @@
 from Google import async_google, async_utils
+from aiohttp import ClientSession
 import time, asyncio, uuid, os
 from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
-from enum import Enum
 from typing import List
 import pandas as pd
 from fastapi.middleware.cors import CORSMiddleware # to allow CORS
+import openai
 
 
-
-class SearchRequest(BaseModel):
+class SearchRequest(BaseModel): # currently not used
     userAsk: str
+
+class APIKey(BaseModel):
+    apiKey: str
 
 class Search(BaseModel):
     searchqueries: List[str]
@@ -128,3 +131,43 @@ def test(search: Search):
     print(type(search.searchDomain))
     print(type(search.max_depth))
     print(type(search.searchWidth))
+
+@app.post("/testapi")
+async def testAPI(apiKey: APIKey):
+    api_key = apiKey.apiKey
+    url = 'https://api.openai.com/v1/chat/completions'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {api_key}'
+    }
+    body = {
+        "model": "gpt-3.5-turbo",
+        "messages": [{"role": "user", "content": "Hello!"}]
+    }
+
+    async with ClientSession() as session:
+        try:
+            async with session.post(url, headers=headers, json=body) as response:
+                status_code = response.status
+                if status_code == 200:
+                    print("success: ", status_code)
+                    return {"Open AI Key": "Valid"}
+                else:
+                    print("error: ", status_code)
+                    return {"Open AI Key": f"Not Valid: {status_code}"}
+        except Exception as e:
+            print(e)
+            return {"Open AI Key": f"Not Valid: {e}"}
+
+
+# def testGPTAPI(apiKey: APIKey):
+#     openai.api_key = apiKey.apiKey
+
+#     completion = openai.ChatCompletion.create(
+#     model="gpt-3.5-turbo",
+#     messages=[
+#         {"role": "user", "content": "hello"}
+#     ]
+#     )
+#     print(completion)
+#     return completion["choices"][0]["message"]["content"]

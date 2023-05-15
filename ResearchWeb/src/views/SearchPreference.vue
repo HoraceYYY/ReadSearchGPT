@@ -89,14 +89,7 @@ export default {
             body: JSON.stringify(data),
             });
 
-            if (!response.ok) {
-            this.buttonText = "Search"
-            throw new Error(`HTTP error! status: ${response.status}`);
-
-            }
-
             const jsonData = await response.json();
-            await this.$store.dispatch('setJsonData', jsonData);
 
             console.log(jsonData);
             this.$router.push({ path: '/searching' });
