@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from typing import List
 import pandas as pd
 from fastapi.middleware.cors import CORSMiddleware # to allow CORS
-import openai
+
 
 
 class SearchRequest(BaseModel): # currently not used
@@ -20,6 +20,7 @@ class Search(BaseModel):
     searchDomain: str | None = None
     max_depth: int  # 0 - 3 Use the DepthLevel Enum
     searchWidth: int # 1-10
+    apiKey: str
 
 
 app = FastAPI()
@@ -41,7 +42,7 @@ tasks = {} # this is only a temp solution, it is in memory and not scalable. if 
 @app.post("/queries/") # currently not used
 async def create_search_query(searchrequest: SearchRequest):
     try:
-        searchqueries = await async_utils.createSearchQuery(searchrequest.userAsk)
+        searchqueries = await async_utils.createSearchQuery(searchrequest.userAsk,)
         return {"success": True, "data": searchqueries}
     except Exception as e:
         return {"success": False, "error": str(e)}
@@ -76,8 +77,9 @@ async def run_task(task_id: str, search: Search):
     userDomain = search.searchDomain
     max_depth = search.max_depth  # Get the integer value of max_depth
     searchWidth = search.searchWidth
+    api_key = search.apiKey
 
-    await asyncio.create_task(async_google.main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth))
+    await asyncio.create_task(async_google.main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth, api_key))
     
     end_time = time.time()
     execution_time = end_time - start_time

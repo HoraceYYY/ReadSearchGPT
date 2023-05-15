@@ -1,15 +1,15 @@
 import os,  openai, tiktoken, math, asyncio, aiofiles, aiohttp
 from termcolor import colored
-from dotenv import load_dotenv 
+##from dotenv import load_dotenv 
 from bs4 import BeautifulSoup
 import pandas as pd
 from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin, urldefrag
 
 # see https://github.com/openai/openai-python for async api details
-async def singleGPT(systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.5-turbo'):
-    load_dotenv()
-    openai.organization = os.getenv("OPENAI_ORG")
-    openai.api_key = os.getenv("OPENAI_API_KEY")
+async def singleGPT(api_key, systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.5-turbo'):
+    ##load_dotenv()
+    ##openai.organization = os.getenv("OPENAI_ORG")
+    openai.api_key = api_key
     openai.aiosession.set(aiohttp.ClientSession())
     systemMessages.append({"role": "user", "content":userMessage})
     max_retries = 3
@@ -83,7 +83,7 @@ async def download_pdf(url):
                     await output_file.write(chunk)
             print(colored(f'PDF downloaded and saved to {output_path}', 'green', attrs=['bold']))
 
-async def relaventURL(url_prompt, links):
+async def relaventURL(url_prompt, links, api_key):
     try:
         messages = [
             {"role": "system", 
@@ -99,9 +99,9 @@ Make sure to return the result in the format of comma_separated_list_of_urls. Ex
         token = num_tokens_from_string(linksString)
         if token <= 3500:
             urlMessage = "Target Information:\n" + url_prompt + "\nURLs:\n" + linksString
-            relaventURLs = await singleGPT(messages,urlMessage, temperature=0.0, top_p=1)
+            relaventURLs = await singleGPT(api_key, messages,urlMessage, temperature=0.0, top_p=1)
         else:
-            relaventURLs = await LinksBreakUp(token, url_prompt, linksString) # split the links into subarrays of 3000 tokens
+            relaventURLs = await LinksBreakUp(api_key, token, url_prompt, linksString) # split the links into subarrays of 3000 tokens
         
         if relaventURLs:
             relaventURLs = [url.strip() for url in relaventURLs.split(',')] # remove the white space from the string and convert the string into a list
@@ -115,7 +115,7 @@ Make sure to return the result in the format of comma_separated_list_of_urls. Ex
         print(f"An error occurred in LinksBreakUp: {e}")
         return None
     
-async def LinksBreakUp(token, url_prompt, linksString): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
+async def LinksBreakUp(api_key, token, url_prompt, linksString): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
     try:
         relaventURLs_list = []
         sectionNumber = math.ceil(token/3000)
@@ -135,7 +135,7 @@ The order of relevance is important. The first URL should be the most relevant. 
 Refrain from returning more than 15 URLs. Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL. \
 Make sure to return the result in the format of comma_separated_list_of_urls. Example result format: 'https://www.example.com, https://www.example.com, https://www.example.com'"}]
             urlMessage = "Target Information:\n" + url_prompt + "\nURLs:\n" + section
-            relaventURLs_list.append(await singleGPT(messages,urlMessage, temperature=0.0, top_p=1))
+            relaventURLs_list.append(await singleGPT(api_key, messages,urlMessage, temperature=0.0, top_p=1))
         relaventURLs = ','.join(relaventURLs_list)
         return relaventURLs # return a text string of the links with potentially some text from GPT3.5
     except Exception as e:
@@ -154,7 +154,7 @@ def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=3000):
     return encoding.encode(text)[:max_tokens]
 
 #break up the content of long webpages into smaller chunks and pass each into GPT3.5 to avoid the token limit and return the summary of the whole webpage
-async def pageBreakUp(content_prompt, content): 
+async def pageBreakUp(api_key, content_prompt, content): 
     pageSummary = ''
     sectionNum = math.ceil(num_tokens_from_string(content) // 3000) + 1 
     cutoffIndex = math.ceil(len(content) // sectionNum)
@@ -170,12 +170,12 @@ Otherwise, provide one summarization per target information with as much detail 
         end_index = (i + 1) * cutoffIndex
         section = content[start_index:end_index]
         pageMessage = "Important Informtion:\n"+ content_prompt + "\ntext:\n" + section
-        pageSummary += await singleGPT(section_messages,pageMessage)
+        pageSummary += await singleGPT(api_key, section_messages,pageMessage)
     if num_tokens_from_string(pageSummary) > 3000: #if the summary is still too long, truncate it to 3500 tokens
         pageSummary = truncate_text_tokens(pageSummary)
     return pageSummary
 
-async def PageResult(content_prompt, content):
+async def PageResult(api_key, content_prompt, content):
     messages = [
         {"role": "system", 
          "content": "Extract the target information from the text provided in the next message. \
@@ -186,12 +186,12 @@ Otherwise, provide one summarization per target information with as much detail 
     pageSummary = ''
     if num_tokens_from_string(content) <= 3500: #if the content is less than 3500 tokens, pass the whole content to GPT
         pageMessage = "Important Informtion:\n" + content_prompt + "\ntext:\n" + content
-        pageSummary = await singleGPT(messages,pageMessage)
+        pageSummary = await singleGPT(api_key, messages,pageMessage)
     else: #split the webpage content into multiple section to avoid the token limit
-        pageSummary = await pageBreakUp(content_prompt, content) #split the webpage content into multiple section and return the summary of the whole webpage
+        pageSummary = await pageBreakUp(api_key, content_prompt, content) #split the webpage content into multiple section and return the summary of the whole webpage
         #print("pageSummary: ",pageSummary)
         pageSummary = "Important Informtion:\n" + content_prompt + "\ntext:\n" + pageSummary 
-        pageSummary = await singleGPT(messages,pageSummary)
+        pageSummary = await singleGPT(api_key, messages,pageSummary)
 
     return pageSummary
 
@@ -291,7 +291,7 @@ def getURLPrompt(query_list):
     url_prompt = ", ".join([f"{obj}" for obj in query_list])
     return url_prompt
 
-async def createSearchQuery(userAsk):
+async def createSearchQuery(userAsk): # currently not used
     messages = [
                 {"role": "system", 
                  "content": "Generate less than 4 Google search queries that reflect the search content in the Text provide. \
@@ -301,7 +301,7 @@ Return the search queries in the format of comma_separated_list_of_queries. Refr
 Example result format: query1, query2, query3, query4 "}]
     
     queryMessage = "Text:\n" + userAsk
-    googleQueries = await singleGPT(messages, queryMessage, temperature=0.0, top_p=1)
+    googleQueries = await singleGPT(messages, queryMessage, temperature=0.0, top_p=1, )
     # print(googleQueries)
     query_list = [query.strip() for query in googleQueries.split(',')] # remove the white space from the string and convert the string into a list
     # print(query_list)

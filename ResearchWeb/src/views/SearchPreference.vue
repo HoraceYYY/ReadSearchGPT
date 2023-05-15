@@ -76,7 +76,7 @@ export default {
             max_depth: this.depth,
             searchDomain: this.domain,
             searchqueries: this.searchQueries,
-            //apiKey: this.apiKey,
+            apiKey: this.apiKey,
         };
         try {
             this.buttonText = "Searching...";

@@ -66,7 +66,7 @@ def google_official_search(query: str, searchWidth: int) -> str | list[str]:
     return search_results_links
     #return safe_google_results(search_results_links)
 
-async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done):
+async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done, api_key):
     while not producer_done[0] or not consumer_queue.empty():
         if tasks[task_id]["status"] == 'canceled':
             raise asyncio.CancelledError
@@ -98,7 +98,7 @@ async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, co
             print(colored('\u2714\uFE0F  Consumer: Skip to the next website.\n', 'green', attrs=['bold']))
     print(colored('\u2714\uFE0F  Consumer: Done!','green',attrs=['bold']))
 
-async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done):
+async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done, api_key):
     while not producer_queue.empty():
         if tasks[task_id]["status"] == 'canceled':
             raise asyncio.CancelledError
@@ -114,7 +114,7 @@ async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_
                     if content_type.lower() == 'application/pdf': # check if the content is pdf, if so, skip to the next url
                         continue
                     links = async_utils.getWebpageLinks(soup, searchDomain, url)
-                    relaventURLs = await async_utils.relaventURL(url_prompt, links) # Get the highly relevant links from the page and make them into asbolute URLs
+                    relaventURLs = await async_utils.relaventURL(url_prompt, links, api_key) # Get the highly relevant links from the page and make them into asbolute URLs
                     if relaventURLs:  
                         print("\u2714\uFE0F", colored(' Producer: Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')  
                         for new_url in relaventURLs:
@@ -130,7 +130,7 @@ async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_
     producer_done[0] = True  # Signal the consumer that the producer is done
     print(colored('\u2714\uFE0F  Producer: Done!','green',attrs=['bold']))
 
-async def main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth):
+async def main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth, api_key):
 
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
@@ -164,8 +164,8 @@ async def main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth
     num_producers = 1
     num_consumers = 1
 
-    producer_tasks = [asyncio.create_task(url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done)) for _ in range(num_producers)]
-    consumer_tasks = [asyncio.create_task(url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done)) for _ in range(num_consumers)]
+    producer_tasks = [asyncio.create_task(url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done, api_key)) for _ in range(num_producers)]
+    consumer_tasks = [asyncio.create_task(url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done, api_key)) for _ in range(num_consumers)]
 
     all_tasks = producer_tasks + consumer_tasks
 
