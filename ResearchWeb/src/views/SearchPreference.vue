@@ -80,7 +80,7 @@ export default {
         };
         try {
             this.buttonText = "Searching...";
-            console.log(data);
+            //console.log(data);
             const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -92,6 +92,8 @@ export default {
             const jsonData = await response.json();
 
             console.log(jsonData);
+            this.jsonData = jsonData;  // assign jsonData directly
+            // this.$store.dispatch('jsonData', jsonData);
             this.$router.push({ path: '/searching' });
             //handle your response here
         } catch (error) {

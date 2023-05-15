@@ -133,6 +133,9 @@ def test(search: Search):
     print(type(search.searchDomain))
     print(type(search.max_depth))
     print(type(search.searchWidth))
+    print(type(search.apiKey))
+
+    return {"task_id":"sudo task id" , "status": "Task has started", "file_path": "sudo file path"}
 
 @app.post("/testapi")
 async def testAPI(apiKey: APIKey):

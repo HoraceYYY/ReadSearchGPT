@@ -26,6 +26,7 @@ export default createStore({
       state.domain = domain;
     },
     setJsonData(state, jsonData) {
+      //state.jsonData = { ...jsonData };
       state.jsonData = jsonData;
     },
   },
