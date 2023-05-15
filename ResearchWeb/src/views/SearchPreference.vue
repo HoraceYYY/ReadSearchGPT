@@ -107,6 +107,7 @@ export default {
   
 <template>
     <div class="form-container">
+        <p>Set the search parameters: </p>
       <form @submit.prevent="submitForm">
         <div class="input-group">
           <label for="width" class="input-label">
@@ -153,7 +154,15 @@ export default {
     align-items: center;
     justify-content: center;
   }
-  
+.form-container p{
+  font-family: Arial, sans-serif; /* Substitute with your preferred font */
+  font-size: 20px; /* Adjust size as needed */
+  margin-left: -100px;
+  font-weight: bold; /* Makes the text bold */
+  width: 800px;
+  margin-bottom: 40px;
+}
+
   .input-group, .dropdown{
     width: 900px;
     margin-bottom: 20px;
