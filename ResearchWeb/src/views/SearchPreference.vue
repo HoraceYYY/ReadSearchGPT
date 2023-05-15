@@ -70,7 +70,7 @@ export default {
       return true;
     },
     async callApi() {
-        const url = "http://127.0.0.1:8000/test";  // replace with your API endpoint
+        const url = "http://127.0.0.1:8000/search";  // replace with your API endpoint
         const data = {
             searchWidth: this.width,
             max_depth: this.depth,

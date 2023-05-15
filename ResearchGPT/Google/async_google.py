@@ -68,7 +68,7 @@ def google_official_search(query: str, searchWidth: int) -> str | list[str]:
 
 async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done, api_key):
     while not producer_done[0] or not consumer_queue.empty():
-        if tasks[task_id]["status"] == 'canceled':
+        if tasks[task_id]["Status"] == 'Cancelled':
             raise asyncio.CancelledError
         url, depth = await consumer_queue.get()
         wrapped_url = async_utils.Url(url)
@@ -100,7 +100,7 @@ async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, co
 
 async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done, api_key):
     while not producer_queue.empty():
-        if tasks[task_id]["status"] == 'canceled':
+        if tasks[task_id]["Status"] == 'Cancelled':
             raise asyncio.CancelledError
         url, depth = await producer_queue.get()
 

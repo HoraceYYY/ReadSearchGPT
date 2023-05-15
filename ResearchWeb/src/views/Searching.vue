@@ -27,7 +27,7 @@ export default {
       <table class="results-table">
         <tr v-for="(value, key) in jsonData" :key="key">
           <td class="key-column">{{ key }}</td>
-          <td :class="{'task-id-value': key === 'task_id'}">{{ value }}</td>
+          <td :class="{'task-id-value': key === 'Task ID'}">{{ value }}</td>
         </tr>
       </table>
       <div class="button-container">
