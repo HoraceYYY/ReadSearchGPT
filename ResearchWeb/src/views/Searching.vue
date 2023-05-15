@@ -19,9 +19,9 @@ export default {
 <template>
     <div class="results-container">
       <div class="text-container">
-        <p>Your AI agent has begun your research!</p>
-        <p>Download partial results anytime during the search. Full results remain available for another 24 hours and will be automatically deleted.</p>
-        <p>You need the Task ID to retrieve the results. <span class="important-notice">Make sure to save the Task ID. It won't be displayed again.</span></p>
+        <p class="textheader">Your AI agent has begun your research!</p>
+        <p class="textbody">Download partial results anytime during the search. Full results remain available for another 24 hours and will be automatically deleted after.</p>
+        <p class="textbody">You need the Task ID to retrieve the results. <span class="important-notice">Make sure to save the Task ID. It won't be displayed again.</span></p>
 
       </div>
       <table class="results-table">
@@ -44,17 +44,22 @@ export default {
     align-items: center;
     justify-content: center;
   }
-  
-  .text-container {
-    max-width: 1000px; /* Match the table width */
-    width: 100%;
+  .textheader {
+    width: 1000px; /* Match the table width */
     text-align: left;
+    font-size: 20px;
+    font-weight: bold;
+
   }
-  
+  .textbody {
+    margin-top: 40px;
+    width: 900px;
+    padding-left: 50px;
+  }
   .results-container p {
     font-family: Arial, sans-serif;
     font-size: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
   
   .important-notice {

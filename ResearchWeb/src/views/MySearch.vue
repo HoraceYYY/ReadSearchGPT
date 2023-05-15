@@ -82,7 +82,10 @@ export default {
   font-family: Arial, sans-serif;
   font-size: 20px;
 }
-
+.input-label{
+  font-weight: bold;
+  margin-bottom: 10px;
+}
 .text-input {
   width: 96%;
   margin: 10px 0;

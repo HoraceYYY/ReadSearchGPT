@@ -125,6 +125,7 @@ body {
   align-items: center;
   height: 100vh;
   padding-top: 50px; /* Adjust this as needed */
+  margin-top: -40px;
 }
 
 .content-container {

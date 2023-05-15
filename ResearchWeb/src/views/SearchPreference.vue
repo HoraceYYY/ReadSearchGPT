@@ -155,11 +155,12 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin-top: -40px;
   }
 .form-container p{
   font-family: Arial, sans-serif; /* Substitute with your preferred font */
   font-size: 20px; /* Adjust size as needed */
-  margin-left: -100px;
+  margin-left: -160px;
   font-weight: bold; /* Makes the text bold */
   width: 800px;
   margin-bottom: 40px;
@@ -222,7 +223,7 @@ export default {
     display: flex;
   justify-content: center;
   gap: 120px; /* Adjust the spacing between buttons as needed */
-  margin-top: 80px; /* Add margin to the top */
+  margin-top: 40px; /* Add margin to the top */
   }
   
   .search-button {

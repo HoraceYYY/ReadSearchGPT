@@ -58,14 +58,27 @@ h1 {
 
 .navbar {
   flex-shrink: 0;
-  background-color: #f8f9fa;
-  padding: 10px;
+  background-color: #ffffff;
+  padding: 15px;
   max-height: 10vh; /* Adjust this value based on your needs */
   overflow-y: auto; 
-}
-
-.navbar-top {
+  font-family: Arial, sans-serif;
+  font-style: italic;
+  color: #2e2b2b;
   
+}
+.navbar-left{
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.navbar-right, .navbar-bottom-right {
+  font-size: 18px;
+  display: flex;
+  gap: 20px;
+}
+.navbar-top {
   display: flex;
   justify-content: space-between;
 }
