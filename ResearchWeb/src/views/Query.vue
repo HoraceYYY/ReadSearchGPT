@@ -11,9 +11,11 @@
             </li>
           </ul>
           <p>Enter Open AI API Key: </p>
-          <div class="input-item extra-input-item">
-            <input v-model="apiKey" type="text" class="input" placeholder="API Key..">
-        </div>
+            <div class="input-item extra-input-item">
+                <input v-model="apiKey" :type="passwordFieldType" class="input" placeholder="API Key..">
+                <button @click="togglePasswordField" class="toggle-password-button">{{ passwordFieldType === 'password' ? 'Show' : 'Hide' }}</button>
+            </div>
+
 
         </div>
         <div class="button-container">
@@ -28,7 +30,8 @@ export default {
     
     data() {
       return {
-        buttonText: "Search"
+        buttonText: "Search",
+        passwordFieldType: "password"
       };
     },
 
@@ -38,7 +41,9 @@ export default {
     this.apiKey = this.$store.getters.apiKey;
     },
   methods: {
-    
+    togglePasswordField() {
+     this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
+   },
     removeItem(index) {
       this.searchqueries.splice(index, 1);
     },
@@ -261,6 +266,25 @@ body {
 .search-button:hover {
   background-color: #0c952c;
   color: #ffffff;
+}
+
+.toggle-password-button {
+   margin-left: 30px; /* Add some margin to the left side of the button */
+   border: 1px solid #000000;
+   border-radius: 8px;
+   cursor: pointer; /* Hand cursor on hover */
+   text-align: center; /* Center the text */
+   text-decoration: none; /* Remove underline */
+   display: inline-block; /* Make them inline elements */
+   font-size: 14px; /* Increase font size */
+   transition-duration: 0.4s; /* Add animation when hovering */
+   color: #000000; /* Green text */
+   background-color: #ffffff;
+}
+
+.toggle-password-button:hover {
+    border: 1px solid #0c952c;
+  color: #0c952c;
 }
 
 </style>
