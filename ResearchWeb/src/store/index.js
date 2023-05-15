@@ -7,7 +7,8 @@ export default createStore({
     width: 5,
     depth: 1,
     domain: "",
-    jsonData: {}
+    jsonData: {},
+    taskId: ""
   },
   mutations: {
     setSearchQueries(state, searchQueries) {
@@ -29,6 +30,9 @@ export default createStore({
       //state.jsonData = { ...jsonData };
       state.jsonData = jsonData;
     },
+    setTaskId(state, taskId) {
+      state.taskId = taskId;
+    },
   },
   actions: {
     SearchQueries({ commit }, searchQueries) {
@@ -48,6 +52,9 @@ export default createStore({
     },
     setJsonData({ commit }, jsonData) {
       commit('setJsonData', jsonData);
+    },
+    setTaskId({ commit }, taskId) {
+      commit('setTaskId', taskId);
     }
   },
   getters: {
@@ -57,5 +64,6 @@ export default createStore({
     depth: state => state.depth,
     domain: state => state.domain,
     jsonData: state => state.jsonData,
+    taskId: state => state.taskId
   }
 })

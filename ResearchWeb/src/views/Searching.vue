@@ -62,11 +62,6 @@ export default {
     color: red;
   }
   
-  .search-results-title {
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
-  
   .results-table {
     width: 900px;
     font-family: Arial, sans-serif;

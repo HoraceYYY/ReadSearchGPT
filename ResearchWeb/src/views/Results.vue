@@ -1,0 +1,190 @@
+<template>
+    <div class="result-container">
+      <div class="content-container">
+        <p>Search Result:</p>
+        <table class="results-table">
+          <tr v-for="(value, key) in jsonData" :key="key">
+            <td class="key-column">{{ key }}</td>
+            <td class="value-column" :class="{'status-green': key === 'Status' && (value === 'Researching...' || value === 'Completed'), 'status-red': key === 'Status' && value !== 'Researching...' && value !== 'Completed'}">{{ value }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="button-container">
+        <button @click="downloadResults" class="download-button">Download Results</button>
+        <button @click="handleButtonClick" :class="buttonClass">{{ buttonText }}</button>
+      </div>
+    </div>
+  </template>
+  
+  <script>
+  import { mapGetters } from 'vuex';
+
+  export default {
+    computed: {
+    ...mapGetters(['taskId']),
+      jsonData: {
+        get() {
+          console.log("jsonData in component:", this.$store.state.jsonData);
+          return this.$store.state.jsonData;
+        },
+        set(value) {
+          this.$store.dispatch('setJsonData', value);
+        }
+      },
+      buttonText() {
+        return this.jsonData.Status === "Researching..." ? "Cancel Search" : "New Search";
+      },
+      buttonClass() {
+        return this.jsonData.Status === "Researching..." ? "cancel-button" : "newsearch-button";
+      },
+    },
+    methods: {
+      async downloadResults() {
+        const url = `http://127.0.0.1:8000/task/${this.taskId}/download`;
+        try {
+          await fetch(url);
+          // handle your response here
+        } catch (error) {
+          console.error(error);
+        }
+      },
+      handleButtonClick() {
+        if (this.jsonData.Status === "Researching...") {
+          this.cancelSearch();
+        } else {
+          this.$router.push({ path: '/' });
+        }
+      },
+      async cancelSearch() {
+        const cancelUrl = `http://127.0.0.1:8000/task/${this.taskId}/stop`;
+        const statusUrl = `http://127.0.0.1:8000/task/${this.taskId}/status`;
+        try {
+          this.buttonText = "Cancelling..."
+          await fetch(cancelUrl, { method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const response = await fetch(statusUrl, { method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.jsonData["Task ID"]),
+          });
+  
+          this.jsonData = await response.json();
+  
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
+  };
+  </script>
+  
+  
+  <style scoped>
+  .result-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .content-container {
+    max-width: 900px; /* Match the table width */
+    width: 100%;
+  }
+  .result-container p {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
+  .results-table {
+    width: 900px;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .results-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  .key-column {
+    width: 180px; /* Adjust as needed */
+  }
+
+  .status-green {
+    color: green;
+  }
+
+  .status-red {
+    color: red;
+}
+
+  .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 120px;
+    margin-top: 80px;
+  }
+  .download-button {
+    border: 2px solid #0000ff;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #0000ff;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+  .download-button:hover {
+    background-color: #0000ff;
+    color: #ffffff;
+  }
+  .cancel-button {
+    border: 2px solid #ff4800;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #ff4800;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+
+  .cancel-button:hover {
+    background-color: #ff4800;
+    color: #ffffff;
+  }
+  .newsearch-button{
+    border: 2px solid #0c952c;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #0c952c;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+
+  .newsearch-button:hover{
+    background-color: #0c952c;
+    color: #ffffff;
+  }
+</style>

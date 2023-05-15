@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from typing import List
 import pandas as pd
 from fastapi.middleware.cors import CORSMiddleware # to allow CORS
-
+from datetime import datetime
 
 
 class SearchRequest(BaseModel): # currently not used
@@ -52,7 +52,7 @@ async def create_search_query(searchrequest: SearchRequest):
 async def startSearching(background_tasks: BackgroundTasks, search: Search):
     task_id = str(uuid.uuid4())
     file_path = await create_output_excel_file(task_id, 'results')
-    tasks[task_id] = {"Status": "Researching", "Time Spent": None, "File Path": file_path}
+    tasks[task_id] = {"Status": "Researching...","Start Time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"Time Spent": None, "File Path": file_path}
     background_tasks.add_task(run_task, task_id, search)
     return {"Task ID": task_id, "Status": "Research has started", "File Path": file_path}
 
@@ -72,7 +72,7 @@ async def create_output_excel_file(task_id, excel_name):
     return file_name
 
 async def run_task(task_id: str, search: Search):
-    start_time = time.time()
+
     searchqueries = search.searchqueries
     userDomain = search.searchDomain
     max_depth = search.max_depth  # Get the integer value of max_depth
@@ -81,19 +81,25 @@ async def run_task(task_id: str, search: Search):
 
     await asyncio.create_task(async_google.main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth, api_key))
     
-    end_time = time.time()
-    execution_time = end_time - start_time
-    tasks[task_id]["Status"] = "Completed"
-    tasks[task_id]["Time Spent"] = execution_time
-    print(f"Task Completed in {execution_time} seconds")
+    end_time = datetime.now()
+    execution_time = end_time - datetime.strptime(tasks[task_id]["Start Time"], "%Y-%m-%d %H:%M:%S")
+    if tasks[task_id]["Status"] == "Researching...":
+        tasks[task_id]["Status"] = "Completed"
+    tasks[task_id]["Time Spent"] = str(execution_time).split('.')[0] 
+    print(f"Task Completed in {execution_time}")
 
 
 @app.get("/task/{task_id}/status")
 async def task_status(task_id: str):
     if task_id in tasks:
+        if tasks[task_id]["Status"] == "Researching...":
+            current_time = datetime.now()
+            elapsed_time = current_time - datetime.strptime(tasks[task_id]["Start Time"], "%Y-%m-%d %H:%M:%S")
+            tasks[task_id]["Time Spent"] = str(elapsed_time).split('.')[0]  # Convert timedelta to string
         return tasks[task_id]
+        
     else:
-        return {"Status": "error", "Message": "Task not found"}
+        return {"Status": "Error", "Message": "Task not found"}
     
 @app.post("/task/{task_id}/stop")
 async def stop_task(task_id: str):
@@ -101,14 +107,14 @@ async def stop_task(task_id: str):
         tasks[task_id]["Status"] = "Cancelled"
         return {"Status": "Task has been cancelled"}
     else:
-        return {"Status": "error", "Message": "Task not found"}
+        return {"Status": "Error", "Message": "Task not found"}
 
 @app.get("/task/{task_id}/download")
 async def download_excel(task_id: str):
     if task_id in tasks:
         return tasks[task_id]["File Path"]
     else:
-        return {"Status": "error", "Message": "Task not found"}
+        return {"Status": "Error", "Message": "Task not found"}
     
 @app.get("/task/{task_id}/delete")
 async def delete_excel(task_id: str):
@@ -118,7 +124,7 @@ async def delete_excel(task_id: str):
         tasks[task_id]["Status"] = "Deleted"
         return {"Status": "Excel file has been deleted"}
     else:
-        return {"Status": "error", "Message": "Task not found"}
+        return {"Status": "Error", "Message": "Task not found"}
 
 @app.get("/task/get_all_tasks")
 async def get_all_tasks():
