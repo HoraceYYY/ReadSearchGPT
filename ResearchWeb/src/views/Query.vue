@@ -5,7 +5,7 @@
           <p>Enter the search topics below: </p>
           <ul class="input-list">
             <li v-for="(item, index) in searchqueries" :key="index" class="input-item">
-              <input v-model="searchqueries[index]" type="text" class="input" placeholder="Enter your search query here...">
+              <input v-model="searchqueries[index]" type="text" class="input" placeholder="Enter your search topic here...">
               <button v-if="index !== 0" @click="removeItem(index)" class="minus-button">-</button>
               <button v-if="index === searchqueries.length - 1 && searchqueries.length < 5" @click="addItem" class="plus-button">+</button>
             </li>
