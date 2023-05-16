@@ -162,23 +162,11 @@ async def testAPI(apiKey: APIKey):
                 status_code = response.status
                 if status_code == 200:
                     print("success: ", status_code)
-                    return {"Open AI Key": "Valid"}
+                    return {"Key": "Valid"}
                 else:
                     print("error: ", status_code)
-                    return {"Open AI Key": f"Not Valid: {status_code}"}
+                    return {"Key": f"Not Valid: {status_code}"}
         except Exception as e:
             print(e)
-            return {"Open AI Key": f"Not Valid: {e}"}
+            return {"Key": f"Not Valid: {e}"}
 
-
-# def testGPTAPI(apiKey: APIKey):
-#     openai.api_key = apiKey.apiKey
-
-#     completion = openai.ChatCompletion.create(
-#     model="gpt-3.5-turbo",
-#     messages=[
-#         {"role": "user", "content": "hello"}
-#     ]
-#     )
-#     print(completion)
-#     return completion["choices"][0]["message"]["content"]

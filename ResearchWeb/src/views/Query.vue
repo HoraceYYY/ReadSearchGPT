@@ -73,7 +73,7 @@ export default {
     this.buttonText = "Checking...";
 
     const response = await this.callApi();
-    if (response['Open AI Key'] === 'Valid') {
+    if (response['Key'] === 'Valid') {
       this.$router.push({ path: '/preference' });
     } else {
       this.buttonText = "Search";
