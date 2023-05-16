@@ -18,7 +18,7 @@
     </nav>
 
     <div class="content">
-      <h1> (Re)Search </h1>
+      <h1> ReadSearch </h1>
       
       <router-view class="router-view-class"/>
 

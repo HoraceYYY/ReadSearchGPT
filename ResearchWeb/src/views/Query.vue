@@ -2,7 +2,7 @@
     <div class="main-container">
       <div class="content-container">
         <div class="text-content">
-          <p>Enter the search topic below: </p>
+          <p>Enter the search topics below: </p>
           <ul class="input-list">
             <li v-for="(item, index) in searchqueries" :key="index" class="input-item">
               <input v-model="searchqueries[index]" type="text" class="input" placeholder="Enter your search query here...">
