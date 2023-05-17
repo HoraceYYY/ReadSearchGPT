@@ -4,7 +4,8 @@ import pandas as pd
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from termcolor import colored
-from collections import deque
+from database import SessionLocal
+from crud import get_task
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import async_utils
 
@@ -66,10 +67,8 @@ def google_official_search(query: str, searchWidth: int) -> str | list[str]:
     return search_results_links
     #return safe_google_results(search_results_links)
 
-async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done, api_key):
+async def url_consumer(task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done, api_key):
     while not producer_done[0] or not consumer_queue.empty():
-        if tasks[task_id]["Status"] == 'Cancelled':
-            raise asyncio.CancelledError
         url, depth = await consumer_queue.get()
         wrapped_url = async_utils.Url(url)
         if wrapped_url not in consumer_checked_list:
@@ -98,10 +97,8 @@ async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, co
             print(colored('\u2714\uFE0F  Consumer: Skip to the next website.\n', 'green', attrs=['bold']))
     print(colored('\u2714\uFE0F  Consumer: Done!','green',attrs=['bold']))
 
-async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done, api_key):
+async def url_producer(producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done, api_key):
     while not producer_queue.empty():
-        if tasks[task_id]["Status"] == 'Cancelled':
-            raise asyncio.CancelledError
         url, depth = await producer_queue.get()
 
         if depth < max_depth: ## change this to max_depth back later 
@@ -131,7 +128,17 @@ async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_
     producer_done[0] = True  # Signal the consumer that the producer is done
     print(colored('\u2714\uFE0F  Producer: Done!','green',attrs=['bold']))
 
-async def main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth, api_key):
+async def termination_watcher(db, task_id, tasks):
+    while True:
+        await asyncio.sleep(30)  # Check every 5 seconds
+        task = get_task(db, task_id)
+        if task.status == 'Cancelled':
+            for task in tasks:
+                task.cancel()
+
+async def main(task_id, searchqueries, userDomain, max_depth, searchWidth, api_key):
+
+    db = SessionLocal()
 
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
@@ -171,54 +178,11 @@ async def main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth
     num_producers = 1
     num_consumers = 1
 
-    producer_tasks = [asyncio.create_task(url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done, api_key)) for _ in range(num_producers)]
-    consumer_tasks = [asyncio.create_task(url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done, api_key)) for _ in range(num_consumers)]
+    producer_tasks = [asyncio.create_task(url_producer(producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done, api_key)) for _ in range(num_producers)]
+    consumer_tasks = [asyncio.create_task(url_consumer(task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done, api_key)) for _ in range(num_consumers)]
 
     all_tasks = producer_tasks + consumer_tasks
+    watcher_task = asyncio.create_task(termination_watcher(db, task_id, all_tasks))
 
-    try:
-        await asyncio.gather(*all_tasks, return_exceptions=True)
-    except asyncio.CancelledError:
-        for task in all_tasks:
-            task.cancel()
-        await asyncio.gather(*all_tasks, return_exceptions=True)
-
-""""
-sudo code:
-
-producer function(producer queue, consumer queue, producer checked list, max depth):
-    
-    while queue is not empty:
-        pop the first url in the queue
-        if the depth of the url < max depth:
-            if the url is not in the producer checked list: 
-                add the url to the producer checked list
-                fetch relevant urls from the page
-                add the relevant relevant urls to the producer queue
-                add the relevant relevant urls to the consumer queue
-            else:
-                skip to the next url
-    
-    set flag for signal to consumer that producer is done
-
-consumer function(consumer queue, consumer checked list):
-    
-    while producer is not done and consumer queue is not empty:
-        pop the first url in the queue
-        if the url is not in the consumer checked list:
-            add the url to the consumer checked list
-            fetch the url content and add to excel
-        else:  
-            skip to the next url
-
-main function:       
-    create a producer queue and initialize it with the urls from google. url should be wrapped before push
-    create a consumer queue and initialize it with the urls from google. url should be wrapped before push
-    create a empty producer checked list as a set
-    create a empty consumer checked list as a set
-
-    create a producer task
-    create a consumer task
-    gather the tasks
-
-"""
+    await asyncio.gather(*all_tasks, return_exceptions=True)
+    watcher_task.cancel()
