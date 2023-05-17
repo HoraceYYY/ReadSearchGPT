@@ -1,12 +1,13 @@
 from bs4 import BeautifulSoup
-import os, requests, sys, json
+import os, requests, sys, json, asyncio
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-import utils
+import async_utils, utils
 import openai
 from dotenv import load_dotenv
 from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin
 from termcolor import colored
-
+import tracemalloc
+tracemalloc.start()
 
 def getContentPrompt(query_list):
     content_prompt = "\n".join(f"{i+1}. {obj}" for i, obj in enumerate(query_list))
@@ -30,37 +31,34 @@ Provide the search queries as a comma-separated list, without additional text. E
     return query_list
 
 
-userAsk = input(colored("What would you like to search:", "blue", attrs=["bold", "underline"]) + " ")
-# print(colored("\nPlease list 3 outcomes your would like to achieve!", "blue",attrs=["bold", "underline"]))
-# objectives_inputs = [input(colored(f"Objective {i + 1}: ", "blue", attrs=["bold"])) for i in range(3)]
+# userAsk = input(colored("What would you like to search:", "blue", attrs=["bold", "underline"]) + " ")
 
-query_list = creatSearchQuery(userAsk)
-print(query_list)
+# query_list = creatSearchQuery(userAsk)
+# print(query_list)
 
 
-print(getContentPrompt(query_list))
-print(getURLPrompt(query_list))
+# print(getContentPrompt(query_list))
+# print(getURLPrompt(query_list))
 
 
-url = "https://www.oracle.com/a/ocom/docs/industries/retail/order-management-cloud-service.pdf"
+
+async def run_task(url, content_prompt):
+    soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
+    if status_code == 200:
+        if content_type.lower() == 'application/pdf': # check if the content is pdf and download it
+            await async_utils.download_pdf(url)
+        else:
+            print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
+            content, page_Title = async_utils.getWebpageData(soup) # get the page title,content, and links
+            pageSummary = await async_utils.PageResult(content_prompt, content) # get the page summary based on the search query
+    print(f'{pageSummary}')
+    return pageSummary
+
+url = "https://en.wikipedia.org/wiki/Prince_George,_British_Columbia"
 searchDomain = "none"
+content_prompt = "1. school and university location and phone number in alberta Dawson Creek \n2. school and university location and phone number in alberta Fort St John\n3. school and university location and phone number in alberta Prince George "
 
-#print(promptObjectives)
 
-headers = {
-    'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
-}
-#get header and body of the reponse
-try:
-    response = requests.get(url, headers=headers)
-    if response.status_code != 200:
-        print(f"Failed to fetch the page. Status code: {response.status_code}")
+asyncio.run(run_task(url, content_prompt))
 
-except Exception as e:
-    print(f"An error occurred: {e}")
-
-print(response.headers.get('content-type','').lower())   
-
-if (response.headers.get('content-type','').lower()) == 'application/pdf': # check if the content is pdf and download it
-    utils.download_pdf(url)
-    print("PDF downloaded")
+tracemalloc.stop()

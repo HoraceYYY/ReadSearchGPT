@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import async_utils
 
 ## take the google search query and return the top 8 results URL
-def google_official_search(query: str, searchtype: int) -> str | list[str]:
+def google_official_search(query: str, searchWidth: int) -> str | list[str]:
     """Return the results of a Google search using the official Google API
 
     Args:
@@ -30,16 +30,10 @@ def google_official_search(query: str, searchtype: int) -> str | list[str]:
         # Initialize the Custom Search API service
         service = build("customsearch", "v1", developerKey=api_key)
 
-        if searchtype == 1: # this is quick search
-            num_results = 3 # only return top 3 results from google; these are results with >10% click through rate
-        elif searchtype == 2: # this is thorogh search
-            num_results = 5 # return top 5 results from google; these are results with >5% click through rate
-        elif searchtype == 3: # this is deep search
-            num_results = 10 # return top 10 results from google; these are results with >1% click through rate
         # Send the search query and retrieve the results
         result = (
             service.cse()
-            .list(q=query, cx=custom_search_engine_id, num=num_results)
+            .list(q=query, cx=custom_search_engine_id, num=searchWidth)
             .execute()
         )
 
@@ -72,9 +66,9 @@ def google_official_search(query: str, searchtype: int) -> str | list[str]:
     return search_results_links
     #return safe_google_results(search_results_links)
 
-async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done):
+async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done, api_key):
     while not producer_done[0] or not consumer_queue.empty():
-        if tasks[task_id]["status"] == 'canceled':
+        if tasks[task_id]["Status"] == 'Cancelled':
             raise asyncio.CancelledError
         url, depth = await consumer_queue.get()
         wrapped_url = async_utils.Url(url)
@@ -87,7 +81,7 @@ async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, co
                     continue
                 print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
                 content, page_Title = async_utils.getWebpageData(soup) # get the page title,content, and links
-                pageSummary = await async_utils.PageResult(content_prompt, content) # get the page summary based on the search query
+                pageSummary = await async_utils.PageResult(api_key, content_prompt, content) # get the page summary based on the search query
                 
                 if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
                     results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
@@ -104,13 +98,13 @@ async def url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, co
             print(colored('\u2714\uFE0F  Consumer: Skip to the next website.\n', 'green', attrs=['bold']))
     print(colored('\u2714\uFE0F  Consumer: Done!','green',attrs=['bold']))
 
-async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done):
+async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done, api_key):
     while not producer_queue.empty():
-        if tasks[task_id]["status"] == 'canceled':
+        if tasks[task_id]["Status"] == 'Cancelled':
             raise asyncio.CancelledError
         url, depth = await producer_queue.get()
 
-        if depth < max_depth:
+        if depth < max_depth: ## change this to max_depth back later 
             wrapped_url = async_utils.Url(url)
             if wrapped_url not in producer_checked_list:
                 producer_checked_list.add(wrapped_url)
@@ -120,7 +114,7 @@ async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_
                     if content_type.lower() == 'application/pdf': # check if the content is pdf, if so, skip to the next url
                         continue
                     links = async_utils.getWebpageLinks(soup, searchDomain, url)
-                    relaventURLs = await async_utils.relaventURL(url_prompt, links) # Get the highly relevant links from the page and make them into asbolute URLs
+                    relaventURLs = await async_utils.relaventURL(url_prompt, links, api_key) # Get the highly relevant links from the page and make them into asbolute URLs
                     if relaventURLs:  
                         print("\u2714\uFE0F", colored(' Producer: Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')  
                         for new_url in relaventURLs:
@@ -136,7 +130,7 @@ async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_
     producer_done[0] = True  # Signal the consumer that the producer is done
     print(colored('\u2714\uFE0F  Producer: Done!','green',attrs=['bold']))
 
-async def main(tasks, task_id, searchqueries, userDomain, max_depth):
+async def main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth, api_key):
 
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
@@ -151,7 +145,7 @@ async def main(tasks, task_id, searchqueries, userDomain, max_depth):
         if userDomain != None: # if the user wants to search within a domain. None if the user keep the UI field empty
             searchDomain = async_utils.get_domain(userDomain)
             query = query + " site:" + searchDomain
-        search_results_links += google_official_search(query, max_depth)
+        search_results_links += google_official_search(query, searchWidth)
 
     for url in search_results_links:
         await producer_queue.put((url, 0))
@@ -170,8 +164,8 @@ async def main(tasks, task_id, searchqueries, userDomain, max_depth):
     num_producers = 1
     num_consumers = 1
 
-    producer_tasks = [asyncio.create_task(url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done)) for _ in range(num_producers)]
-    consumer_tasks = [asyncio.create_task(url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done)) for _ in range(num_consumers)]
+    producer_tasks = [asyncio.create_task(url_producer(tasks, task_id, producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done, api_key)) for _ in range(num_producers)]
+    consumer_tasks = [asyncio.create_task(url_consumer(tasks, task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done, api_key)) for _ in range(num_consumers)]
 
     all_tasks = producer_tasks + consumer_tasks
 
