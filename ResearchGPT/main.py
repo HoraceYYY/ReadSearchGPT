@@ -67,7 +67,10 @@ async def startSearching(background_tasks: BackgroundTasks, search: Search, db: 
     crud.create_task(db, task)
     # tasks[task_id] = {"Status": "Researching...","Start Time": start_time,"Time Spent": None, "File Path": file_path}
     # tasks[task_id] = {"Status": "Researching...","Start Time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"Time Spent": None, "File Path": file_path}
-    background_tasks.add_task(run_task, task_id, search)
+    
+    # Use the existing session to create a new one for the background task
+    new_db = SessionLocal()
+    background_tasks.add_task(run_task, task_id, search, new_db)
     return {"Task ID": task_id, "Status": "Research has started", "File Path": file_path}
 
 async def create_output_excel_file(task_id, excel_name):
@@ -85,27 +88,29 @@ async def create_output_excel_file(task_id, excel_name):
     return file_name
 
 async def run_task(task_id: str, search: Search, db: Session):
-    searchqueries = search.searchqueries
-    userDomain = search.searchDomain
-    max_depth = search.max_depth  # Get the integer value of max_depth
-    searchWidth = search.searchWidth
-    api_key = search.apiKey
-    
-    await asyncio.create_task(async_google.main(task_id, searchqueries, userDomain, max_depth, searchWidth, api_key))
-    task = crud.get_task(db, task_id)
-    end_time = datetime.now()
-    execution_time = end_time - task.start_time
-    # execution_time = end_time - datetime.strptime(tasks[task_id]["Start Time"], "%Y-%m-%d %H:%M:%S")
-    # if tasks[task_id]["Status"] == "Researching...":
-    #     tasks[task_id]["Status"] = "Completed"
-    # tasks[task_id]["Time Spent"] = str(execution_time).split('.')[0] 
-    if task.status == "Researching...":
-        task.status = "Completed"
-    task.time_spent = str(execution_time).split('.')[0]
-    task.end_time = end_time
-    db.commit()
-
-    print(f"Task Completed in {execution_time}")
+    try:
+        searchqueries = search.searchqueries
+        userDomain = search.searchDomain
+        max_depth = search.max_depth  # Get the integer value of max_depth
+        searchWidth = search.searchWidth
+        api_key = search.apiKey
+        
+        await asyncio.create_task(async_google.main(task_id, searchqueries, userDomain, max_depth, searchWidth, api_key))
+        task = crud.get_task(db, task_id)
+        end_time = datetime.now()
+        execution_time = end_time - task.start_time
+        # execution_time = end_time - datetime.strptime(tasks[task_id]["Start Time"], "%Y-%m-%d %H:%M:%S")
+        # if tasks[task_id]["Status"] == "Researching...":
+        #     tasks[task_id]["Status"] = "Completed"
+        # tasks[task_id]["Time Spent"] = str(execution_time).split('.')[0] 
+        if task.status == "Researching...":
+            task.status = "Completed"
+        task.time_spent = str(execution_time).split('.')[0]
+        task.end_time = end_time
+        db.commit()
+        print(f"Task Completed in {execution_time}")
+    finally:    
+        db.close()
 
 
 @app.get("/task/{task_id}/status")

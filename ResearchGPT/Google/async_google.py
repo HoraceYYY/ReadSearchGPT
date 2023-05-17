@@ -143,7 +143,7 @@ async def main(task_id, searchqueries, userDomain, max_depth, searchWidth, api_k
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     
-    if userDomain.strip() == "":
+    if userDomain is not None and userDomain.strip() == "":
         userDomain = None
 
     content_prompt = async_utils.getContentPrompt(searchqueries)

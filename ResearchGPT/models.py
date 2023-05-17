@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, DateTime
-from database import Base
+from sqlalchemy.ext.declarative import declarative_base
 
-
+Base = declarative_base()
 class Task(Base):
     __tablename__ = "tasks"
 
