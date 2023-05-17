@@ -125,7 +125,7 @@ export default {
                 <span class="tooltip">ℹ️
                 <span class="tooltip-text">Level of webpage exploration by following links found on webpages.</span>
                 </span>
-                Additional Search results:
+                Additional Search Results:
             </label>
             <select id="depth" v-model="depth" class="dropdown">
                 <option value="0">None: Only search initial results (~1min, 10s URLs)</option>

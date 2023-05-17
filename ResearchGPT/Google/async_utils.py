@@ -86,17 +86,18 @@ async def download_pdf(url):
 async def relaventURL(url_prompt, links, api_key):
     try:
         linksString = ','.join(links)
+        #print(linksString)
         messages = [
             {"role": "system", 
-            "content": f"Extract the URLs that are most relevant to the target information from the URLs below, delimted by three dashes (-). \
-If there are no URLs that are relevant to any of the target information, refrain from returning any messages. Instead of returning any messages, only return 'NONE'. \
+            "content": f"From the URLs below, delimted by three dashes(-), extract the URLs that are most relevant to the target information I provide. \
+If there are no URLs that are relevant to the target information, refrain from returning any messages. Instead of returning any messages, only return 'NONE'. \
 Otherwise, return no more than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. Refrain from returning more than 15 URLs in total. \
 The order of relevance is important. The first URL should be the most relevant. \
+Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url. \
 Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL.\n\n\
----\n{linksString}\n---\n\nFormat: 'https://www.example.com, https://www.example.com, https://www.example.com' "}]
+---\n{linksString}\n---"}]
         ## pass the list of message to GPT
 
-        
         token = num_tokens_from_string(linksString)
         if token <= 3500:
             urlMessage = "Target Information:" + url_prompt
@@ -129,12 +130,13 @@ async def LinksBreakUp(api_key, token, url_prompt, linksString): # convert the l
             #print('sectionToken',num_tokens_from_string(section))
             messages = [
                 {"role": "system", 
-                 "content": f"Extract the URLs that are most relevant to the target information from the URLs below, delimted by three dashes (-). \
-If there are no URLs that are relevant to any of the target information, refrain from returning any messages. Instead of returning any messages, only return 'NONE'. \
+                 "content": f"From the URLs below, delimted by three dashes(-), extract the URLs that are most relevant to the target information I provide. \
+If there are no URLs that are relevant to the target information, refrain from returning any messages. Instead of returning any messages, only return 'NONE'. \
 Otherwise, return no more than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. Refrain from returning more than 15 URLs in total. \
 The order of relevance is important. The first URL should be the most relevant. \
+Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url. \
 Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL.\n\n\
----\n{section}\n---\n\nFormat: 'https://www.example.com, https://www.example.com, https://www.example.com' "}]
+---\n{section}\n---"}]
             urlMessage = "Target Information:" + url_prompt
             relaventURLs_list.append(await singleGPT(api_key, messages,urlMessage, temperature=0.0, top_p=1))
         relaventURLs = ','.join(relaventURLs_list)
