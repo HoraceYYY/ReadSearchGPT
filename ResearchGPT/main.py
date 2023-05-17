@@ -1,12 +1,14 @@
 from Google import async_google, async_utils
 from aiohttp import ClientSession
-import time, asyncio, uuid, os
-from fastapi import FastAPI, BackgroundTasks
+import asyncio, uuid, os
+from fastapi import FastAPI, BackgroundTasks, Depends
 from pydantic import BaseModel
 from typing import List
 import pandas as pd
 from fastapi.middleware.cors import CORSMiddleware # to allow CORS
 from datetime import datetime
+from Database import models, crud, database
+from sqlalchemy.orm import Session
 
 
 class SearchRequest(BaseModel): # currently not used
