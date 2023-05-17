@@ -114,6 +114,7 @@ async def url_producer(tasks, task_id, producer_queue, consumer_queue, producer_
                     if content_type.lower() == 'application/pdf': # check if the content is pdf, if so, skip to the next url
                         continue
                     links = async_utils.getWebpageLinks(soup, searchDomain, url)
+                    #print(links)
                     relaventURLs = await async_utils.relaventURL(url_prompt, links, api_key) # Get the highly relevant links from the page and make them into asbolute URLs
                     if relaventURLs:  
                         print("\u2714\uFE0F", colored(' Producer: Additional relavent websites to search:', 'green', attrs=['bold']) ,f" {relaventURLs}", '\n')  
@@ -135,6 +136,8 @@ async def main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     
+    if userDomain.strip() == "":
+        userDomain = None
 
     content_prompt = async_utils.getContentPrompt(searchqueries)
     url_prompt = async_utils.getURLPrompt(searchqueries)
@@ -146,6 +149,10 @@ async def main(tasks, task_id, searchqueries, userDomain, max_depth, searchWidth
             searchDomain = async_utils.get_domain(userDomain)
             query = query + " site:" + searchDomain
         search_results_links += google_official_search(query, searchWidth)
+
+    print(f"Search Domain: {searchDomain}")
+    if searchDomain == None:
+        print('search domain is none')
 
     for url in search_results_links:
         await producer_queue.put((url, 0))
