@@ -56,7 +56,6 @@ async def create_search_query(searchrequest: SearchRequest):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-
 @app.post("/search/") # this is the entry point of the search 
 async def startSearching(background_tasks: BackgroundTasks, search: Search, db: Session = Depends(get_db)):
     task_id = str(uuid.uuid4())
@@ -65,9 +64,6 @@ async def startSearching(background_tasks: BackgroundTasks, search: Search, db: 
     # Add your task to the database
     task = models.Task(id=task_id, start_time=start_time, file_path=file_path, status="Researching...")
     crud.create_task(db, task)
-    # tasks[task_id] = {"Status": "Researching...","Start Time": start_time,"Time Spent": None, "File Path": file_path}
-    # tasks[task_id] = {"Status": "Researching...","Start Time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"Time Spent": None, "File Path": file_path}
-    
     # Use the existing session to create a new one for the background task
     new_db = SessionLocal()
     background_tasks.add_task(run_task, task_id, search, new_db)
@@ -99,10 +95,6 @@ async def run_task(task_id: str, search: Search, db: Session):
         task = crud.get_task(db, task_id)
         end_time = datetime.now()
         execution_time = end_time - task.start_time
-        # execution_time = end_time - datetime.strptime(tasks[task_id]["Start Time"], "%Y-%m-%d %H:%M:%S")
-        # if tasks[task_id]["Status"] == "Researching...":
-        #     tasks[task_id]["Status"] = "Completed"
-        # tasks[task_id]["Time Spent"] = str(execution_time).split('.')[0] 
         if task.status == "Researching...":
             task.status = "Completed"
         task.time_spent = str(execution_time).split('.')[0]
