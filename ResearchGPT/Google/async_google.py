@@ -73,10 +73,12 @@ async def url_consumer(task_id, consumer_queue, consumer_checked_list, content_p
         wrapped_url = async_utils.Url(url)
         if wrapped_url not in consumer_checked_list:
             consumer_checked_list.add(wrapped_url)
-            soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
+            soup, content_type, status_code = await async_utils.fetch_url(url, task_id, results) # fetch the url
             if status_code == 200:
                 if content_type.lower() == 'application/pdf': # check if the content is pdf and download it
-                    await async_utils.download_pdf(url)
+                    results['Unchecked Material'] = pd.concat([results['PDFs'], pd.DataFrame([{'PDFs': url}])], ignore_index=True)
+                    await async_utils.updateExcel(task_id, "results", "Unchecked Material", results['Unchecked Material'])
+                    #await async_utils.download_pdf(url)
                     continue
                 print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
                 content, page_Title = async_utils.getWebpageData(soup) # get the page title,content, and links
@@ -130,7 +132,7 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
 
 async def termination_watcher(db, task_id, tasks):
     while True:
-        await asyncio.sleep(30)  # Check every 5 seconds
+        await asyncio.sleep(30)  # Check every 30 seconds
         task = get_task(db, task_id)
         if task.status == 'Cancelled':
             for task in tasks:
@@ -170,7 +172,8 @@ async def main(task_id, searchqueries, userDomain, max_depth, searchWidth, api_k
     
     results = {
         'Related': pd.DataFrame(columns=['URL', 'Title', 'Content']),
-        'Unrelated': pd.DataFrame(columns=['URL', 'Title', 'Content'])
+        'Unrelated': pd.DataFrame(columns=['URL', 'Title', 'Content']),
+        'Unchecked Material': pd.DataFrame(columns=['PDFs', 'Additional Links']),
         }
     
     producer_done = [False]

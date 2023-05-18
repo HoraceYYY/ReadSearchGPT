@@ -38,7 +38,7 @@ async def singleGPT(api_key, systemMessages, userMessage, temperature=1, top_p=1
     await openai.aiosession.get().close()
     return response["choices"][0]["message"]["content"]
       
-async def fetch_url(url):
+async def fetch_url(url, task_id = None, results = None):
     headers = {
         'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
     }
@@ -59,9 +59,17 @@ async def fetch_url(url):
                     return soup, content_type, status_code
                 else:
                     print(f"Failed to fetch the page. Status code: {status_code}")
+                    if results is not None:
+                        results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
+                    if task_id is not None:
+                        await updateExcel(task_id, "results", "Unchecked Material", results['Unchecked Material'])
                     return None, None, status_code
         except Exception as e:
             print(f"An error occurred: {type(e)} - {e}")
+            if results is not None:
+                results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
+            if task_id is not None:
+                await updateExcel(task_id, "results", "Unchecked Material", results['Unchecked Material'])
             return None, None, e
 
 async def download_pdf(url):
@@ -93,7 +101,7 @@ async def relaventURL(url_prompt, links, api_key):
 If there are no URLs that are relevant to the target information, refrain from returning any messages. Instead of returning any messages, only return 'NONE'. \
 Otherwise, return no more than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. Refrain from returning more than 15 URLs in total. \
 The order of relevance is important. The first URL should be the most relevant. \
-Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url. \
+Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url, for example: 'url1',url2','url3'. Refrain from using any other format for the output.\
 Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL.\n\n\
 ---\n{linksString}\n---"}]
         ## pass the list of message to GPT
@@ -134,7 +142,7 @@ async def LinksBreakUp(api_key, token, url_prompt, linksString): # convert the l
 If there are no URLs that are relevant to the target information, refrain from returning any messages. Instead of returning any messages, only return 'NONE'. \
 Otherwise, return no more than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. Refrain from returning more than 15 URLs in total. \
 The order of relevance is important. The first URL should be the most relevant. \
-Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url. \
+Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url, for example: 'url1',url2','url3'. Refrain from using any other format for the output. \
 Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL.\n\n\
 ---\n{section}\n---"}]
             urlMessage = "Target Information:" + url_prompt
