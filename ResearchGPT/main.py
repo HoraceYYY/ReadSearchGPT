@@ -146,7 +146,7 @@ async def download_excel(task_id: str, db: Session = Depends(get_db)):
     else:
         return {"Status": "Error", "Message": "Task not found"}
     
-@app.get("/task/{task_id}/deletefile")
+@app.post("/task/{task_id}/deletefile")
 async def delete_excel(task_id: str, db: Session = Depends(get_db)):
     task = crud.get_task(db, task_id)
     if task:
