@@ -108,7 +108,7 @@ async def task_status(task_id: str, db: Session = Depends(get_db)):
             task.time_spent = str(elapsed_time).split('.')[0]
             db.commit()
         
-        return {"Status": task.status, "Start Time": task.start_time.strftime("%Y-%m-%d %H:%M:%S"), "Time Spent": task.time_spent, "File Path": task.file_path}
+        return {"Task ID": task_id, "Status": task.status, "Start Time": task.start_time.strftime("%Y-%m-%d %H:%M:%S"), "Time Spent": task.time_spent, "File Path": task.file_path}
     else:
         return {"Status": "Error", "Message": "Task not found"}
     
