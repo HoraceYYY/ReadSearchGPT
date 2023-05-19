@@ -78,7 +78,7 @@ async def url_consumer(task_id, consumer_queue, consumer_checked_list, content_p
                 if status_code == 200:
                     if content_type.lower() == 'application/pdf': # check if the content is pdf and download it
                         results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'PDFs': url}])], ignore_index=True)
-                        await async_utils.updateExcel(task_id, "results", "Unchecked Material", results['Unchecked Material'])
+                        #await async_utils.updateExcel(task_id, "results", "Unchecked Material", results['Unchecked Material'])
                         print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
                         #await async_utils.download_pdf(url)
                         continue
@@ -88,10 +88,10 @@ async def url_consumer(task_id, consumer_queue, consumer_checked_list, content_p
                     
                     if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
                         results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # add the filtered result to the dataframe
-                        await async_utils.updateExcel(task_id, "results", "Related", results['Related'])                
+                        #await async_utils.updateExcel(task_id, "results", "Related", results['Related'])                
                     else:
                         results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True)
-                        await async_utils.updateExcel(task_id, "results", "Unrelated", results['Unrelated'])
+                        #await async_utils.updateExcel(task_id, "results", "Unrelated", results['Unrelated'])
 
                     print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
                 else:
@@ -101,6 +101,7 @@ async def url_consumer(task_id, consumer_queue, consumer_checked_list, content_p
                 print(colored('\u2714\uFE0F  Consumer: Skip to the next website.\n', 'green', attrs=['bold']))
         except asyncio.CancelledError:
             print(colored('\u2714\uFE0F  Consumer: Task Cancelled!','red',attrs=['bold']))
+            raise
     print(colored('\u2714\uFE0F  Consumer: Done!','green',attrs=['bold']))
 
 async def url_producer(producer_queue, consumer_queue, producer_checked_list, searchDomain, url_prompt, max_depth, producer_done, api_key):
@@ -133,6 +134,7 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
                     print(colored('\u2714\uFE0F  Producer: Skip to the next website.\n', 'green', attrs=['bold']))
         except asyncio.CancelledError:
             print(colored('\u2714\uFE0F  Producer: Task Cancelled!','red',attrs=['bold']))
+            raise
     producer_done[0] = True  # Signal the consumer that the producer is done
     print(colored('\u2714\uFE0F  Producer: Done!','green',attrs=['bold']))
 
@@ -191,3 +193,10 @@ async def main(task_id, searchqueries, userDomain, max_depth, searchWidth, api_k
 
     await asyncio.gather(*all_tasks, return_exceptions=True)
     watcher_task.cancel()
+    ## update the excel file   
+    await async_utils.updateExcel(task_id, "Related", results['Related'])     
+    await async_utils.updateExcel(task_id, "Unrelated", results['Unrelated'])
+    await async_utils.updateExcel(task_id, "Unchecked Material", results['Unchecked Material'])
+    await async_utils.updateExcel(task_id, "Unchecked Material", results['Unchecked Material'])
+
+

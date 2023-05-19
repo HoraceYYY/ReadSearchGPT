@@ -26,11 +26,11 @@ async def singleGPT(api_key, systemMessages, userMessage, temperature=1, top_p=1
             break  # If successful, break out of the loop
         except Exception as e:
             if attempt < max_retries:
-                print(f"An error occurred: {e}")
+                print(f"An error occurred: {str(e)}")
                 print(f"Retrying in 5 seconds... (attempt {attempt} of {max_retries})")
                 await asyncio.sleep(5)
             else:
-                print(f"An error occurred: {e}")
+                print(f"An error occurred: {str(e)}")
                 print(f"Reached the maximum number of retries ({max_retries}). Aborting.")
                 await openai.aiosession.get().close()
                 return str(e)  # You can return None or an appropriate default value here
@@ -59,20 +59,16 @@ async def fetch_url(url, task_id = None, results = None):
                     return soup, content_type, status_code
                 else:
                     print(f"Failed to fetch the page. Status code: {status_code}")
-                    if results is not None:
-                        results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
-                    if task_id is not None:
-                        await updateExcel(task_id, "results", "Unchecked Material", results['Unchecked Material'])
+                    results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
+                    #     await updateExcel(task_id, "Unchecked Material", results['Unchecked Material'])
                     return None, None, status_code
         except Exception as e:
-            print(f"An error occurred: {type(e)} - {e}")
-            if results is not None:
-                results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
-            if task_id is not None:
-                await updateExcel(task_id, "results", "Unchecked Material", results['Unchecked Material'])
+            print(f"An error occurred. ERROR TYPE: {type(e)}; ERROR: {str(e)}")
+            results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
+            #     await updateExcel(task_id, "results", "Unchecked Material", results['Unchecked Material'])
             return None, None, e
 
-async def download_pdf(url):
+async def download_pdf(url): # not being used
     headers = {'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'}
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as response:
@@ -122,7 +118,7 @@ Refrain from returning any URL that is not relevant to the target information. I
             else:
                 return filtered_url_list   
     except Exception as e:
-        print(f"An error occurred in LinksBreakUp: {e}")
+        print(f"An error occurred in LinksBreakUp: {str(e)}")
         return None
     
 async def LinksBreakUp(api_key, token, url_prompt, linksString): # convert the list of links into a string and break it up into subarrays of 3000 tokens. It will break up some links but give better speed
@@ -150,7 +146,7 @@ Refrain from returning any URL that is not relevant to the target information. I
         relaventURLs = ','.join(relaventURLs_list)
         return relaventURLs # return a text string of the links with potentially some text from GPT3.5
     except Exception as e:
-        print(f"An error occurred in LinksBreakUp: {e}")
+        print(f"An error occurred in LinksBreakUp: {str(e)}")
         return None
     
 def num_tokens_from_string(string: str, encoding_name = 'cl100k_base' ) -> int:
@@ -237,11 +233,11 @@ def getWebpageLinks(soup, searchDomain, url):
                     links.append(absolute_url)
     return links
 
-async def updateExcel(task_id, excel_name, excelsheet, data):
-    folder_path = f'Results/{task_id}'
+async def updateExcel(task_id, excelsheet, data):
+    folder_path = 'Results'
     os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
 
-    file_name = f"{folder_path}/{excel_name}.xlsx"  # Create the Excel file name
+    file_name = f"{folder_path}/{task_id}.xlsx"  # Create the Excel file name
     if os.path.isfile(file_name):  # Check if the file exists
         xls = await asyncio.to_thread(pd.ExcelFile, file_name)  # If the file exists, read the existing Excel file
         if excelsheet in xls.sheet_names:  # Check if the sheet exists in the Excel file
