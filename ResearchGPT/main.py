@@ -71,17 +71,7 @@ async def startSearching(background_tasks: BackgroundTasks, search: Search, db: 
 async def create_output_excel_file(task_id):
     folder_path = 'Results'
     os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
-
     file_name = f"{folder_path}/{task_id}.xlsx"  # Create the Excel file name
-    if not os.path.isfile(file_name):  # Check if the file exists
-        # If the file doesn't exist, create a new Excel file
-        df_related = pd.DataFrame(columns=['URL', 'Title', 'Content'])
-        df_unrelated = pd.DataFrame(columns=['URL', 'Title', 'Content'])
-        df_UncheckedMaterial = pd.DataFrame(columns=['PDFs', 'Additional Links'])
-        with pd.ExcelWriter(file_name) as writer:
-            df_related.to_excel(writer, sheet_name='Related', index=False)
-            df_unrelated.to_excel(writer, sheet_name='Unrelated', index=False)
-            df_UncheckedMaterial.to_excel(writer, sheet_name='Unchecked Material', index=False)
     return file_name
 
 async def run_task(task_id: str, search: Search):
@@ -127,6 +117,8 @@ async def stop_task(task_id: str, db: Session = Depends(get_db)):
     task = crud.get_task(db, task_id)
     if task:
         task.status = "Cancelled"
+        task.end_time = datetime.now()
+        task.time_spent = str(task.end_time - task.start_time).split('.')[0]
         db.commit()
         return {"Status": "Task has been cancelled"}
     else:
