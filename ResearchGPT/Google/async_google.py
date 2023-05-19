@@ -77,8 +77,9 @@ async def url_consumer(task_id, consumer_queue, consumer_checked_list, content_p
                 soup, content_type, status_code = await async_utils.fetch_url(url, task_id, results) # fetch the url
                 if status_code == 200:
                     if content_type.lower() == 'application/pdf': # check if the content is pdf and download it
-                        results['Unchecked Material'] = pd.concat([results['PDFs'], pd.DataFrame([{'PDFs': url}])], ignore_index=True)
+                        results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'PDFs': url}])], ignore_index=True)
                         await async_utils.updateExcel(task_id, "results", "Unchecked Material", results['Unchecked Material'])
+                        print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
                         #await async_utils.download_pdf(url)
                         continue
                     print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
@@ -150,7 +151,7 @@ async def main(task_id, searchqueries, userDomain, max_depth, searchWidth, api_k
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     
-    if userDomain is not None and userDomain.strip() == "":
+    if userDomain is not None and userDomain.strip() == "": # remove this once the ui logic is done
         userDomain = None
 
     content_prompt = async_utils.getContentPrompt(searchqueries)
@@ -163,10 +164,6 @@ async def main(task_id, searchqueries, userDomain, max_depth, searchWidth, api_k
             searchDomain = async_utils.get_domain(userDomain)
             query = query + " site:" + searchDomain
         search_results_links += google_official_search(query, searchWidth)
-
-    print(f"Search Domain: {searchDomain}")
-    if searchDomain == None:
-        print('search domain is none')
 
     for url in search_results_links:
         await producer_queue.put((url, 0))
