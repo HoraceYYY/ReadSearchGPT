@@ -59,31 +59,33 @@ async def create_search_query(searchrequest: SearchRequest):
 @app.post("/search/") # this is the entry point of the search 
 async def startSearching(background_tasks: BackgroundTasks, search: Search, db: Session = Depends(get_db)):
     task_id = str(uuid.uuid4())
-    file_path = await create_output_excel_file(task_id, 'results')
+    file_path = await create_output_excel_file(task_id)
     start_time = datetime.now()
     # Add your task to the database
     task = models.Task(id=task_id, start_time=start_time, file_path=file_path, status="Researching...")
     crud.create_task(db, task)
     # Use the existing session to create a new one for the background task
-    new_db = SessionLocal()
-    background_tasks.add_task(run_task, task_id, search, new_db)
+    background_tasks.add_task(run_task, task_id, search)
     return {"Task ID": task_id, "Status": "Research has started", "File Path": file_path}
 
-async def create_output_excel_file(task_id, excel_name):
-    folder_path = f'Results/{task_id}'
+async def create_output_excel_file(task_id):
+    folder_path = 'Results'
     os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
 
-    file_name = f"{folder_path}/{excel_name}.xlsx"  # Create the Excel file name
+    file_name = f"{folder_path}/{task_id}.xlsx"  # Create the Excel file name
     if not os.path.isfile(file_name):  # Check if the file exists
-        # If the file doesn't exist, create a new Excel file with 'Related' and 'Unrelated' sheets
+        # If the file doesn't exist, create a new Excel file
         df_related = pd.DataFrame(columns=['URL', 'Title', 'Content'])
         df_unrelated = pd.DataFrame(columns=['URL', 'Title', 'Content'])
+        df_UncheckedMaterial = pd.DataFrame(columns=['PDFs', 'Additional Links'])
         with pd.ExcelWriter(file_name) as writer:
             df_related.to_excel(writer, sheet_name='Related', index=False)
             df_unrelated.to_excel(writer, sheet_name='Unrelated', index=False)
+            df_UncheckedMaterial.to_excel(writer, sheet_name='Unchecked Material', index=False)
     return file_name
 
-async def run_task(task_id: str, search: Search, db: Session):
+async def run_task(task_id: str, search: Search):
+    db = SessionLocal()  # Create a new session
     try:
         searchqueries = search.searchqueries
         userDomain = search.searchDomain

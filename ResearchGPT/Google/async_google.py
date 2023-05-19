@@ -138,18 +138,21 @@ async def url_producer(producer_queue, consumer_queue, producer_checked_list, se
     producer_done[0] = True  # Signal the consumer that the producer is done
     print(colored('\u2714\uFE0F  Producer: Done!','green',attrs=['bold']))
 
-async def termination_watcher(db, task_id, tasks):
-    while True:
-        await asyncio.sleep(30)  # Check every 30 seconds
-        task = get_task(db, task_id)
-        if task.status == 'Cancelled':
-            for task in tasks:
-                task.cancel()
+async def termination_watcher(task_id, tasks):
+    db = SessionLocal()
+    try:
+        while True:
+            await asyncio.sleep(30)  # Check every 30 seconds
+            task = get_task(db, task_id)
+            db.refresh(task)
+            # print(colored(f"\n\nTask Status: {task.status}\n\n", 'blue', attrs=['bold']))
+            if task.status == 'Cancelled':
+                for task in tasks:
+                    task.cancel()
+    finally:
+        db.close()  # Make sure to close the session when you're done
 
 async def main(task_id, searchqueries, userDomain, max_depth, searchWidth, api_key):
-
-    db = SessionLocal()
-
     producer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     consumer_queue = asyncio.Queue() #all urls here are raw / not wrapped
     
@@ -189,11 +192,13 @@ async def main(task_id, searchqueries, userDomain, max_depth, searchWidth, api_k
     consumer_tasks = [asyncio.create_task(url_consumer(task_id, consumer_queue, consumer_checked_list, content_prompt, results, producer_done, api_key)) for _ in range(num_consumers)]
 
     all_tasks = producer_tasks + consumer_tasks
-    watcher_task = asyncio.create_task(termination_watcher(db, task_id, all_tasks))
+    watcher_task = asyncio.create_task(termination_watcher(task_id, all_tasks))
 
     await asyncio.gather(*all_tasks, return_exceptions=True)
     watcher_task.cancel()
-    ## update the excel file   
+    ## update the excel file
+    
+        
     await async_utils.updateExcel(task_id, "Related", results['Related'])     
     await async_utils.updateExcel(task_id, "Unrelated", results['Unrelated'])
     await async_utils.updateExcel(task_id, "Unchecked Material", results['Unchecked Material'])

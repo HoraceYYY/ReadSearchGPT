@@ -43,30 +43,30 @@ async def fetch_url(url, task_id = None, results = None):
         'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
     }
     timeout = aiohttp.ClientTimeout(total=10)
-    async with aiohttp.ClientSession(timeout=timeout) as session:
-        try:
-            async with session.get(url, headers=headers) as response:
-                content_type = response.headers.get('Content-Type', '').split(';')[0].strip()
-                status_code = response.status
+    session = aiohttp.ClientSession(timeout=timeout)
+    try:
+        async with session.get(url, headers=headers) as response:
+            content_type = response.headers.get('Content-Type', '').split(';')[0].strip()
+            status_code = response.status
 
-                if status_code == 200:
-                    if content_type.lower() == 'application/pdf':
-                        return None, content_type, status_code
+            if status_code == 200:
+                if content_type.lower() == 'application/pdf':
+                    return None, content_type, status_code
 
-                    page_content = await response.text()
-                    # extract the page content
-                    soup = BeautifulSoup(page_content, 'html.parser')
-                    return soup, content_type, status_code
-                else:
-                    print(f"Failed to fetch the page. Status code: {status_code}")
-                    results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
-                    #     await updateExcel(task_id, "Unchecked Material", results['Unchecked Material'])
-                    return None, None, status_code
-        except Exception as e:
-            print(f"An error occurred. ERROR TYPE: {type(e)}; ERROR: {str(e)}")
-            results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
-            #     await updateExcel(task_id, "results", "Unchecked Material", results['Unchecked Material'])
-            return None, None, None
+                page_content = await response.text()
+                # extract the page content
+                soup = BeautifulSoup(page_content, 'html.parser')
+                return soup, content_type, status_code
+            else:
+                print(f"Failed to fetch the page. Status code: {status_code}")
+                results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
+                return None, None, status_code
+    except Exception as e:
+        print(f"An error occurred. ERROR TYPE: {type(e)}; ERROR: {str(e)}")
+        results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
+        return None, None, None
+    finally:
+        await session.close()
 
 async def download_pdf(url): # not being used
     headers = {'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'}

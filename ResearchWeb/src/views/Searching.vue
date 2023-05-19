@@ -4,6 +4,15 @@ import { mapGetters } from 'vuex';
 export default {
   computed: {
     ...mapGetters(['jsonData']),
+    jsonData: {
+        get() {
+          console.log("jsonData in component:", this.$store.state.jsonData);
+          return this.$store.state.jsonData;
+        },
+        set(value) {
+          this.$store.dispatch('setJsonData', value);
+        }
+      },
   },
   created() {
     console.log("jsonData in component:", this.jsonData);
@@ -27,7 +36,7 @@ export default {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(this.jsonData["Task ID"]),
+            // body: JSON.stringify(this.jsonData["Task ID"]),
           });
   
           this.jsonData = await response.json();
