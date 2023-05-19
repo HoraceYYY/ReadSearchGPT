@@ -66,7 +66,7 @@ async def fetch_url(url, task_id = None, results = None):
             print(f"An error occurred. ERROR TYPE: {type(e)}; ERROR: {str(e)}")
             results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
             #     await updateExcel(task_id, "results", "Unchecked Material", results['Unchecked Material'])
-            return None, None, e
+            return None, None, None
 
 async def download_pdf(url): # not being used
     headers = {'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'}
