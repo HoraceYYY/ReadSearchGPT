@@ -3,6 +3,7 @@ from termcolor import colored
 ##from dotenv import load_dotenv 
 from bs4 import BeautifulSoup
 import pandas as pd
+import models
 from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin, urldefrag
 
 # see https://github.com/openai/openai-python for async api details
@@ -38,7 +39,7 @@ async def singleGPT(api_key, systemMessages, userMessage, temperature=1, top_p=1
     await openai.aiosession.get().close()
     return response["choices"][0]["message"]["content"]
       
-async def fetch_url(url, task_id = None, results = None):
+async def fetch_url(url, results = None):
     headers = {
         'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
     }
@@ -59,14 +60,31 @@ async def fetch_url(url, task_id = None, results = None):
                 return soup, content_type, status_code
             else:
                 print(f"Failed to fetch the page. Status code: {status_code}")
-                results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
+                results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True) # remove if database works
                 return None, None, status_code
     except Exception as e:
         print(f"An error occurred. ERROR TYPE: {type(e)}; ERROR: {str(e)}")
-        results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True)
+        results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True) # remove if database works
         return None, None, None
     finally:
         await session.close()
+
+async def add_to_db(session, task_id, category, url=None, title=None, content=None,  pdfs = None, additional_links=None):
+    try:
+        new_data = models.URLData(
+            task_id=task_id,
+            url=url,
+            title=title,
+            content=content,
+            pdfs=pdfs,
+            additional_links=additional_links,
+            category=category
+        )
+        session.add(new_data)
+        session.commit()
+    except Exception as e:
+        print(f"An error occurred while adding data to the database: {e}")
+        session.rollback()
 
 async def download_pdf(url): # not being used
     headers = {'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'}

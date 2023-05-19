@@ -8,7 +8,7 @@
       <div class="navbar-top">
         <div class="navbar-left">
           <router-link to="/" class="nav-link">New Search</router-link>
-          <router-link to="/mysearch" class="nav-link">Find My Search</router-link>
+          <router-link to="/mysearch" class="nav-link">Find My Results</router-link>
         </div>
         <div class="navbar-right">
           <router-link to="/tutorial" class="nav-link">Watch Tutorial</router-link>

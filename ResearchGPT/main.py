@@ -7,7 +7,7 @@ from typing import List
 import pandas as pd
 from fastapi.middleware.cors import CORSMiddleware # to allow CORS
 from datetime import datetime
-from database import SessionLocal, engine
+from database import SessionLocal
 from sqlalchemy.orm import Session
 import models, crud
 
