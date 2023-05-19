@@ -101,7 +101,7 @@ async def relaventURL(url_prompt, links, api_key):
 If there are no URLs that are relevant to the target information, refrain from returning any messages. Instead of returning any messages, only return 'NONE'. \
 Otherwise, return no more than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. Refrain from returning more than 15 URLs in total. \
 The order of relevance is important. The first URL should be the most relevant. \
-Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url, for example: 'url1',url2','url3'. Refrain from using any other format for the output.\
+Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url, for example: url1,url2,url3. Refrain from using any other format for the output.\
 Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL.\n\n\
 ---\n{linksString}\n---"}]
         ## pass the list of message to GPT
@@ -142,7 +142,7 @@ async def LinksBreakUp(api_key, token, url_prompt, linksString): # convert the l
 If there are no URLs that are relevant to the target information, refrain from returning any messages. Instead of returning any messages, only return 'NONE'. \
 Otherwise, return no more than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. Refrain from returning more than 15 URLs in total. \
 The order of relevance is important. The first URL should be the most relevant. \
-Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url, for example: 'url1',url2','url3'. Refrain from using any other format for the output. \
+Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url, for example: url1,url2,url3. Refrain from using any other format for the output. \
 Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL.\n\n\
 ---\n{section}\n---"}]
             urlMessage = "Target Information:" + url_prompt
@@ -170,39 +170,46 @@ async def pageBreakUp(api_key, content_prompt, content):
     sectionNum = math.ceil(num_tokens_from_string(content) // 3000) + 1 
     cutoffIndex = math.ceil(len(content) // sectionNum)
     for i in range(sectionNum): #split the content into multiple section and use a new GPT3.5 for each section to avoid the token limit
-        section_messages = [
-            {"role": "system", 
-            "content": "Extract the target information from the text provided in the next message. \
-You will be given one or two or three target information to look for from the text. \
-You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
-If the text does not contain any of the target information, refrain from summarizing the text. Instead of summarizing the task, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
-Otherwise, provide one summarization per target information with as much detail as possible."}]
         start_index = i * cutoffIndex
         end_index = (i + 1) * cutoffIndex
         section = content[start_index:end_index]
-        pageMessage = "Important Informtion:\n"+ content_prompt + "\ntext:\n" + section
-        pageSummary += await singleGPT(api_key, section_messages,pageMessage)
+        section_messages = [
+        {"role": "system", 
+         "content": f"From the text below, delimted by three dashes(-), extract the information that are relevant to the target information I provide. \
+You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
+If the text does not contain any of the target information, refrain from summarizing the text. Instead of summarizing the task, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
+Otherwise, for each target information, provide a summarization from the relevant text with as much detail as possible. Use the target information as the title of the summarization. \n\n\
+---\n{section}\n---"}]
+        pageMessage = "Target Informtion:\n"+ content_prompt
+        pageSummary += await singleGPT(api_key, section_messages, pageMessage)
     if num_tokens_from_string(pageSummary) > 3000: #if the summary is still too long, truncate it to 3500 tokens
         pageSummary = truncate_text_tokens(pageSummary)
     return pageSummary
 
 async def PageResult(api_key, content_prompt, content):
-    messages = [
-        {"role": "system", 
-         "content": "Extract the target information from the text provided in the next message. \
-You will be given one or two or three target information to look for from the text. \
-You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
-If the text does not contain any of the target information, refrain from summarizing the text. Instead of summarizing the task, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
-Otherwise, provide one summarization per target information with as much detail as possible."}]
     pageSummary = ''
     if num_tokens_from_string(content) <= 3500: #if the content is less than 3500 tokens, pass the whole content to GPT
-        pageMessage = "Important Informtion:\n" + content_prompt + "\ntext:\n" + content
-        pageSummary = await singleGPT(api_key, messages,pageMessage)
+        messages = [
+        {"role": "system", 
+         "content": f"From the text below, delimted by three dashes(-), extract the information that are relevant to the target information I provide. \
+You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
+If the text does not contain any of the target information, refrain from summarizing the text. Instead of summarizing the task, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
+Otherwise, for each target information, provide a summarization from the relevant text with as much detail as possible. Use the target information as the title of the summarization. \n\n\
+---\n{content}\n---"}]
+        pageMessage = "Target Informtion:\n" + content_prompt
+        pageSummary = await singleGPT(api_key, messages, pageMessage)
     else: #split the webpage content into multiple section to avoid the token limit
         pageSummary = await pageBreakUp(api_key, content_prompt, content) #split the webpage content into multiple section and return the summary of the whole webpage
         #print("pageSummary: ",pageSummary)
-        pageSummary = "Important Informtion:\n" + content_prompt + "\ntext:\n" + pageSummary 
-        pageSummary = await singleGPT(api_key, messages,pageSummary)
+        messages = [
+        {"role": "system", 
+         "content": f"From the text below, delimted by three dashes(-), extract the information that are relevant to the target information I provide. \
+You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
+If the text does not contain any of the target information, refrain from summarizing the text. Instead of summarizing the task, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
+Otherwise, for each target information, provide a summarization from the relevant text with as much detail as possible. Use the target information as the title of the summarization. \n\n\
+---\n{pageSummary}\n---"}]
+        pageSummary = "Target Informtion:\n" + content_prompt
+        pageSummary = await singleGPT(api_key, messages, pageSummary)
 
     return pageSummary
 
