@@ -201,11 +201,5 @@ async def main(task_id, searchqueries, userDomain, max_depth, searchWidth, api_k
 
     await asyncio.gather(*all_tasks, return_exceptions=True)
     watcher_task.cancel()
-    ## update the excel file
-    
-    await async_utils.updateExcel(task_id, "Related", results['Related'])     
-    await async_utils.updateExcel(task_id, "Unrelated", results['Unrelated'])
-    await async_utils.updateExcel(task_id, "Unchecked Material", results['Unchecked Material'])
-    await async_utils.updateExcel(task_id, "Unchecked Material", results['Unchecked Material'])
 
 

@@ -22,7 +22,7 @@ class URLData(Base):
     __tablename__ = "url_data"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    task_id = Column(UUID(as_uuid=True), ForeignKey('tasks.id'), nullable=False)
+    task_id = Column(String, ForeignKey('tasks.id'), nullable=False)
     url = Column(String)  # URL for all types of content
     title = Column(String)  # Title for 'Related' and 'Unrelated' categories
     content = Column(Text)  # In case content can be quite long for 'Related' and 'Unrelated' categories

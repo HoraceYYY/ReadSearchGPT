@@ -90,12 +90,6 @@ async def run_task(task_id: str, search: Search):
     finally:    
         db.close()
 
-# async def create_output_excel_file(task_id):
-#     folder_path = 'Results'
-#     os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
-#     file_name = f"{folder_path}/{task_id}.xlsx"  # Create the Excel file name
-#     return file_name
-
 @app.get("/task/{task_id}/status")
 async def task_status(task_id: str, db: Session = Depends(get_db)):
     task = crud.get_task(db, task_id)
@@ -137,11 +131,11 @@ async def download_excel(task_id: str, db: Session = Depends(get_db)):
 
     for url_data in url_data_list:
         if url_data.category == 'Related':
-            related = related.append({'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}, ignore_index=True)
+            related = pd.concat([related, pd.DataFrame([{'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}])], ignore_index=True)
         elif url_data.category == 'Unrelated':
-            unrelated = unrelated.append({'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}, ignore_index=True)
+            unrelated = pd.concat([unrelated, pd.DataFrame([{'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}])], ignore_index=True)
         elif url_data.category == 'Unchecked Material':
-            unchecked = unchecked.append({'PDFs': url_data.pdfs, 'Additional Links': url_data.additional_links}, ignore_index=True)
+            unchecked = pd.concat([unchecked, pd.DataFrame([{'PDFs': url_data.pdfs, 'Additional Links': url_data.additional_links}])], ignore_index=True)
 
     # Write data to Excel file with each DataFrame as a separate sheet
     with pd.ExcelWriter(f"Results/{task_id}.xlsx") as writer:

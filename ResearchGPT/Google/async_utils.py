@@ -181,7 +181,7 @@ def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=3000):
 #break up the content of long webpages into smaller chunks and pass each into GPT3.5 to avoid the token limit and return the summary of the whole webpage
 async def pageBreakUp(api_key, content_prompt, content): 
     pageSummary = ''
-    sectionNum = math.ceil(num_tokens_from_string(content) // 3000) + 1 
+    sectionNum = math.ceil(num_tokens_from_string(content) // 2800) + 1 
     cutoffIndex = math.ceil(len(content) // sectionNum)
     for i in range(sectionNum): #split the content into multiple section and use a new GPT3.5 for each section to avoid the token limit
         start_index = i * cutoffIndex
