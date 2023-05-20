@@ -1,6 +1,8 @@
 from sqlalchemy import Column, String, DateTime, ForeignKey, Text
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+from uuid import uuid4
 
 Base = declarative_base()
 
@@ -13,11 +15,14 @@ class Task(Base):
     end_time = Column(DateTime, default=None)
     time_spent = Column(String)
     file_path = Column(String)
+    
+    url_data = relationship("URLData", back_populates="task")
 
 class URLData(Base):
     __tablename__ = "url_data"
 
-    task_id = Column(String, ForeignKey('tasks.id'), primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    task_id = Column(UUID(as_uuid=True), ForeignKey('tasks.id'), nullable=False)
     url = Column(String)  # URL for all types of content
     title = Column(String)  # Title for 'Related' and 'Unrelated' categories
     content = Column(Text)  # In case content can be quite long for 'Related' and 'Unrelated' categories
@@ -27,4 +32,4 @@ class URLData(Base):
 
     task = relationship("Task", back_populates="url_data", uselist=False)
 
-Task.url_data = relationship("URLData", back_populates="task", uselist=False)
+
