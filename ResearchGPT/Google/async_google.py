@@ -79,7 +79,7 @@ async def url_consumer(task_id, consumer_queue, consumer_checked_list, content_p
                 if status_code == 200:
                     
                     if content_type.lower() == 'application/pdf': # check if the content is pdf and download it
-                        async_utils.add_to_db(db, task_id, category="Unchecked Material", pdf=url) # add pdf link to database
+                        await async_utils.add_to_db(db, task_id, category="Unchecked Material", pdfs=url) # add pdf link to database
                         results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'PDFs': url}])], ignore_index=True) #remove after database works
 
                         print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
@@ -89,14 +89,14 @@ async def url_consumer(task_id, consumer_queue, consumer_checked_list, content_p
                     content, page_Title = async_utils.getWebpageData(soup) # get the page title,content, and links
                     pageSummary = await async_utils.PageResult(api_key, content_prompt, content) # get the page summary based on the search query
                     if "4b76bd04151ea7384625746cecdb8ab293f261d4" not in pageSummary.lower():
-                        async_utils.add_to_db(db, task_id, category='Related', url = url, title=page_Title, content=pageSummary)
+                        await async_utils.add_to_db(db, task_id, category='Related', url = url, title=page_Title, content=pageSummary)
                         results['Related'] = pd.concat([results['Related'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # remove if database works
                     else:
-                        async_utils.add_to_db(db, task_id, category='Unrelated', url = url, title=page_Title, content=pageSummary)
+                        await async_utils.add_to_db(db, task_id, category='Unrelated', url = url, title=page_Title, content=pageSummary)
                         results['Unrelated'] = pd.concat([results['Unrelated'], pd.DataFrame([{'URL': url, 'Title': page_Title, 'Content': pageSummary}])], ignore_index=True) # remove if database works
                     print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']), ' Current Depth: ', depth)
                 else:
-                    async_utils.add_to_db(db, task_id, category="Unchecked Material", additional_links=url) # add additional unchecked link to database
+                    await async_utils.add_to_db(db, task_id, category="Unchecked Material", additional_links=url) # add additional unchecked link to database
                     print("\U0001F6AB", colored(f' Consumer: Website did not respond. Error code: {status_code}.','red',attrs=['bold']), ' Current Depth: ', depth, ' URL:', url)
             else:
                 print(colored('\u2714\uFE0F  Consumer:The content in this URL has already been checked:', 'green', attrs=['bold']), f' {url}')

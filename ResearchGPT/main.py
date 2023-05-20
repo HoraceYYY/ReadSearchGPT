@@ -1,7 +1,7 @@
 from Google import async_google, async_utils
 from aiohttp import ClientSession
-import asyncio, uuid, os
-from fastapi import FastAPI, BackgroundTasks, Depends
+import asyncio, uuid
+from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List
 import pandas as pd
@@ -59,20 +59,14 @@ async def create_search_query(searchrequest: SearchRequest):
 @app.post("/search/") # this is the entry point of the search 
 async def startSearching(background_tasks: BackgroundTasks, search: Search, db: Session = Depends(get_db)):
     task_id = str(uuid.uuid4())
-    file_path = await create_output_excel_file(task_id)
+    # file_path = await create_output_excel_file(task_id)
     start_time = datetime.now()
-    # Add your task to the database
-    task = models.Task(id=task_id, start_time=start_time, file_path=file_path, status="Researching...")
+
+    task = models.Task(id=task_id, start_time=start_time, file_path=None, status="Researching...")     # Add your task to the database
     crud.create_task(db, task)
     # Use the existing session to create a new one for the background task
     background_tasks.add_task(run_task, task_id, search)
-    return {"Task ID": task_id, "Status": "Research has started", "File Path": file_path}
-
-async def create_output_excel_file(task_id):
-    folder_path = 'Results'
-    os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
-    file_name = f"{folder_path}/{task_id}.xlsx"  # Create the Excel file name
-    return file_name
+    return {"Task ID": task_id, "Status": "Research has started"}
 
 async def run_task(task_id: str, search: Search):
     db = SessionLocal()  # Create a new session
@@ -96,6 +90,11 @@ async def run_task(task_id: str, search: Search):
     finally:    
         db.close()
 
+# async def create_output_excel_file(task_id):
+#     folder_path = 'Results'
+#     os.makedirs(folder_path, exist_ok=True)  # Create the folder if it doesn't exist
+#     file_name = f"{folder_path}/{task_id}.xlsx"  # Create the Excel file name
+#     return file_name
 
 @app.get("/task/{task_id}/status")
 async def task_status(task_id: str, db: Session = Depends(get_db)):
@@ -107,11 +106,10 @@ async def task_status(task_id: str, db: Session = Depends(get_db)):
             elapsed_time = current_time - task.start_time
             task.time_spent = str(elapsed_time).split('.')[0]
             db.commit()
-        
-        return {"Task ID": task_id, "Status": task.status, "Start Time": task.start_time.strftime("%Y-%m-%d %H:%M:%S"), "Time Spent": task.time_spent, "File Path": task.file_path}
+        return {"Task ID": task_id, "Status": task.status, "Start Time": task.start_time.strftime("%Y-%m-%d %H:%M:%S"), "Time Spent": task.time_spent}
     else:
         return {"Status": "Error", "Message": "Task not found"}
-    
+  
 @app.post("/task/{task_id}/stop")
 async def stop_task(task_id: str, db: Session = Depends(get_db)):
     task = crud.get_task(db, task_id)
@@ -126,11 +124,32 @@ async def stop_task(task_id: str, db: Session = Depends(get_db)):
 
 @app.get("/task/{task_id}/download")
 async def download_excel(task_id: str, db: Session = Depends(get_db)):
-    task = crud.get_task(db, task_id)
-    if task:
-        return {"File Path": task.file_path}
-    else:
-        return {"Status": "Error", "Message": "Task not found"}
+    # Find the URL data for the specified task ID
+    url_data_list = db.query(models.URLData).filter(models.URLData.task_id == task_id).all()
+
+    if not url_data_list:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    # Create data frames for each category
+    related = pd.DataFrame(columns=['URL', 'Title', 'Content'])
+    unrelated = pd.DataFrame(columns=['URL', 'Title', 'Content'])
+    unchecked = pd.DataFrame(columns=['PDFs', 'Additional Links'])
+
+    for url_data in url_data_list:
+        if url_data.category == 'Related':
+            related = related.append({'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}, ignore_index=True)
+        elif url_data.category == 'Unrelated':
+            unrelated = unrelated.append({'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}, ignore_index=True)
+        elif url_data.category == 'Unchecked Material':
+            unchecked = unchecked.append({'PDFs': url_data.pdfs, 'Additional Links': url_data.additional_links}, ignore_index=True)
+
+    # Write data to Excel file with each DataFrame as a separate sheet
+    with pd.ExcelWriter(f"Results/{task_id}.xlsx") as writer:
+        related.to_excel(writer, sheet_name='Related', index=False)
+        unrelated.to_excel(writer, sheet_name='Unrelated', index=False)
+        unchecked.to_excel(writer, sheet_name='Unchecked Material', index=False)
+
+    return {f"Results/{task_id}.xlsx"}
     
 @app.post("/task/{task_id}/deletefile")
 async def delete_excel(task_id: str, db: Session = Depends(get_db)):
