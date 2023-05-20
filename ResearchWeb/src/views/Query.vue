@@ -2,10 +2,10 @@
     <div class="main-container">
       <div class="content-container">
         <div class="text-content">
-          <p>Enter the search topics below: </p>
+          <p>Enter research topics below: </p>
           <ul class="input-list">
             <li v-for="(item, index) in searchqueries" :key="index" class="input-item">
-              <input v-model="searchqueries[index]" type="text" class="input" placeholder="Enter your search topic here...">
+              <input v-model="searchqueries[index]" type="text" class="input" placeholder="Enter up to 5 research topics...">
               <button v-if="index !== 0" @click="removeItem(index)" class="minus-button">-</button>
               <button v-if="index === searchqueries.length - 1 && searchqueries.length < 5" @click="addItem" class="plus-button">+</button>
             </li>
@@ -27,7 +27,6 @@
 
 <script>
 export default {
-    
     data() {
       return {
         buttonText: "Start",
@@ -35,31 +34,45 @@ export default {
       };
     },
 
-  created() {
-    // Initialize data from the Vuex store
-    this.searchqueries = this.$store.getters.searchQueries;
-    this.apiKey = this.$store.getters.apiKey;
+computed: {
+  searchqueries: {
+    get() {
+      return this.$store.getters.searchQueries;
     },
-  methods: {
+    set(value) {
+      this.$store.dispatch('SearchQueries', value);
+    }
+  },
+  apiKey: {
+    get() {
+      return this.$store.getters.apiKey;
+    },
+    set(value) {
+      this.$store.dispatch('ApiKey', value);
+    }
+  }
+},
+methods: {
     togglePasswordField() {
      this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
    },
     removeItem(index) {
       this.searchqueries.splice(index, 1);
+      this.searchqueries = [...this.searchqueries];
     },
     addItem() {
     if (this.searchqueries.length < 5) {
         this.searchqueries.push("");
+        this.searchqueries = [...this.searchqueries];
         }
     },
-   async search() {
+async search() {
   try {
+    const filteredQueries = this.searchqueries.filter(query => query.trim() !== "");
     // Check if any of the search queries are empty
-    for (let i = 0; i < this.searchqueries.length; i++) {
-            if (this.searchqueries[i].trim() === "") {
-                alert("Please fill in all search query fields before submitting or remove the empty fields.");
-                return;
-            }
+    if (filteredQueries.length === 0) {
+      alert("Please enter at least one search query before submitting.");
+      return;
     }
 
     if (this.apiKey.trim() === "") {
@@ -67,20 +80,17 @@ export default {
       return;
     }
     // If all fields are filled in, proceed to the next page
-    this.$store.dispatch('SearchQueries', this.searchqueries);
-    this.$store.dispatch('ApiKey', this.apiKey);
-
+    this.searchqueries = [...filteredQueries];
     this.buttonText = "Checking Key...";
 
     const response = await this.callApi();
     if (response['Key'] === 'Valid') {
       this.$router.push({ path: '/preference' });
     } else {
-      this.buttonText = "Search";
+      this.buttonText = "Start";
       alert("Please enter a valid API key");
       return;
     }
-
   } catch (error) {
     console.error(error);
   }
@@ -201,10 +211,6 @@ body {
   word-wrap: break-word; /* Add this line */
   overflow-wrap: break-word; /* Add this line, for better compatibility with different browsers */
   white-space: pre-wrap; /* Add this line to preserve line breaks and spaces */
-}
-
-.input-item input:focus {
-  border: 1px solid #515151;
 }
 
 .minus-button, .plus-button {
