@@ -24,7 +24,7 @@
     ...mapGetters(['taskId']),
       jsonData: {
         get() {
-          console.log("jsonData in component:", this.$store.state.jsonData);
+        //   console.log("jsonData in component:", this.$store.state.jsonData);
           return this.$store.state.jsonData;
         },
         set(value) {
@@ -73,7 +73,6 @@
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(this.jsonData["Task ID"]),
           });
   
           this.jsonData = await response.json();
