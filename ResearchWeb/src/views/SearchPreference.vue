@@ -4,7 +4,7 @@ import { mapGetters } from 'vuex';
 export default {
     data() {
       return {
-        buttonText: "Search"
+        buttonText: "Start Searching"
       };
     },
   computed: {
@@ -97,7 +97,7 @@ export default {
             this.$router.push({ path: '/searching' });
             //handle your response here
         } catch (error) {
-            this.buttonText = "Search"
+            this.buttonText = "Start Searching"
             console.error(error);
             alert(`There is an error duing the search: ${error}`);// handle error here
         }
@@ -222,7 +222,7 @@ export default {
 
     display: flex;
   justify-content: center;
-  gap: 120px; /* Adjust the spacing between buttons as needed */
+  gap: 160px; /* Adjust the spacing between buttons as needed */
   margin-top: 40px; /* Add margin to the top */
   }
   
@@ -231,13 +231,14 @@ export default {
   border-radius: 8px;
   background-color: #ffffff;
   color: #0c952c;
-    padding: 15px 32px;
+    padding: 15px 28px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
+    font-weight: bold;
   }
   
   .startover-button {

@@ -32,7 +32,7 @@
         }
       },
       buttonText() {
-        return this.jsonData.Status === "Researching..." ? "Cancel Search" : "New Search";
+        return this.jsonData.Status === "Researching..." ? "Cancel Search" : " New Search ";
       },
       buttonClass() {
         return this.jsonData.Status === "Researching..." ? "cancel-button" : "newsearch-button";
@@ -95,6 +95,7 @@
     justify-content: center;
   }
   .content-container {
+    margin-top: -5px;
     max-width: 900px; /* Match the table width */
     width: 100%;
   }
@@ -134,8 +135,9 @@
   .button-container {
     display: flex;
     justify-content: center;
-    gap: 120px;
+    gap: 160px;
     margin-top: 80px;
+
   }
   .download-button {
     border: 2px solid #0000ff;
@@ -177,7 +179,7 @@
     border-radius: 8px;
     background-color: #ffffff;
     color: #0c952c;
-    padding: 15px 32px;
+    padding: 15px 41px;
     text-align: center;
     text-decoration: none;
     display: inline-block;

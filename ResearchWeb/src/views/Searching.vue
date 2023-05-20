@@ -52,7 +52,7 @@ export default {
 <template>
     <div class="results-container">
       <div class="text-container">
-        <p class="textheader">Your AI agent has begun your research!</p>
+        <p class="textheader">Your AI assistant has begun your research!</p>
         <p class="textbody">Download partial results anytime during the search. Full results remain available for another 24 hours and will be automatically deleted after.</p>
         <p class="textbody">You need the Task ID to retrieve the results. <span class="important-notice">Make sure to save the Task ID. It won't be displayed again.</span></p>
       </div>
@@ -71,6 +71,7 @@ export default {
   
   <style scoped>
   .results-container {
+    margin-top: 5px;
     width: 100%;
     display: flex;
     flex-direction: column;

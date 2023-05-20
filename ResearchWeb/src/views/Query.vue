@@ -30,7 +30,7 @@ export default {
     
     data() {
       return {
-        buttonText: "Search",
+        buttonText: "Start",
         passwordFieldType: "password"
       };
     },
@@ -70,7 +70,7 @@ export default {
     this.$store.dispatch('SearchQueries', this.searchqueries);
     this.$store.dispatch('ApiKey', this.apiKey);
 
-    this.buttonText = "Checking...";
+    this.buttonText = "Checking Key...";
 
     const response = await this.callApi();
     if (response['Key'] === 'Valid') {
