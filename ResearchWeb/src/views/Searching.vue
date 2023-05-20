@@ -4,6 +4,15 @@ import { mapGetters } from 'vuex';
 export default {
   computed: {
     ...mapGetters(['jsonData']),
+    jsonData: {
+        get() {
+          console.log("jsonData in component:", this.$store.state.jsonData);
+          return this.$store.state.jsonData;
+        },
+        set(value) {
+          this.$store.dispatch('setJsonData', value);
+        }
+      },
   },
   created() {
     console.log("jsonData in component:", this.jsonData);
@@ -12,6 +21,30 @@ export default {
     newSearch() {
       this.$router.push({ path: '/' });
     },
+    async cancelSearch() {
+      const taskId = this.jsonData['Task ID'];
+      const cancelUrl = `http://127.0.0.1:8000/task/${taskId}/stop`;
+      const statusUrl = `http://127.0.0.1:8000/task/${taskId}/status`;
+      try {
+          this.buttonText = "Cancelling..."
+          await fetch(cancelUrl, { method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const response = await fetch(statusUrl, { method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            // body: JSON.stringify(this.jsonData["Task ID"]),
+          });
+  
+          this.jsonData = await response.json();
+  
+        } catch (error) {
+          console.error(error);
+        }
+    }
   },
 };
 </script>
@@ -22,7 +55,6 @@ export default {
         <p class="textheader">Your AI agent has begun your research!</p>
         <p class="textbody">Download partial results anytime during the search. Full results remain available for another 24 hours and will be automatically deleted after.</p>
         <p class="textbody">You need the Task ID to retrieve the results. <span class="important-notice">Make sure to save the Task ID. It won't be displayed again.</span></p>
-
       </div>
       <table class="results-table">
         <tr v-for="(value, key) in jsonData" :key="key">
@@ -32,6 +64,7 @@ export default {
       </table>
       <div class="button-container">
         <button type="button" @click="newSearch" class="startover-button">New Search</button>
+        <button type="button" @click="cancelSearch" class="cancel-button">Cancel Search</button>
       </div>
     </div>
   </template>
@@ -115,5 +148,25 @@ export default {
     background-color: #0c952c;
     color: #ffffff;
   }
+
+.cancel-button {
+    border: 2px solid #ff4800;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #ff4800;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+
+  .cancel-button:hover {
+    background-color: #ff4800;
+    color: #ffffff;
+  }
+
   </style>
   

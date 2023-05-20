@@ -42,7 +42,11 @@
       async downloadResults() {
         const url = `http://127.0.0.1:8000/task/${this.taskId}/download`;
         try {
-          await fetch(url);
+          await fetch(url, { method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
           // handle your response here
         } catch (error) {
           console.error(error);
