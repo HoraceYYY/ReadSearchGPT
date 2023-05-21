@@ -71,7 +71,7 @@ export default {
   
   <style scoped>
   .results-container {
-    margin-top: 5px;
+    margin-top: -20px;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -128,7 +128,7 @@ export default {
     display: flex;
     justify-content: center;
     gap: 120px;
-    margin-top: 80px;
+    margin-top: 50px;
   }
   
   .startover-button {
