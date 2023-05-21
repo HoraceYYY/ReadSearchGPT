@@ -18,10 +18,9 @@
     </nav>
 
     <div class="content">
-      <h1> ReadSearch </h1>
-      
-      <router-view class="router-view-class"/>
-
+      <h1 class="title">ReadSearch</h1>
+      <h2 class="subtitle">Your AI Assistant for Online Research!</h2>
+      <router-view class="router-view-class" />
     </div>
     
     <nav class="navbar">  
@@ -73,12 +72,18 @@ h1 {
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
-.navbar-right, .navbar-bottom-right {
+.navbar-right{
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.navbar-bottom-right {
   font-size: 18px;
   display: flex;
   gap: 20px;
 }
 .navbar-top {
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
 }
@@ -104,9 +109,18 @@ h1 {
   align-items: center;
   justify-content: flex-start;
   flex-grow: 1;
-  gap: 20px;
   overflow-y: auto; 
-  padding-top: 9vh; /* Adjust this value to move content up or down */
+  padding-top: 2.5vh; /* Adjust this value to move content up or down */
   max-height: 80vh;
+}
+
+.title {
+  font-size: 3em;
+  margin-bottom: -20px; /* Adjust the value to make the spacing smaller */
+}
+
+.subtitle {
+  font-size: 1.8em;
+  margin-bottom: 60px;
 }
 </style>

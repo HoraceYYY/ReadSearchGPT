@@ -4,7 +4,7 @@ import { mapGetters } from 'vuex';
 export default {
   data() {
     return {
-      buttonText: "Find My Search"
+      buttonText: "Find My Results"
     };
   },
   computed: {

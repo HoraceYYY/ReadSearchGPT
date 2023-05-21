@@ -4,8 +4,8 @@ export default createStore({
   state: {
     searchQueries: [""],
     apiKey: "",
-    width: 5,
-    depth: 1,
+    width: null,
+    depth: null,
     domain: "",
     jsonData: {},
     taskId: ""
