@@ -2,7 +2,7 @@
     <div class="main-container">
       <div class="content-container">
         <div class="text-content">
-          <p>Enter research topics below: </p>
+          <p>Enter Research Topics Below: </p>
           <ul class="input-list">
             <li v-for="(item, index) in searchqueries" :key="index" class="input-item">
               <input v-model="searchqueries[index]" type="text" class="input" placeholder="Enter up to 5 research topics...">
@@ -10,11 +10,12 @@
               <button v-if="index === searchqueries.length - 1 && searchqueries.length < 5" @click="addItem" class="plus-button">+</button>
             </li>
           </ul>
-          <p>Enter Open AI API Key: </p>
+          <p>Enter Open AI API Key: (We won't save your key)</p>
             <div class="input-item extra-input-item">
-                <input v-model="apiKey" :type="passwordFieldType" class="input" placeholder="API Key..">
+                <input v-model="apiKey" :type="passwordFieldType" class="input" placeholder="Enter API Key..">
                 <button @click="togglePasswordField" class="toggle-password-button">{{ passwordFieldType === 'password' ? 'Show' : 'Hide' }}</button>
             </div>
+            <a class="input-item extra-input-item" href="https://example.com" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new tab">How to get an API key</a>
         </div>
         <div class="button-container">
           <button class="search-button" @click="search">{{ buttonText }}</button>
