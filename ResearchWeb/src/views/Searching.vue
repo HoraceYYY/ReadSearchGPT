@@ -1,26 +1,64 @@
-<script>
-import { mapGetters } from 'vuex';
+<template>
+  <div class="results-container">
+    <div class="text-container">
+      <p class="textheader">Your AI assistant has begun your research!</p>
+      <p class="textbody">Download partial results anytime during the search. Full results remain available for another 24 hours and will be automatically deleted after.</p>
+      <p class="textbody">You need the Task ID to retrieve the results. <span class="important-notice">Make sure to save the Task ID to download the results later. It won't be displayed again.</span></p>
+    </div>
+    <table class="results-table">
+      <tr v-for="(value, key) in jsonData" :key="key">
+        <td class="key-column">{{ key }}</td>
+        <td :class="{'task-id-value': key === 'Task ID'}">{{ value }}</td>
+      </tr>
+    </table>
+    <div class="button-container">
+      <button @click="downloadResults" class="download-button">Download Results</button>
+      <button @click="handleButtonClick" :class="buttonClass">{{ buttonText }}</button>
+    </div>
+  </div>
+</template>
 
+<script>
 export default {
   computed: {
-    ...mapGetters(['jsonData']),
     jsonData: {
         get() {
-        //   console.log("jsonData in component:", this.$store.state.jsonData);
+        //console.log("jsonData in component:", this.$store.state.jsonData);
           return this.$store.state.jsonData;
         },
         set(value) {
           this.$store.dispatch('setJsonData', value);
         }
       },
+      buttonText() {
+        return this.jsonData.Status === "Researching..." ? "Cancel Search" : " New Search ";
+      },
+      buttonClass() {
+        return this.jsonData.Status === "Researching..." ? "cancel-button" : "newsearch-button";
+      },
   },
-//   created() {
-//     console.log("jsonData in component:", this.jsonData);
-//   },
   methods: {
-    newSearch() {
-      this.$router.push({ path: '/' });
-    },
+    async downloadResults() {
+        const taskId = this.jsonData['Task ID'];
+        const url = `http://127.0.0.1:8000/task/${taskId}/download`;
+        try {
+          await fetch(url, { method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          // handle your response here
+        } catch (error) {
+          console.error(error);
+        }
+      },
+      handleButtonClick() {
+        if (this.jsonData.Status === "Researching...") {
+          this.cancelSearch();
+        } else {
+          this.$router.push({ path: '/' });
+        }
+      },
     async cancelSearch() {
       const taskId = this.jsonData['Task ID'];
       const cancelUrl = `http://127.0.0.1:8000/task/${taskId}/stop`;
@@ -36,7 +74,6 @@ export default {
             headers: {
               'Content-Type': 'application/json',
             },
-            // body: JSON.stringify(this.jsonData["Task ID"]),
           });
   
           this.jsonData = await response.json();
@@ -49,26 +86,7 @@ export default {
 };
 </script>
 
-<template>
-    <div class="results-container">
-      <div class="text-container">
-        <p class="textheader">Your AI assistant has begun your research!</p>
-        <p class="textbody">Download partial results anytime during the search. Full results remain available for another 24 hours and will be automatically deleted after.</p>
-        <p class="textbody">You need the Task ID to retrieve the results. <span class="important-notice">Make sure to save the Task ID. It won't be displayed again.</span></p>
-      </div>
-      <table class="results-table">
-        <tr v-for="(value, key) in jsonData" :key="key">
-          <td class="key-column">{{ key }}</td>
-          <td :class="{'task-id-value': key === 'Task ID'}">{{ value }}</td>
-        </tr>
-      </table>
-      <div class="button-container">
-        <button type="button" @click="newSearch" class="startover-button">New Search</button>
-        <button type="button" @click="cancelSearch" class="cancel-button">Cancel Search</button>
-      </div>
-    </div>
-  </template>
-  
+
   <style scoped>
   .results-container {
     margin-top: -20px;
@@ -127,16 +145,16 @@ export default {
   .button-container {
     display: flex;
     justify-content: center;
-    gap: 120px;
-    margin-top: 50px;
+    gap: 160px;
+    margin-top: 40px;
+
   }
-  
-  .startover-button {
-    border: 2px solid #0c952c;
+  .download-button {
+    border: 2px solid #0000ff;
     border-radius: 8px;
     background-color: #ffffff;
-    color: #0c952c;
-    padding: 15px 32px;
+    color: #0000ff;
+    padding: 8px 16px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -144,13 +162,11 @@ export default {
     margin: 4px 2px;
     cursor: pointer;
   }
-  
-  .startover-button:hover {
-    background-color: #0c952c;
+  .download-button:hover {
+    background-color: #0000ff;
     color: #ffffff;
   }
-
-.cancel-button {
+  .cancel-button {
     border: 2px solid #ff4800;
     border-radius: 8px;
     background-color: #ffffff;
@@ -168,6 +184,26 @@ export default {
     background-color: #ff4800;
     color: #ffffff;
   }
+  .newsearch-button{
+    border: 2px solid #0c952c;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #0c952c;
+    padding: 15px 41px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+
+  .newsearch-button:hover{
+    background-color: #0c952c;
+    color: #ffffff;
+  }
+  
+
 
   </style>
   

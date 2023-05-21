@@ -261,7 +261,7 @@ body {
 
 .search-button {
   margin-top: -10px;
-  padding: 15px 30px;
+  padding: 15px 50px;
   font-size: 1.2em;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -269,6 +269,7 @@ body {
   border-radius: 8px;
   background-color: #ffffff;
   color: #0c952c;
+  font-weight: bold;
 }
 
 .search-button:hover {

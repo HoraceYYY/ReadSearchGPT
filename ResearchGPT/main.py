@@ -66,7 +66,7 @@ async def startSearching(background_tasks: BackgroundTasks, search: Search, db: 
     crud.create_task(db, task)
     # Use the existing session to create a new one for the background task
     background_tasks.add_task(run_task, task_id, search)
-    return {"Task ID": task_id, "Status": "Research has started"}
+    return {"Task ID": task_id, "Status": "Researching..."}
 
 async def run_task(task_id: str, search: Search):
     db = SessionLocal()  # Create a new session
@@ -108,11 +108,14 @@ async def task_status(task_id: str, db: Session = Depends(get_db)):
 async def stop_task(task_id: str, db: Session = Depends(get_db)):
     task = crud.get_task(db, task_id)
     if task:
-        task.status = "Cancelled"
-        task.end_time = datetime.now()
-        task.time_spent = str(task.end_time - task.start_time).split('.')[0]
-        db.commit()
-        return {"Status": "Task has been cancelled"}
+        if task.status == "Researching...":
+            task.status = "Cancelled"
+            task.end_time = datetime.now()
+            task.time_spent = str(task.end_time - task.start_time).split('.')[0]
+            db.commit()
+            return {"Status": "Task has been cancelled"}
+        else:
+            return {"message": "Search was not running."}
     else:
         return {"Status": "Error", "Message": "Task not found"}
 
