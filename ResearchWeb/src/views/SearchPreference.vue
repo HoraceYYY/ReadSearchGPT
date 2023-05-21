@@ -43,38 +43,55 @@ export default {
     }
   },
 
-    methods: {
-    startOver() {
+methods: {
+startOver() {
       this.$router.push({ path: '/' });
     },
-    async submitForm() {
-      if (!this.validateFormData()) {
+
+async submitForm() {
+      if (!this.validateInput()) {
         return;
       }
       // add these lines
 
     await this.callApi();
     },
-    validateFormData() {
-      if (this.depth == 3 && this.domain == "") {
-        if (!confirm("You are about to perform a deep search without limiting the search domain. This may take hours with high Open AI api cost. Do you wish to proceed?")) {
-          return false;
-        }
-      }
 
-      if (this.domain != "" && !this.domain.startsWith("http")) {
-        alert("Please enter a valid domain starting with http or https");
-        return false;
-      }
+    validateInput() {
+    var domain = this.domain; // Assuming 'this.domain' contains the user input
 
-      return true;
+    // Trim leading and trailing white spaces
+    domain = domain.trim();
+
+    // Convert to lowercase
+    domain = domain.toLowerCase();
+
+    if (domain !== "") {
+
+    // Regular expression for URL validation
+    var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+
+    // Check if URL is valid
+    if (!pattern.test(domain)) {
+        alert("Please enter a valid URL.");
+        return false
+    }
+    }
+    return true;
     },
+
     async callApi() {
+        this.validateInput()
         const url = "http://127.0.0.1:8000/search";  // replace with your API endpoint
         const data = {
             searchWidth: this.width,
             max_depth: this.depth,
-            searchDomain: this.domain,
+            searchDomain: this.domain.trim().toLowerCase(),
             searchqueries: this.searchQueries,
             apiKey: this.apiKey,
         };
@@ -144,8 +161,7 @@ export default {
         </div>
       </form>
     </div>
-    <!-- <p>Search queries: {{ searchQueries }}</p>
-    <p>API Key: {{ apiKey }}</p> -->
+
 </template>
   
   <style scoped>
