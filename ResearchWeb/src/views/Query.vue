@@ -15,8 +15,6 @@
                 <input v-model="apiKey" :type="passwordFieldType" class="input" placeholder="API Key..">
                 <button @click="togglePasswordField" class="toggle-password-button">{{ passwordFieldType === 'password' ? 'Show' : 'Hide' }}</button>
             </div>
-
-
         </div>
         <div class="button-container">
           <button class="search-button" @click="search">{{ buttonText }}</button>
@@ -33,7 +31,10 @@ export default {
         passwordFieldType: "password"
       };
     },
-
+    created() {
+  this.searchqueries = [""]
+  this.apiKey = "" 
+},
 computed: {
   searchqueries: {
     get() {
@@ -96,6 +97,7 @@ async search() {
   }
 },
 async callApi() {
+    // console.log(this.searchqueries)
     const url = "http://127.0.0.1:8000/testapi";  // replace with your API endpoint
     const payload = {
         apiKey: this.apiKey,

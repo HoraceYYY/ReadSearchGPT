@@ -4,9 +4,33 @@ import { mapGetters } from 'vuex';
 export default {
     data() {
       return {
-        buttonText: "Start Searching"
+        buttonText: "Start Searching",
+        searchType: 'Quick Search',
       };
     },
+created() {
+  if (this.searchType === 'Quick Search') {
+    this.$store.dispatch('setWidth', 8);
+    this.$store.dispatch('setDepth', 0);
+  } else if (this.searchType === 'Thorough Search') {
+    this.$store.dispatch('setWidth', 8);
+    this.$store.dispatch('setDepth', 1);
+  }
+  this.domain = "" 
+},
+
+watch: {
+  searchType(newVal) {
+    if (newVal === 'Quick Search') {
+      this.$store.dispatch('setWidth', 8);
+      this.$store.dispatch('setDepth', 0);
+    } else if (newVal === 'Thorough Search') {
+      this.$store.dispatch('setWidth', 8);
+      this.$store.dispatch('setDepth', 1);
+    }
+  }
+},
+
   computed: {
     ...mapGetters(['searchQueries', 'apiKey']),
     width: {
@@ -95,7 +119,9 @@ async submitForm() {
             searchqueries: this.searchQueries,
             apiKey: this.apiKey,
         };
+        // console.log(data)
         try {
+            
             this.buttonText = "Searching...";
             //console.log(data);
             const response = await fetch(url, {
@@ -108,7 +134,7 @@ async submitForm() {
 
             const jsonData = await response.json();
 
-            console.log(jsonData);
+            // console.log(jsonData);
             this.jsonData = jsonData;  // assign jsonData directly
             // this.$store.dispatch('jsonData', jsonData);
             this.$router.push({ path: '/searching' });
@@ -120,36 +146,26 @@ async submitForm() {
         }
     },
     }
-};
+}
 </script>
-
-  
+ 
 <template>
     <div class="form-container">
-        <p>Set the search parameters: </p>
       <form @submit.prevent="submitForm">
         <div class="input-group">
-          <label for="width" class="input-label">
-            <span class="tooltip">ℹ️
-            <span class="tooltip-text">This sets the number of search engine results for each search topic.</span>
-            </span> 
-            # of Initial Search Results (Per Topic): {{ width }}
-        </label>
-          <input type="range" id="width" min="1" max="10" v-model="width" class="slider" />
-        </div>
-        <div class="input-group">
-            <label for="depth" class="input-label">
-                <span class="tooltip">ℹ️
-                <span class="tooltip-text">Level of webpage exploration by following links found on webpages.</span>
-                </span>
-                Additional Search Results:
+            <div class="radio-group">
+              <input type="radio" id="quickSearch" value="Quick Search" v-model="searchType" class="radio-input_Quick"/>
+              <label for="quickSearch" class="radio-label">
+                Quick Search
+                <span class="description">Search 10's of websites within a few minutes.</span>
             </label>
-            <select id="depth" v-model="depth" class="dropdown">
-                <option value="0">None: Only search initial results (~1min, 10s URLs)</option>
-                <option value="1">Quick: Search relevant links found from the initial results (>10min, 100s URLs)</option>
-                <option value="2">Thorough: Search relevant links from Quick Option (>1h, 1000s URLs)</option>
-                <option value="3">Deep: Search relevant links from Thorough Option (do NOT recommend without limiting the search domain) </option>
-            </select>
+
+              <input type="radio" id="thoroughSearch" value="Thorough Search" v-model="searchType" class="radio-input_Thorough" />
+              <label for="thoroughSearch" class="radio-label">
+                Thorough Search
+                <span class="description">Search 100's of websites in 10-20 mintues.</span>
+            </label>
+            </div>
         </div>
         <div class="input-group">
           <label for="domain" class="input-label">Limit Search Within A Domain (optional):</label>
@@ -161,7 +177,6 @@ async submitForm() {
         </div>
       </form>
     </div>
-
 </template>
   
   <style scoped>
@@ -182,58 +197,75 @@ async submitForm() {
   margin-bottom: 40px;
 }
 
-  .input-group, .dropdown{
-    width: 900px;
-    margin-bottom: 20px;
-    font-family: Arial, sans-serif; /* Substitute with your preferred font */
+.input-group{
+  width: 900px;
+  margin-bottom: 50px;
+  font-family: Arial, sans-serif; /* Substitute with your preferred font */
   font-size: 20px;
+  font-weight: bold;
   }
  
-  .slider, .dropdown{
-    width: 100%; 
-  }
-  .text-input {
-    width: 96%;
-  }
-  .slider, .dropdown, .text-input {
+ .text-input {
     margin: 10px 0;
     font-style: italic;
     font-family: Arial, sans-serif; /* Substitute with your preferred font */
   font-size: 18px;
+  width: 96%;
+  padding: 10px;
   }
-  
-  .text-input, .dropdown{
-    padding: 10px;
-  }
-
-  .tooltip {
-  position: relative;
-  display: inline-block;
-  margin-left: 4px;
+  .radio-group {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1em;
+  gap: 50px;
 }
-
-.tooltip .tooltip-text {
-  visibility: hidden;
-  width: 180px;
-  background-color: #000;
-  color: #fff;
+  .radio-label {
+  display: block;
+  padding: 3em 0.8em;
+  margin: 0.5em;
+  border: 2px solid #aaa;
+  border-radius: 10px;
   text-align: center;
-  border-radius: 4px;
-  padding: 4px;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0;
-  transition: opacity 0.3s;
+  cursor: pointer;
+  background: #bbb;
+  color: #ffffff;
+  font-size: 28px;
+}
+.description {
+    display: block;
+    font-size: 15px; /* Change this value to your desired size */
+    margin-top: 20px;
+    font-style: italic;
+}
+/* Style the input elements (hidden) */
+.radio-input_Quick, .radio-input_Thorough {
+  display: none;
 }
 
-.tooltip:hover .tooltip-text {
-  visibility: visible;
-  opacity: 1;
+/* Style when Quick Search is selected */
+.radio-input_Quick:checked + .radio-label {
+  background:#4e9dc2;
 }
-  
+
+/* Style when Thorough Search is selected */
+.radio-input_Thorough:checked + .radio-label {
+  background: #4e9dc2;
+}
+
+/* If you want to grey out the unselected option, use these styles: */
+.radio-input_Quick:not(:checked) + .radio-label {
+  background: #bbb;
+  cursor: pointer;
+  color: #aaa;
+}
+
+.radio-input_Thorough:not(:checked) + .radio-label {
+  background: #bbb;
+  cursor: pointer;
+  color: #aaa;
+}
+
   .button-container {
 
     display: flex;
@@ -280,6 +312,8 @@ async submitForm() {
   background-color: #ff4800;
   color: #ffffff;
 }
+
+
   </style>
   
 

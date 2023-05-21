@@ -6,7 +6,7 @@ export default {
     ...mapGetters(['jsonData']),
     jsonData: {
         get() {
-          console.log("jsonData in component:", this.$store.state.jsonData);
+        //   console.log("jsonData in component:", this.$store.state.jsonData);
           return this.$store.state.jsonData;
         },
         set(value) {
@@ -14,9 +14,9 @@ export default {
         }
       },
   },
-  created() {
-    console.log("jsonData in component:", this.jsonData);
-  },
+//   created() {
+//     console.log("jsonData in component:", this.jsonData);
+//   },
   methods: {
     newSearch() {
       this.$router.push({ path: '/' });
