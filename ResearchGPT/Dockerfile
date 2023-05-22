@@ -4,7 +4,7 @@
 FROM python:3.10.3-slim
 
 # Set a directory for the application
-WORKDIR /usr/src/app
+WORKDIR app
 
 # Install dependencies
 COPY requirements.txt .
