@@ -15,7 +15,7 @@
                 <input v-model="apiKey" :type="passwordFieldType" class="input" placeholder="Enter API Key..">
                 <button @click="togglePasswordField" class="toggle-password-button">{{ passwordFieldType === 'password' ? 'Show' : 'Hide' }}</button>
             </div>
-            <a class="input-item extra-input-item" href="https://example.com" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new tab">How to get an API key</a>
+            <a class="input-item extra-input-item" href="https://example.com" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new tab">How to get an API key?</a>
         </div>
         <div class="button-container">
           <button class="search-button" @click="search">{{ buttonText }}</button>
