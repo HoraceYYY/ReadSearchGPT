@@ -1,7 +1,8 @@
 from Google import async_google
 from aiohttp import ClientSession
-import asyncio, uuid
+import asyncio, uuid, os, time
 from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List
 import pandas as pd
@@ -138,6 +139,45 @@ async def download_excel(task_id: str, db: Session = Depends(get_db)):
         unchecked.to_excel(writer, sheet_name='Unchecked Material', index=False)
 
     return {f"Results/{task_id}.xlsx"}
+
+@app.get("/task/{task_id}/webdownload")
+async def download_excel(task_id: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    # Find the URL data for the specified task ID
+    url_data_list = db.query(models.URLData).filter(models.URLData.task_id == task_id).all()
+
+    if not url_data_list:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    # Create data frames for each category
+    related = pd.DataFrame(columns=['URL', 'Title', 'Content'])
+    unrelated = pd.DataFrame(columns=['URL', 'Title', 'Content'])
+    unchecked = pd.DataFrame(columns=['PDFs', 'Additional Links'])
+
+    for url_data in url_data_list:
+        if url_data.category == 'Related':
+            related = pd.concat([related, pd.DataFrame([{'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}])], ignore_index=True)
+        elif url_data.category == 'Unrelated':
+            unrelated = pd.concat([unrelated, pd.DataFrame([{'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}])], ignore_index=True)
+        elif url_data.category == 'Unchecked Material':
+            unchecked = pd.concat([unchecked, pd.DataFrame([{'PDFs': url_data.pdfs, 'Additional Links': url_data.additional_links}])], ignore_index=True)
+
+    # Write data to Excel file with each DataFrame as a separate sheet
+    file_path = f"Results/{task_id}.xlsx"
+    with pd.ExcelWriter(file_path) as writer:
+        related.to_excel(writer, sheet_name='Related', index=False)
+        unrelated.to_excel(writer, sheet_name='Unrelated', index=False)
+        unchecked.to_excel(writer, sheet_name='Unchecked Material', index=False)
+
+    # Add a background task to delete the file after 1 minute
+    background_tasks.add_task(delete_file_after_delay, file_path, delay=60)
+
+    # Return the file as a response
+    return FileResponse(file_path, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename=f"{task_id}.xlsx")
+
+def delete_file_after_delay(file_path: str, delay: int):
+    time.sleep(delay)
+    if os.path.exists(file_path):
+        os.remove(file_path)
 
 @app.post("/task/cleanup")
 async def cleanup(background_tasks: BackgroundTasks):
