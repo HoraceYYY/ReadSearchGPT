@@ -7,6 +7,9 @@ export default {
       buttonText: "Find My Results"
     };
   },
+  created() {
+  this.taskId = '' //clear the input from previous input of the same session
+},
   computed: {
     ...mapGetters(['jsonData']),
     taskId: {

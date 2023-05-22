@@ -2,13 +2,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from models import Base
+from dotenv import load_dotenv
+import os
 
-"""
-local database vs GCP database. Only choose one
-"""
-##SQLALCHEMY_DATABASE_URL = "postgresql://readsearch:readsearch@localhost:5432/tasks"
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:readsearchpostgres@34.66.209.78:5432/tasks"
-
+dotenv_path = os.path.join(os.path.dirname(__file__), 'Google', '.env')
+load_dotenv(dotenv_path)  # Load the .env file
+SQLALCHEMY_DATABASE_URL = os.getenv("GCP_SQLALCHEMY_DATABASE_URL")
+print(SQLALCHEMY_DATABASE_URL)
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL
 )

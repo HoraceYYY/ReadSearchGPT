@@ -33,8 +33,8 @@ export default {
       };
     },
     created() {
-  this.searchqueries = [""]
-  this.apiKey = "" 
+  this.searchqueries = [""]//clear the input from previous input of the same session
+  this.apiKey = "" //clear the input from previous input of the same session
 },
 computed: {
   searchqueries: {

@@ -60,7 +60,7 @@ async def startSearching(background_tasks: BackgroundTasks, search: Search, db: 
     crud.create_task(db, task)
     # Use the existing session to create a new one for the background task
     background_tasks.add_task(run_task, task_id, search)
-    return {"Task ID": task_id, "Status": "Researching...", "Start Time": start_time, "Search Results": "Available"}
+    return {"Task ID": task_id, "Status": "Researching...", "Start Time": str(start_time).split('.')[0], "Search Results": "Available"}
 
 async def run_task(task_id: str, search: Search):
     db = SessionLocal()  # Create a new session
