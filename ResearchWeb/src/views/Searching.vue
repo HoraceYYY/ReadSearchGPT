@@ -40,14 +40,29 @@ export default {
   methods: {
     async downloadResults() {
         const taskId = this.jsonData['Task ID'];
-        const url = `http://127.0.0.1:8000/task/${taskId}/localdownload`;
+        const url = `http://127.0.0.1:8000/task/${taskId}/webdownload`;
         try {
-          await fetch(url, { method: 'GET',
+          const response = await fetch(url, { method: 'GET',
             headers: {
               'Content-Type': 'application/json',
             },
           });
-          // handle your response here
+          if (!response.ok) {
+            throw new Error("HTTP error " + response.status);
+        }
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = `${taskId}.xlsx`; // or any name you want to give to your file
+        document.body.appendChild(a);
+        a.click();
+        // After a timeout, remove the element and revoke the object URL
+        setTimeout(() => {
+            a.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+        }, 0);
+
         } catch (error) {
           console.error(error);
         }
