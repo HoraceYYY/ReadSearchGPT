@@ -40,7 +40,7 @@ export default {
   methods: {
     async downloadResults() {
         const taskId = this.jsonData['Task ID'];
-        const url = `http://127.0.0.1:8000/task/${taskId}/download`;
+        const url = `http://127.0.0.1:8000/task/${taskId}/localdownload`;
         try {
           await fetch(url, { method: 'GET',
             headers: {
