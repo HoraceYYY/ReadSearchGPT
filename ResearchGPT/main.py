@@ -5,7 +5,6 @@ from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List
 import pandas as pd
-from fastapi.middleware.cors import CORSMiddleware # to allow CORS
 from datetime import datetime, timedelta
 from database import SessionLocal
 from sqlalchemy.orm import Session
@@ -34,18 +33,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-origins = [
-    "http://localhost:5173",  # assuming your Vue.js app is running on port 3000
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 @app.post("/search/") # this is the entry point of the search 
 async def startSearching(background_tasks: BackgroundTasks, search: Search, db: Session = Depends(get_db)):
