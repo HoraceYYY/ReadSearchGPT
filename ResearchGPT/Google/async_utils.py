@@ -322,20 +322,3 @@ def getContentPrompt(query_list):
 def getURLPrompt(query_list):
     url_prompt = ", ".join([f"{obj}" for obj in query_list])
     return url_prompt
-
-async def createSearchQuery(userAsk): # currently not used
-    messages = [
-                {"role": "system", 
-                 "content": "Generate less than 4 Google search queries that reflect the search content in the Text provide. \
-For each query, utilize specific keywords that accurately represent the topic of the Text. Refrain from creating related queries that are outside of text's search content. \
-Ensure all queries are mutually exclusive and collectively exhaustive regarding the text's search content. \
-Return the search queries in the format of comma_separated_list_of_queries. Refrain from numbering each item in the list. refrain from creating query in a new line. Refrain from creating queries with only one word. \
-Example result format: query1, query2, query3, query4 "}]
-    
-    queryMessage = "Text:\n" + userAsk
-    googleQueries = await singleGPT(messages, queryMessage, temperature=0.0, top_p=1, )
-    # print(googleQueries)
-    query_list = [query.strip() for query in googleQueries.split(',')] # remove the white space from the string and convert the string into a list
-    # print(query_list)
-    # input('Press Enter to continue...')
-    return query_list

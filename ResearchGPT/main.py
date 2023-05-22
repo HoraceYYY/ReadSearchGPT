@@ -1,4 +1,4 @@
-from Google import async_google, async_utils
+from Google import async_google
 from aiohttp import ClientSession
 import asyncio, uuid
 from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException
@@ -6,9 +6,10 @@ from pydantic import BaseModel
 from typing import List
 import pandas as pd
 from fastapi.middleware.cors import CORSMiddleware # to allow CORS
-from datetime import datetime
+from datetime import datetime, timedelta
 from database import SessionLocal
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 import models, crud
 
 class SearchRequest(BaseModel): # currently not used
@@ -48,13 +49,6 @@ app.add_middleware(
 
 tasks = {} # this is only a temp solution, it is in memory and not scalable. if system crash, all info in this array will be lost
 
-@app.post("/queries/") # currently not used
-async def create_search_query(searchrequest: SearchRequest):
-    try:
-        searchqueries = await async_utils.createSearchQuery(searchrequest.userAsk,)
-        return {"success": True, "data": searchqueries}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
 
 @app.post("/search/") # this is the entry point of the search 
 async def startSearching(background_tasks: BackgroundTasks, search: Search, db: Session = Depends(get_db)):
@@ -66,7 +60,7 @@ async def startSearching(background_tasks: BackgroundTasks, search: Search, db: 
     crud.create_task(db, task)
     # Use the existing session to create a new one for the background task
     background_tasks.add_task(run_task, task_id, search)
-    return {"Task ID": task_id, "Status": "Researching..."}
+    return {"Task ID": task_id, "Status": "Researching...", "Start Time": start_time, "Search Results": "Available"}
 
 async def run_task(task_id: str, search: Search):
     db = SessionLocal()  # Create a new session
@@ -100,7 +94,7 @@ async def task_status(task_id: str, db: Session = Depends(get_db)):
             elapsed_time = current_time - task.start_time
             task.time_spent = str(elapsed_time).split('.')[0]
             db.commit()
-        return {"Task ID": task_id, "Status": task.status, "Start Time": task.start_time.strftime("%Y-%m-%d %H:%M:%S"), "Time Spent": task.time_spent}
+        return {"Task ID": task_id, "Status": task.status, "Search Result": task.file_availability, "Start Time": task.start_time.strftime("%Y-%m-%d %H:%M:%S"), "Time Spent": task.time_spent}
     else:
         return {"Status": "Error", "Message": "Task not found"}
   
@@ -119,7 +113,7 @@ async def stop_task(task_id: str, db: Session = Depends(get_db)):
     else:
         return {"Status": "Error", "Message": "Task not found"}
 
-@app.get("/task/{task_id}/download")
+@app.get("/task/{task_id}/localdownload") # this is to download from the loacal database only
 async def download_excel(task_id: str, db: Session = Depends(get_db)):
     # Find the URL data for the specified task ID
     url_data_list = db.query(models.URLData).filter(models.URLData.task_id == task_id).all()
@@ -147,16 +141,29 @@ async def download_excel(task_id: str, db: Session = Depends(get_db)):
         unchecked.to_excel(writer, sheet_name='Unchecked Material', index=False)
 
     return {f"Results/{task_id}.xlsx"}
-    
-@app.post("/task/{task_id}/deletefile")
-async def delete_excel(task_id: str, db: Session = Depends(get_db)):
-    task = crud.get_task(db, task_id)
-    if task:
-        task.status = "Deleted"
+
+@app.post("/task/cleanup")
+async def cleanup(background_tasks: BackgroundTasks):
+    background_tasks.add_task(run_cleanup)
+    return {"Status": "Cleanup started"}
+
+async def run_cleanup():
+    db = SessionLocal()  # Create a new session
+    try:
+        # Find tasks that ended more than 24 hours ago
+        old_tasks = db.query(models.Task).filter(
+            and_(models.Task.end_time < datetime.now() - timedelta(hours=1), 
+                 models.Task.file_availability == "Available")).all()
+        for task in old_tasks:
+            # Delete URL data associated with the task
+            db.query(models.URLData).filter(models.URLData.task_id == task.id).delete()
+            # Update file_availability status in the Task table
+            task.file_availability = "Expired"
+        
+        # Commit the changes to the database
         db.commit()
-        return {"Status": "Excel file has been deleted"}
-    else:
-        return {"Status": "Error", "Message": "Task not found"}
+    finally:    
+        db.close()
 
 @app.get("/task/get_all_tasks")
 async def get_all_tasks(db: Session = Depends(get_db)):

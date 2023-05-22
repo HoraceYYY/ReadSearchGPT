@@ -14,6 +14,7 @@ class Task(Base):
     start_time = Column(DateTime)
     end_time = Column(DateTime, default=None)
     time_spent = Column(String)
+    file_availability = Column(String, default="Available")
     file_path = Column(String)
     
     url_data = relationship("URLData", back_populates="task")
