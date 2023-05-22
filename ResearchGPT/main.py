@@ -47,9 +47,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-tasks = {} # this is only a temp solution, it is in memory and not scalable. if system crash, all info in this array will be lost
-
-
 @app.post("/search/") # this is the entry point of the search 
 async def startSearching(background_tasks: BackgroundTasks, search: Search, db: Session = Depends(get_db)):
     task_id = str(uuid.uuid4())
