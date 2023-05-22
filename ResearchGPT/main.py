@@ -167,19 +167,6 @@ async def get_all_tasks(db: Session = Depends(get_db)):
     tasks = crud.get_all_tasks(db)
     return {"Tasks": [dict(task_id=task.id, status=task.status, start_time=task.start_time, time_spent=task.time_spent, file_path=task.file_path) for task in tasks]}
 
-@app.post("/test")
-def test(search: Search):
-    # print the body of the request and their data type
-    print(search)
-    # print the data type of each field
-    print(type(search.searchqueries))
-    print(type(search.searchDomain))
-    print(type(search.max_depth))
-    print(type(search.searchWidth))
-    print(type(search.apiKey))
-
-    return {"Task ID":"sudo task id" , "Status": "Task has started", "File Path": "sudo file path"}
-
 @app.post("/testapi")
 async def testAPI(apiKey: APIKey):
     api_key = apiKey.apiKey
