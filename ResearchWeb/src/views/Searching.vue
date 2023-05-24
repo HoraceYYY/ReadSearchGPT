@@ -40,7 +40,7 @@ export default {
   methods: {
     async downloadResults() {
         const taskId = this.jsonData['Task ID'];
-        const url = `http://127.0.0.1:8000/task/${taskId}/webdownload`;
+        const url = `https://readsearch-hauf6ju5bq-uc.a.run.app/task/${taskId}/webdownload`;
         try {
           const response = await fetch(url, { method: 'GET',
             headers: {
@@ -76,8 +76,8 @@ export default {
       },
     async cancelSearch() {
       const taskId = this.jsonData['Task ID'];
-      const cancelUrl = `http://127.0.0.1:8000/task/${taskId}/stop`;
-      const statusUrl = `http://127.0.0.1:8000/task/${taskId}/status`;
+      const cancelUrl = `https://readsearch-hauf6ju5bq-uc.a.run.app/task/${taskId}/stop`;
+      const statusUrl = `https://readsearch-hauf6ju5bq-uc.a.run.app/task/${taskId}/status`;
       try {
           this.buttonText = "Cancelling..."
           await fetch(cancelUrl, { method: 'POST',

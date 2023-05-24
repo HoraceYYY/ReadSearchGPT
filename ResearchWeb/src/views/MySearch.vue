@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     async findSearch() {
-      const url = `http://127.0.0.1:8000/task/${this.taskId}/status`;  // replace with your API endpoint
+      const url = `https://readsearch-hauf6ju5bq-uc.a.run.app/task/${this.taskId}/status`;  // replace with your API endpoint
       try {
         this.buttonText = "Retriveing...";
         const response = await fetch(url,{

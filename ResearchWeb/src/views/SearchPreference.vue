@@ -111,7 +111,7 @@ async submitForm() {
 
     async callApi() {
         this.validateInput()
-        const url = "http://127.0.0.1:8000/search";  // replace with your API endpoint
+        const url = "https://readsearch-hauf6ju5bq-uc.a.run.app/search/";  // replace with your API endpoint
         const data = {
             searchWidth: this.width,
             max_depth: this.depth,

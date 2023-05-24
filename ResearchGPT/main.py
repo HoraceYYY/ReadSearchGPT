@@ -38,7 +38,7 @@ def get_db():
 
 origins = [
     "http://localhost:5173",  # assuming your Vue.js app is running on port 3000
-    "http://127.0.0.1:8000",
+    "https://storage.googleapis.com/",
 ]
 
 app.add_middleware(
