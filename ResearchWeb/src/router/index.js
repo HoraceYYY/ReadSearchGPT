@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import NewSearch from '../views/NewSearch.vue'
 import MySearch from '../views/MySearch.vue'
 import Tutorial from '../views/Tutorial.vue'
 import Feedback from '../views/Feedback.vue'
@@ -23,10 +22,6 @@ const router = createRouter({
       path: '/mysearch',
       name: 'Find My Search',
       component: MySearch
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      //component: () => import('../views/AboutView.vue')
     },
     {
       path: '/tutorial', 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, ForeignKey, Text
+from sqlalchemy import Column, String, DateTime, ForeignKey, Text, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -33,4 +33,10 @@ class URLData(Base):
 
     task = relationship("Task", back_populates="url_data", uselist=False)
 
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    feedback = Column(Text)  # User's feedback on the product
+    timestamp = Column(DateTime, default=func.now())  # The time when feedback was submitted
 
