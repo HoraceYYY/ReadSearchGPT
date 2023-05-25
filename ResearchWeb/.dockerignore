@@ -1,0 +1,26 @@
+# ignore node_modules, you'll usually install dependencies during build
+node_modules
+
+# ignore local environment files
+.env
+
+# ignore development logs
+npm-debug.log
+
+# ignore Git related files
+.git
+.gitignore
+
+# ignore Docker related files
+Dockerfile
+.dockerignore
+
+# ignore Vite and VSCode related files
+.vite
+.vscode
+
+# ignore README
+README.md
+
+# You typically don't want to include your lock file
+package-lock.json
