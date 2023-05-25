@@ -258,9 +258,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.search-button {
   margin-top: -10px;
   padding: 15px 50px;
   font-size: 1.2em;

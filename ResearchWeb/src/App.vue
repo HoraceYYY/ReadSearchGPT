@@ -7,7 +7,7 @@
     <nav class="navbar">
       <div class="navbar-top">
         <div class="navbar-left">
-          <router-link to="/" class="nav-link">New Search</router-link>
+          <router-link to="/newsearch" class="nav-link">New Search</router-link>
           <router-link to="/mysearch" class="nav-link">Find My Results</router-link>
         </div>
         <div class="navbar-right">
@@ -120,10 +120,12 @@ h1 {
 .title {
   font-size: 3em;
   margin-bottom: -20px; /* Adjust the value to make the spacing smaller */
+  color: rgb(0, 26, 130);
 }
 
 .subtitle {
   font-size: 1.8em;
   margin-bottom: 60px;
+  color:  rgb(0, 26, 130);
 }
 </style>

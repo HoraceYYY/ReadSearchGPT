@@ -1,9 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MySearch from '../views/MySearch.vue'
-import Tutorial from '../views/Tutorial.vue'
+import Landing from '../views/Landing.vue'
 import Feedback from '../views/Feedback.vue'
-import Terms from '../views/Terms.vue'
-import Privacy from '../views/Privacy.vue'  
 import Query from '../views/Query.vue'
 import Searching from '../views/Searching.vue'
 import SearchPreference from '../views/SearchPreference.vue'
@@ -24,9 +22,9 @@ const router = createRouter({
       component: MySearch
     },
     {
-      path: '/tutorial', 
-      name: 'Find My Tutorial',
-      component: Tutorial 
+      path: '/', 
+      name: 'Landing',
+      component: Landing
     },
     {
       path: '/feedback', 
@@ -34,17 +32,7 @@ const router = createRouter({
       component: Feedback 
     },
     {
-      path: '/terms', 
-      name: 'Terms',
-      component: Terms 
-    },
-    {
-      path: '/privacy', 
-      name: 'Privacy',
-      component: Privacy 
-    },
-    {
-      path: '/', 
+      path: '/newsearch', 
       name: 'Query',
       component: Query 
     },
@@ -57,7 +45,7 @@ const router = createRouter({
       path: '/results', 
       name: 'Results',
       component: Results 
-    },
+    }
   ]
 })
 
