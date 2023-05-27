@@ -1,6 +1,8 @@
 from Google import async_google
 from aiohttp import ClientSession
-import asyncio, uuid, os, time
+
+import asyncio, uuid, time,os
+
 from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -26,6 +28,9 @@ class Search(BaseModel):
     searchWidth: int # 1-10
     apiKey: str
 
+class FeedbackBase(BaseModel):
+    feedback: str
+
 app = FastAPI()
 
 # Get a db session
@@ -38,6 +43,7 @@ def get_db():
 
 origins = [
     "http://localhost:5173",  # assuming your Vue.js app is running on port 3000
+    "https://readsearch.azurewebsites.net"
 ]
 
 app.add_middleware(
@@ -48,7 +54,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/search/") # this is the entry point of the search 
+@app.post("/search") # this is the entry point of the search 
 async def startSearching(background_tasks: BackgroundTasks, search: Search, db: Session = Depends(get_db)):
     task_id = str(uuid.uuid4())
     # file_path = await create_output_excel_file(task_id)
@@ -234,3 +240,12 @@ async def testAPI(apiKey: APIKey):
             print(e)
             return {"Key": f"Not Valid: {e}"}
 
+@app.post("/feedback")
+async def create_feedback(feedback: FeedbackBase, db: Session = Depends(get_db)):
+    new_feedback = models.Feedback(
+        feedback=feedback.feedback
+    )
+    db.add(new_feedback)
+    db.commit()
+    db.refresh(new_feedback)
+    return {"Message": "Feedback successfully submitted", "Feedback ID": new_feedback.id}

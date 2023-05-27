@@ -10,12 +10,12 @@
               <button v-if="index === searchqueries.length - 1 && searchqueries.length < 5" @click="addItem" class="plus-button">+</button>
             </li>
           </ul>
-          <p>Enter Open AI API Key: (We won't save your key)</p>
+          <p>Enter Open AI API Key:</p>
             <div class="input-item extra-input-item">
-                <input v-model="apiKey" :type="passwordFieldType" class="input" placeholder="Enter API Key..">
+                <input v-model="apiKey" :type="passwordFieldType" class="input" placeholder="Enter API Key. We DO NOT save your key.">
                 <button @click="togglePasswordField" class="toggle-password-button">{{ passwordFieldType === 'password' ? 'Show' : 'Hide' }}</button>
             </div>
-            <a class="input-item extra-input-item" href="https://example.com" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new tab">How to get an API key?</a>
+            <a class="input-item extra-input-item" href="https://mirage-oval-bce.notion.site/How-To-Get-An-OpenAI-API-Key-62d0b160bb634973bc0d4faec40b7b77" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new tab">How to get an API key?</a>
         </div>
         <div class="button-container">
           <button class="search-button" @click="search">{{ buttonText }}</button>
@@ -99,7 +99,7 @@ async search() {
 },
 async callApi() {
     // console.log(this.searchqueries)
-    const url = "http://127.0.0.1:8000/testapi";  // replace with your API endpoint
+    const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/testapi";  // replace with your API endpoint
     const payload = {
         apiKey: this.apiKey,
     };
@@ -258,9 +258,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.search-button {
   margin-top: -10px;
   padding: 15px 50px;
   font-size: 1.2em;

@@ -7,11 +7,12 @@
     <nav class="navbar">
       <div class="navbar-top">
         <div class="navbar-left">
-          <router-link to="/" class="nav-link">New Search</router-link>
+          <router-link to="/newsearch" class="nav-link">New Search</router-link>
           <router-link to="/mysearch" class="nav-link">Find My Results</router-link>
         </div>
         <div class="navbar-right">
-          <router-link to="/tutorial" class="nav-link">Watch Tutorial</router-link>
+          <!-- <router-link to="/tutorial" class="nav-link">Tutorials & FAQs</router-link> -->
+          <a href="https://mirage-oval-bce.notion.site/Tutorials-FAQs-d026f83b53c1471589ba8ff49445dc3e" class="nav-link" target="_blank">Tutorials & FAQs</a>
           <router-link to="/feedback" class="nav-link">Provide Feedback</router-link>
         </div>
       </div>
@@ -25,8 +26,10 @@
     
     <nav class="navbar">  
       <div class="navbar-bottom-right">
-        <router-link to="/privacy" class="nav-link">Privacy</router-link>
-        <router-link to="/terms" class="nav-link">Terms</router-link>
+        <a href="https://mirage-oval-bce.notion.site/Terms-8289e5d1596d45e49215df02bff2839f" class="nav-link" target="_blank">Terms</a>
+      <a href="https://mirage-oval-bce.notion.site/Privacy-354ba4e4b7f94e218ea4cbfad27b751a" class="nav-link" target="_blank">Privacy</a>
+        <!-- <router-link to="/privacy" class="nav-link">Privacy</router-link>
+        <router-link to="/terms" class="nav-link">Terms</router-link> -->
       </div>
     </nav>
   </div>
@@ -83,7 +86,7 @@ h1 {
   gap: 20px;
 }
 .navbar-top {
-  margin-top: 10px;
+  margin-top: 0px;
   display: flex;
   justify-content: space-between;
 }
@@ -110,17 +113,19 @@ h1 {
   justify-content: flex-start;
   flex-grow: 1;
   overflow-y: auto; 
-  padding-top: 2.5vh; /* Adjust this value to move content up or down */
+  padding-top: 1vh; /* Adjust this value to move content up or down */
   max-height: 80vh;
 }
 
 .title {
   font-size: 3em;
   margin-bottom: -20px; /* Adjust the value to make the spacing smaller */
+  color: rgb(0, 26, 130);
 }
 
 .subtitle {
   font-size: 1.8em;
   margin-bottom: 60px;
+  color:  rgb(0, 26, 130);
 }
 </style>

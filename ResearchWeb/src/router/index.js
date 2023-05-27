@@ -1,10 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import NewSearch from '../views/NewSearch.vue'
 import MySearch from '../views/MySearch.vue'
-import Tutorial from '../views/Tutorial.vue'
+import Landing from '../views/Landing.vue'
 import Feedback from '../views/Feedback.vue'
-import Terms from '../views/Terms.vue'
-import Privacy from '../views/Privacy.vue'  
 import Query from '../views/Query.vue'
 import Searching from '../views/Searching.vue'
 import SearchPreference from '../views/SearchPreference.vue'
@@ -23,15 +20,11 @@ const router = createRouter({
       path: '/mysearch',
       name: 'Find My Search',
       component: MySearch
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      //component: () => import('../views/AboutView.vue')
     },
     {
-      path: '/tutorial', 
-      name: 'Find My Tutorial',
-      component: Tutorial 
+      path: '/', 
+      name: 'Landing',
+      component: Landing
     },
     {
       path: '/feedback', 
@@ -39,17 +32,7 @@ const router = createRouter({
       component: Feedback 
     },
     {
-      path: '/terms', 
-      name: 'Terms',
-      component: Terms 
-    },
-    {
-      path: '/privacy', 
-      name: 'Privacy',
-      component: Privacy 
-    },
-    {
-      path: '/', 
+      path: '/newsearch', 
       name: 'Query',
       component: Query 
     },
@@ -62,7 +45,7 @@ const router = createRouter({
       path: '/results', 
       name: 'Results',
       component: Results 
-    },
+    }
   ]
 })
 
