@@ -40,7 +40,7 @@
     },
     methods: {
       async downloadResults() {
-        const url = `https://readsearch-hauf6ju5bq-uc.a.run.app/task/${this.taskId}/webdownload`;
+        const url = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${this.taskId}/webdownload`;
         try {
           const response = await fetch(url, { method: 'GET',
             headers: {
@@ -75,8 +75,8 @@
         }
       },
       async cancelSearch() {
-        const cancelUrl = `https://readsearch-hauf6ju5bq-uc.a.run.app/task/${this.taskId}/stop`;
-        const statusUrl = `https://readsearch-hauf6ju5bq-uc.a.run.app/task/${this.taskId}/status`;
+        const cancelUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${this.taskId}/stop`;
+        const statusUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${this.taskId}/status`;
         try {
           this.buttonText = "Cancelling..."
           await fetch(cancelUrl, { method: 'POST',

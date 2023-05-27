@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     async findSearch() {
-      const url = `https://readsearch-hauf6ju5bq-uc.a.run.app/task/${this.taskId}/status`;  // replace with your API endpoint
+      const url = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${this.taskId}/status`;  // replace with your API endpoint
       try {
         this.buttonText = "Retriveing...";
         const response = await fetch(url,{

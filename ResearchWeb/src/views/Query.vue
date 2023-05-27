@@ -99,7 +99,7 @@ async search() {
 },
 async callApi() {
     // console.log(this.searchqueries)
-    const url = "https://readsearch-hauf6ju5bq-uc.a.run.app/testapi";  // replace with your API endpoint
+    const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/testapi";  // replace with your API endpoint
     const payload = {
         apiKey: this.apiKey,
     };
