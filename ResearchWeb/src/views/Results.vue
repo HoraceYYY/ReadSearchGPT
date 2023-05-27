@@ -40,7 +40,9 @@
     },
     methods: {
       async downloadResults() {
+
         const url = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${this.taskId}/webdownload`;
+
         try {
           const response = await fetch(url, { method: 'GET',
             headers: {
