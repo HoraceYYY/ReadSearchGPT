@@ -150,171 +150,143 @@ async submitForm() {
 </script>
  
 <template>
-    <div class="form-container">
-      <form @submit.prevent="submitForm">
-        <div class="input-group">
-            <div class="radio-group">
-              <input type="radio" id="quickSearch" value="Quick Search" v-model="searchType" class="radio-input_Quick"/>
-              <label for="quickSearch" class="radio-label">
-                Quick Search
-                <span class="description">Search 10's of websites within a few minutes.</span>
-            </label>
-
-              <input type="radio" id="thoroughSearch" value="Thorough Search" v-model="searchType" class="radio-input_Thorough" />
-              <label for="thoroughSearch" class="radio-label">
-                Thorough Search
-                <span class="description">Search 100's of websites in 10-20 mintues.</span>
-            </label>
+  <div class="d-flex flex-column align-items-center justify-content-center">
+        <form @submit.prevent="submitForm">
+            <div class="input-group mb-3 radio-button-container">
+                <div class="d-flex justify-content-center mb-3 gap-1">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="quickSearch" value="Quick Search" v-model="searchType"/>
+                        <label class="form-check-label" for="quickSearch">
+                            <b>Quick Search</b><br />
+                            <span class="form-text">Search 10's of websites within a few minutes.</span>
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="thoroughSearch" value="Thorough Search" v-model="searchType" />
+                        <label class="form-check-label" for="thoroughSearch">
+                            <b>Thorough Search</b><br />
+                            <span class="form-text">Search 100's of websites in 10-20 mintues.</span>
+                        </label>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="input-group">
-          <label for="domain" class="input-label">Limit Search Within A Domain (optional):</label>
-          <input type="text" id="domain" v-model="domain" class="text-input" placeholder="https://..." />
-        </div>
-        <div class="button-container">
-          <button type="submit" class="search-button">{{ buttonText }}</button>
-          <button type="button" @click="startOver" class="startover-button">Start Over</button>
-        </div>
-      </form>
+            <div class="form mb-5 h5 text-start fw-bold w-100 domain-container">
+              <label for="domain">Limit Search Within A Domain (optional):</label>
+              <input type="text" id="domain" v-model="domain" class="form-control" placeholder="https://..." />
+            </div>
+            <div class="button-container d-flex justify-content-between mt-3">
+              <div class="col-6">
+                  <button type="submit" class="btn btn-outline-success btn-lg fw-bold w-100 narrower-button">{{ buttonText }}</button>
+              </div>
+              <div class="col-6">
+                  <button type="button" @click="startOver" class="btn btn-outline-danger btn-lg w-100 narrower-button">Start Over</button>
+              </div>
+          </div>
+        </form>
     </div>
 </template>
   
-  <style scoped>
-  .form-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: -40px;
+<style scoped>
+  .form-check-label{
+      padding: 2em 0.4em;
+      margin: 0.5em;
+      border: 2px solid #aaa;
+      border-radius: 10px;
+      text-align: center;
+      background: #bbb;
+      color: #ffffff; 
+      font-size: 28px;
+      cursor: pointer;
+      max-width: 400px;
   }
-.form-container p{
-  font-family: Arial, sans-serif; /* Substitute with your preferred font */
-  font-size: 20px; /* Adjust size as needed */
-  margin-left: -160px;
-  font-weight: bold; /* Makes the text bold */
-  width: 800px;
-  margin-bottom: 40px;
-}
-
-.input-group{
-  width: 900px;
-  margin-bottom: 50px;
-  font-family: Arial, sans-serif; /* Substitute with your preferred font */
-  font-size: 20px;
-  font-weight: bold;
+    .form-check-input {
+    position: absolute;
+    display: none;
+    outline: none;
   }
- 
- .text-input {
-    margin: 10px 0;
-    font-style: italic;
-    font-family: Arial, sans-serif; /* Substitute with your preferred font */
-  font-size: 18px;
-  width: 96%;
-  padding: 10px;
+  .form-text{
+      font-style: italic;
+      color: #ffffff;
+    }
+    .form-check-input:checked + .form-check-label {
+        background: #4e9dc2;
+    }
+    .form-check-input:not(:checked) + .form-check-label {
+        background: #bbb;
+    }
+    .form-check-input:not(:checked) + .form-check-label  {
+    color: #aaa; /* change the text color to grey when not selected */
+    }
+    .form-check-input:checked + .form-check-label{
+        color: #ffffff; /* change the text color to white when selected */
+    }
+    .form-check-input:not(:checked) + .form-check-label .form-text {
+        color: #aaa; /* change the text color to grey when not selected */
+    }
+    .form-check-input:checked+.form-check-label .form-text{
+        color: #ffffff; /* change the text color to white when selected */
+    }
+    .btn:hover {
+        color: #ffffff;
+    }
+
+    .btn-outline-success:hover {
+        background-color: #0c952c;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #ff4800;
+    }
+    .domain-container {
+    max-width: 1000px;  /* Set max-width as needed */
+    margin: auto;
+    text-align: left;
+    padding: 0 15px;  /* Add padding */
+    color: #ffffff;
+    
   }
-  .radio-group {
-  margin-top: 50px;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1em;
-  gap: 50px;
-}
-  .radio-label {
-  display: block;
-  padding: 3em 0.8em;
-  margin: 0.5em;
-  border: 2px solid #aaa;
-  border-radius: 10px;
-  text-align: center;
-  cursor: pointer;
-  background: #bbb;
-  color: #ffffff;
-  font-size: 28px;
-}
-.description {
-    display: block;
-    font-size: 15px; /* Change this value to your desired size */
-    margin-top: 20px;
-    font-style: italic;
-}
-/* Style the input elements (hidden) */
-.radio-input_Quick, .radio-input_Thorough {
-  display: none;
-}
-
-/* Style when Quick Search is selected */
-.radio-input_Quick:checked + .radio-label {
-  background:#4e9dc2;
-}
-
-/* Style when Thorough Search is selected */
-.radio-input_Thorough:checked + .radio-label {
-  background: #4e9dc2;
-}
-
-/* If you want to grey out the unselected option, use these styles: */
-.radio-input_Quick:not(:checked) + .radio-label {
-  background: #bbb;
-  cursor: pointer;
-  color: #aaa;
-}
-
-.radio-input_Thorough:not(:checked) + .radio-label {
-  background: #bbb;
-  cursor: pointer;
-  color: #aaa;
-}
-
+  .radio-button-container {
+    max-width: 1000px;  /* Set max-width as needed */
+    margin: auto;
+  }
   .button-container {
-
-    display: flex;
-  justify-content: center;
-  gap: 160px; /* Adjust the spacing between buttons as needed */
-  margin-top: 40px; /* Add margin to the top */
-  }
-  
-  .search-button {
-    border: 2px solid #0c952c;
-  border-radius: 8px;
-  background-color: #ffffff;
-  color: #0c952c;
-    padding: 15px 28px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .startover-button {
-    border: 2px solid #ff4800;
-  border-radius: 8px;
-  background-color: #ffffff;
-  color: #ff4800;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-  }
-
-  .search-button:hover {
-  background-color: #0c952c;
-  color: #ffffff;
+    max-width: 1000px;  /* Set max-width */
+    margin: auto;  /* Center the container */
+    padding: 0 30px;  /* Add padding */
 }
 
-.startover-button:hover {
-  background-color: #ff4800;
-  color: #ffffff;
-}
-
-
-  </style>
+.button-container .col-6 {
+    margin-bottom: 15px;
   
+}
+.narrower-button {
+    max-width: 200px; /* Adjust the max-width as needed */
+    width: 100%; /* Make the buttons occupy the full width of their containers */
+  }
 
+    @media (max-width: 576px) {
+    .domain-container {
+      font-size: 0.8rem;
+      width: 85%;  /* Reduce width */
+      margin: 10px auto;  /* Add some vertical margin */
+    }
 
+    .btn {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.5rem;
+      
+    }
+
+    .form-check-label {
+      font-size: 0.8rem;
+    }
+
+    .narrower-button {
+      max-width: 150px; /* Adjust the max-width as needed */
+    }
+    .button-container .col-6 {
+        margin-bottom: 10px;
+    }
+}
+  
+</style>

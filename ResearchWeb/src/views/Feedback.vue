@@ -70,15 +70,15 @@ export default {
 </script>
 
 <template>
-  <div class="form-container">
+  <div class="container">
     <form @submit.prevent="sendFeedback">
-      <div class="input-group">
-        <label for="feedback" class="input-label">Tell us about your experience of the product or you new features you would like to see:</label>
-        <textarea id="feedback" v-model="feedback" class="text-input" placeholder="Enter your feedback here..." maxlength="1500" rows="8" />
+      <div class="form-group">
+        <label for="feedback" class="form-label">Tell us about your experience of the product or new features you would like to see:</label>
+        <textarea id="feedback" v-model="feedback" class="form-control" placeholder="Enter your feedback here..." maxlength="1500" rows="8" />
         <p v-if="wordCount > 1500" class="word-count-warning">Please limit your feedback to 1500 words</p>
       </div>
       <div class="button-container">
-        <button type="submit" class="send-button" :disabled="wordCount > 1500">{{ this.buttonText }}</button>
+        <button type="submit" class="btn send-button" :disabled="wordCount > 1500">{{ this.buttonText }}</button>
       </div>
       <p v-if="displayMessage" class="success-message">{{ successMessage }}</p>
       <p v-if="displayError" class="error-message">{{ errorMessage }}</p>
@@ -87,54 +87,45 @@ export default {
 </template>
 
 <style scoped>
-.form-container {
-  width: 100%;
+.container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 
-.input-group {
-  width: 900px;
-  margin-bottom: 20px;
-  font-family: Arial, sans-serif;
-  font-size: 20px;
+.form-group {
+  width: 100%;
+  max-width: 1200px; /* Increased max-width */
 }
 
-.input-label {
+.form-label {
+  display: block;
   font-weight: bold;
   margin-bottom: 10px;
 }
 
-.text-input {
-  width: 96%;
-  margin: 10px 0;
+.form-control {
+  width: 100%;
   font-style: italic;
-  font-family: Arial, sans-serif;
-  font-size: 18px;
-  padding: 10px;
+  font-size: 1rem;
+  padding: .375rem .75rem;
 }
 
 .button-container {
   display: flex;
   justify-content: center;
-  gap: 120px;
-  margin-top: 40px;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
 }
 
 .send-button {
   border: 2px solid #0c952c;
-  border-radius: 8px;
   background-color: #ffffff;
   color: #0c952c;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
+  padding: .375rem 1.5rem; /* Increased padding to make button wider */
+  max-width: 300px; /* Added max-width to limit button size */
 }
 
 .send-button:hover {
@@ -142,16 +133,17 @@ export default {
   color: #ffffff;
 }
 
-.word-count-warning, .success-message {
-  color: red;
+.word-count-warning,
+.success-message,
+.error-message {
   text-align: center;
 }
 
 .success-message {
   color: green;
 }
+
 .error-message {
   color: red;
-  text-align: center;
 }
 </style>

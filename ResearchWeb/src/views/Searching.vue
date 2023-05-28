@@ -1,23 +1,3 @@
-<template>
-  <div class="results-container">
-    <div class="text-container">
-      <p class="textheader">Your AI assistant has begun your research!</p>
-      <p class="textbody">Download partial results anytime during the search. Full results remain available for another 24 hours and will be automatically deleted after.</p>
-      <p class="textbody">You need the Task ID to retrieve the results. <span class="important-notice">Make sure to save the Task ID to download the results later. It won't be displayed again.</span></p>
-    </div>
-    <table class="results-table">
-      <tr v-for="(value, key) in jsonData" :key="key">
-        <td class="key-column">{{ key }}</td>
-        <td :class="{'task-id-value': key === 'Task ID'}">{{ value }}</td>
-      </tr>
-    </table>
-    <div class="button-container">
-      <button @click="downloadResults" class="download-button">Download Results</button>
-      <button @click="handleButtonClick" :class="buttonClass">{{ buttonText }}</button>
-    </div>
-  </div>
-</template>
-
 <script>
 export default {
   computed: {
@@ -104,123 +84,108 @@ export default {
 </script>
 
 
-  <style scoped>
-  .results-container {
-    margin-top: -20px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  .textheader {
-    width: 1000px; /* Match the table width */
-    text-align: left;
-    font-size: 20px;
-    font-weight: bold;
+<template>
+  <div class="container">
+    <div class="text-container">
+      <p class="textheader">Your AI assistant has begun your research!</p>
+      <p class="textbody">Download partial results anytime during the search. Full results remain available for another 24 hours and will be automatically deleted after.</p>
+      <p class="textbody">You need the Task ID to retrieve the results. <span class="important-notice">Make sure to save the Task ID to download the results later. It won't be displayed again.</span></p>
+    </div>
+    <div class="table-responsive text-start">
+      <table class="table results-table mx-auto">
+        <tr v-for="(value, key) in jsonData" :key="key">
+          <td class="key-column">{{ key }}</td>
+          <td :class="{'task-id-value': key === 'Task ID'}">{{ value }}</td>
+        </tr>
+      </table>
+    </div>
+    <div class="d-flex justify-content-center gap-5 mt-4">
+      <button @click="downloadResults" class="download-button btn btn-outline-primary">Download Results</button>
+      <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
+    </div>
+  </div>
+</template>
 
-  }
-  .textbody {
-    margin-top: 40px;
-    width: 900px;
-    padding-left: 50px;
-  }
-  .results-container p {
-    font-family: Arial, sans-serif;
-    font-size: 20px;
-    margin-bottom: 10px;
-  }
-  
-  .important-notice {
-    font-weight: bold;
-    color: red;
-  }
-  
-  .results-table {
-    width: 900px;
-    font-family: Arial, sans-serif;
-    font-size: 20px;
-    margin-bottom: 20px;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
+<style scoped>
+.textheader {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.textbody {
+  margin-top: 1rem;
+  color: #fff;
+}
+
+.important-notice {
+  font-weight: bold;
+  color: red;
+}
+
+.results-table {
+  margin-top: 1rem;
+  border-collapse: collapse;
+  max-width: 800px;
+  color: #fff; 
+}
+
+.results-table td {
+  border: 1px solid #dee2e6;
+  padding: 0.5rem;
+}
+
+.key-column {
+  width: 200px; /* Adjust as needed */
+}
+
+.task-id-value {
+  font-weight: bold;
+  color: red;
+}
+
+.download-button {
+  border-color: #8e8ef7;
+  color: #8e8ef7;
+}
+
+.download-button:hover {
+  background-color: #8e8ef7;
+  color: #fff;
+}
+
+.cancel-button {
+  border-color: #ff4800;
+  color: #ff4800;
+}
+
+.cancel-button:hover {
+  background-color: #ff4800;
+  color: #fff;
+}
+
+.newsearch-button {
+  border-color: #0c952c;
+  color: #0c952c;
+}
+
+.newsearch-button:hover {
+  background-color: #0c952c;
+  color: #fff;
+}
+.download-button,
+.cancel-button,
+.newsearch-button {
+  width: 200px; /* Make both buttons the same width */
+}
+@media (max-width: 576px) {
+  /* For mobile view */
   .results-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    font-size: 0.875rem; /* Make text smaller */
   }
   
   .key-column {
-    width: 200px; /* Adjust as needed */
+    width: 100px; /* Make key column narrower */
   }
-  
-  .task-id-value {
-    font-weight: bold;
-    color: red;
-  }
-  
-  .button-container {
-    display: flex;
-    justify-content: center;
-    gap: 160px;
-    margin-top: 40px;
-
-  }
-  .download-button {
-    border: 2px solid #0000ff;
-    border-radius: 8px;
-    background-color: #ffffff;
-    color: #0000ff;
-    padding: 8px 16px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-  }
-  .download-button:hover {
-    background-color: #0000ff;
-    color: #ffffff;
-  }
-  .cancel-button {
-    border: 2px solid #ff4800;
-    border-radius: 8px;
-    background-color: #ffffff;
-    color: #ff4800;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-  }
-
-  .cancel-button:hover {
-    background-color: #ff4800;
-    color: #ffffff;
-  }
-  .newsearch-button{
-    border: 2px solid #0c952c;
-    border-radius: 8px;
-    background-color: #ffffff;
-    color: #0c952c;
-    padding: 15px 41px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-  }
-
-  .newsearch-button:hover{
-    background-color: #0c952c;
-    color: #ffffff;
-  }
-  
-
-
-  </style>
-  
+}
+</style>

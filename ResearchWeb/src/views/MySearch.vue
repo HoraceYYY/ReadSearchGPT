@@ -48,79 +48,54 @@ export default {
 </script>
 
 <template>
-  <div class="form-container">
+  <div class="container">
     <form @submit.prevent="findSearch">
-      <div class="input-group">
-        <label for="task_id" class="input-label">Enter Task ID to Retrive Results:</label>
-        <input type="text" id="task_id" v-model="taskId" class="text-input" placeholder="Enter Task ID ..." />
+      <div class="form-group">
+        <label for="task_id" class="form-label">Enter Task ID to Retrive Results:</label>
+        <input type="text" id="task_id" v-model="taskId" class="form-control" placeholder="Enter Task ID ..." />
       </div>
       <div class="button-container">
-        <button type="submit" class="search-button">{{ buttonText }}</button>
+        <button type="submit" class="btn search-button">{{ buttonText }}</button>
       </div>
     </form>
   </div>
 </template>
 
+
 <style scoped>
-.form-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.form-group {
+  max-width: 1000px;
+  margin: auto;
 }
 
-.form-container p {
-  font-family: Arial, sans-serif;
-  font-size: 20px;
-  margin-left: -100px;
-  font-weight: bold;
-  width: 800px;
-  margin-bottom: 40px;
-}
-
-.input-group {
-  width: 900px;
-  margin-bottom: 20px;
-  font-family: Arial, sans-serif;
-  font-size: 20px;
-}
-.input-label{
+.form-label {
+  display: block;
   font-weight: bold;
   margin-bottom: 10px;
+  text-align: left;
+  font-size: 20px;
 }
-.text-input {
-  width: 96%;
-  margin: 10px 0;
+
+.form-control {
+  width: 100%;
   font-style: italic;
-  font-family: Arial, sans-serif;
-  font-size: 18px;
   padding: 10px;
+  font-size: 18px;
 }
 
 .button-container {
   display: flex;
   justify-content: center;
-  gap: 120px;
   margin-top: 80px;
 }
 
 .search-button {
-  border: 2px solid #0c952c;
-  border-radius: 8px;
-  background-color: #ffffff;
+  border-color: #0c952c;
   color: #0c952c;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
 }
 
 .search-button:hover {
   background-color: #0c952c;
-  color: #ffffff;
+  color: #fff;
 }
 </style>

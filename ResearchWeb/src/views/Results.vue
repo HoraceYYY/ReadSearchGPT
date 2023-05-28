@@ -1,21 +1,3 @@
-<template>
-    <div class="result-container">
-      <div class="content-container">
-        <p>Search Result:</p>
-        <table class="results-table">
-          <tr v-for="(value, key) in jsonData" :key="key">
-            <td class="key-column">{{ key }}</td>
-            <td class="value-column" :class="{'status-green': key === 'Status' && (value === 'Researching...' || value === 'Completed'), 'status-red': key === 'Status' && value !== 'Researching...' && value !== 'Completed'}">{{ value }}</td>
-          </tr>
-        </table>
-      </div>
-      <div class="button-container">
-        <button @click="downloadResults" class="download-button">Download Results</button>
-        <button @click="handleButtonClick" :class="buttonClass">{{ buttonText }}</button>
-      </div>
-    </div>
-  </template>
-  
 <script>
   import { mapGetters } from 'vuex';
 
@@ -101,112 +83,127 @@
     }
   };
   </script>
+
+
+
+
+<template>
+  <div class="container">
+    <div class="text-container text-start">
+      <p class="textheader">Search Result:</p>
+      <div class="table-responsive">
+        <table class="table results-table mx-auto">
+          <tr v-for="(value, key) in jsonData" :key="key">
+            <td class="key-column">{{ key }}</td>
+            <td class="value-column" :class="{'status-green': key === 'Status' && (value === 'Researching...' || value === 'Completed'), 'status-red': key === 'Status' && value !== 'Researching...' && value !== 'Completed'}">{{ value }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="d-flex justify-content-center gap-5 mt-4">
+        <button @click="downloadResults" class="download-button btn btn-outline-primary">Download Results</button>
+        <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
+      </div>
+    </div>
+  </div>
+</template>
   
-  
-  <style scoped>
-  .result-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  .content-container {
-    margin-top: -5px;
-    max-width: 900px; /* Match the table width */
-    width: 100%;
-  }
-  .result-container p {
-    font-family: Arial, sans-serif;
-    font-size: 20px;
-    margin-bottom: 20px;
-    font-weight: bold;
-  }
-
-  .results-table {
-    width: 900px;
-    font-family: Arial, sans-serif;
-    font-size: 20px;
-    margin-bottom: 20px;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-
-  .results-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-
-  .key-column {
-    width: 180px; /* Adjust as needed */
-  }
-
-  .status-green {
-    color: green;
-  }
-
-  .status-red {
-    color: red;
+<style scoped>
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-  .button-container {
-    display: flex;
-    justify-content: center;
-    gap: 160px;
-    margin-top: 80px;
+.text-container {
+  margin-top: -5px;
+  max-width: 800px; /* Match the table width */
+  width: 100%;
+  
+}
 
-  }
-  .download-button {
-    border: 2px solid #0000ff;
-    border-radius: 8px;
-    background-color: #ffffff;
-    color: #0000ff;
-    padding: 8px 16px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-  }
-  .download-button:hover {
-    background-color: #0000ff;
-    color: #ffffff;
-  }
-  .cancel-button {
-    border: 2px solid #ff4800;
-    border-radius: 8px;
-    background-color: #ffffff;
-    color: #ff4800;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-  }
+.textheader {
+  font-family: Arial, sans-serif;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: #fff;
 
-  .cancel-button:hover {
-    background-color: #ff4800;
-    color: #ffffff;
-  }
-  .newsearch-button{
-    border: 2px solid #0c952c;
-    border-radius: 8px;
-    background-color: #ffffff;
-    color: #0c952c;
-    padding: 15px 41px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-  }
+}
 
-  .newsearch-button:hover{
-    background-color: #0c952c;
-    color: #ffffff;
+.table-responsive {
+  margin-top: 1rem;
+  color: #fff;
+}
+
+.results-table {
+  border-collapse: collapse;
+  max-width: 800px;
+  color: #fff;
+}
+
+.results-table td {
+  border: 1px solid #dee2e6;
+  padding: 0.5rem;
+}
+
+.key-column {
+  width: 200px; /* Adjust as needed */
+}
+
+.status-green {
+  color: green;
+}
+
+.status-red {
+  color: red;
+}
+
+.download-button,
+.cancel-button,
+.newsearch-button {
+  width: 200px; /* Make both buttons the same width */
+}
+
+.download-button {
+  border-color: #8e8ef7;
+  color: #8e8ef7;
+}
+
+.download-button:hover {
+  background-color: #8e8ef7;
+  color: #fff;
+}
+
+.cancel-button {
+  border-color: #ff4800;
+  color: #ff4800;
+}
+
+.cancel-button:hover {
+  background-color: #ff4800;
+  color: #fff;
+}
+
+.newsearch-button {
+  border-color: #0c952c;
+  color: #0c952c;
+}
+
+.newsearch-button:hover {
+  background-color: #0c952c;
+  color: #fff;
+}
+
+@media (max-width: 576px) {
+  /* For mobile view */
+  .results-table td {
+    font-size: 0.875rem; /* Make text smaller */
   }
+  
+  .key-column {
+    width: 100px; /* Make key column narrower */
+  }
+}
 </style>
