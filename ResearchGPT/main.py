@@ -43,7 +43,9 @@ def get_db():
 
 origins = [
     "http://localhost:5173",  # assuming your Vue.js app is running on port 3000
-    "https://readsearch.azurewebsites.net"
+    "https://readsearch.azurewebsites.net",
+    "www.readsearchgpt.com",
+    "https://readsearchgpt.com"
 ]
 
 app.add_middleware(
