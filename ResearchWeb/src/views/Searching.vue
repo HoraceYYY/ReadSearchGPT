@@ -19,7 +19,7 @@ export default {
   },
   methods: {
     async downloadResults() {
-        const taskId = this.jsonData['Task ID'];
+        const taskId = this.jsonData['Research ID'];
 
         const url = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/webdownload`;
 
@@ -57,7 +57,7 @@ export default {
         }
       },
     async cancelSearch() {
-      const taskId = this.jsonData['Task ID'];
+      const taskId = this.jsonData['Research ID'];
       const cancelUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/stop`;
       const statusUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/status`;
       try {

@@ -34,7 +34,7 @@ export default {
         });
         const jsonData = await response.json();
 
-        console.log(jsonData);
+        //console.log(jsonData);
         this.$store.dispatch('setJsonData', jsonData);
         await this.$router.push({ path: '/results' });
       } catch (error) {
@@ -51,8 +51,8 @@ export default {
   <div class="container">
     <form @submit.prevent="findSearch">
       <div class="form-group">
-        <label for="task_id" class="form-label">Enter Task ID to Retrive Results:</label>
-        <input type="text" id="task_id" v-model="taskId" class="form-control" placeholder="Enter Task ID ..." />
+        <label for="task_id" class="form-label">Enter Research ID to Retrive Results:</label>
+        <input type="text" id="task_id" v-model="taskId" class="form-control" placeholder="Enter Research ID ..." />
       </div>
       <div class="button-container">
         <button type="submit" class="btn search-button">{{ buttonText }}</button>

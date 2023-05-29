@@ -66,7 +66,7 @@ async def startSearching(background_tasks: BackgroundTasks, search: Search, db: 
     crud.create_task(db, task)
     # Use the existing session to create a new one for the background task
     background_tasks.add_task(run_task, task_id, search)
-    return {"Task ID": task_id, "Status": "Researching...", "Start Time": str(start_time).split('.')[0], "Search Results": "Available"}
+    return {"Research ID": task_id, "Status": "Researching...", "Start Time": str(start_time).split('.')[0], "Search Results": "Available"}
 
 async def run_task(task_id: str, search: Search):
     db = SessionLocal()  # Create a new session
@@ -100,9 +100,9 @@ async def task_status(task_id: str, db: Session = Depends(get_db)):
             elapsed_time = current_time - task.start_time
             task.time_spent = str(elapsed_time).split('.')[0]
             db.commit()
-        return {"Task ID": task_id, "Status": task.status, "Search Result": task.file_availability, "Start Time": task.start_time.strftime("%Y-%m-%d %H:%M:%S"), "Time Spent": task.time_spent}
+        return {"Research ID": task_id, "Status": task.status, "Search Result": task.file_availability, "Start Time": task.start_time.strftime("%Y-%m-%d %H:%M:%S"), "Time Spent": task.time_spent}
     else:
-        return {"Status": "Error", "Message": "Task not found"}
+        return {"Status": "Error", "Message": "Research not found"}
   
 @app.post("/task/{task_id}/stop")
 async def stop_task(task_id: str, db: Session = Depends(get_db)):
@@ -113,11 +113,11 @@ async def stop_task(task_id: str, db: Session = Depends(get_db)):
             task.end_time = datetime.now()
             task.time_spent = str(task.end_time - task.start_time).split('.')[0]
             db.commit()
-            return {"Status": "Task has been cancelled"}
+            return {"Status": "Research has been cancelled"}
         else:
             return {"message": "Search was not running."}
     else:
-        return {"Status": "Error", "Message": "Task not found"}
+        return {"Status": "Error", "Message": "Research not found"}
 
 @app.get("/task/{task_id}/localdownload") # this is to download from the loacal database only
 async def download_excel(task_id: str, db: Session = Depends(get_db)):

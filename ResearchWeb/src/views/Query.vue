@@ -2,11 +2,11 @@
   <div class="container pt-0 d-flex justify-content-center align-items-center" style="min-height: 1vh;">
     <div class="card p-4 mb-4 rounded shadow" style="max-width: 1000px; width: 100%;">
       <div class="card-body">
-        <h5 class="fw-bold mb-3 text-start ">Enter Research Topics Below:</h5>
+        <h5 class="fw-bold mb-3 text-start ">Research Topics:</h5>
         <div class="input-group mb-3" v-for="(item, index) in searchqueries" :key="index">
           <input type="text" class="form-control" v-model="searchqueries[index]" @input="addItemAuto" placeholder="Enter up to 5 research topics..." aria-label="Research Topic">
         </div>
-        <h5 class="fw-bold mb-3 text-start ">Enter Open AI API Key:</h5>
+        <h5 class="fw-bold mb-3 text-start ">Open AI API Key:</h5>
         <div class="input-group mb-3">
           <input :type="passwordFieldType" v-model="apiKey" class="form-control" placeholder="Enter API Key. We DO NOT save your key." aria-label="API Key">
           <button class="btn btn-outline-dark" type="button" @click="togglePasswordField">{{ passwordFieldType === 'password' ? 'Show' : 'Hide' }}</button>
