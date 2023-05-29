@@ -52,7 +52,7 @@ export default {
     <form @submit.prevent="findSearch">
       <div class="form-group">
         <label for="task_id" class="form-label">Enter Research ID to Retrive Results:</label>
-        <input type="text" id="task_id" v-model="taskId" class="form-control" placeholder="Enter Research ID ..." />
+        <input type="text" id="task_id" v-model="taskId" class="form-control" placeholder="Research ID ..." />
       </div>
       <div class="button-container">
         <button type="submit" class="btn search-button">{{ buttonText }}</button>

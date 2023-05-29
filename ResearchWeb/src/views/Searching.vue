@@ -95,7 +95,7 @@ export default {
       <table class="table results-table mx-auto">
         <tr v-for="(value, key) in jsonData" :key="key">
           <td class="key-column">{{ key }}</td>
-          <td :class="{'task-id-value': key === 'Task ID'}">{{ value }}</td>
+          <td :class="{'task-id-value': key === 'Research ID'}">{{ value }}</td>
         </tr>
       </table>
     </div>

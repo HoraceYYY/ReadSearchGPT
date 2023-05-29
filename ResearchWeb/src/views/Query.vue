@@ -4,11 +4,11 @@
       <div class="card-body">
         <h5 class="fw-bold mb-3 text-start ">Research Topics:</h5>
         <div class="input-group mb-3" v-for="(item, index) in searchqueries" :key="index">
-          <input type="text" class="form-control" v-model="searchqueries[index]" @input="addItemAuto" placeholder="Enter up to 5 research topics..." aria-label="Research Topic">
+          <input type="text" class="form-control" v-model="searchqueries[index]" @input="addItemAuto" placeholder="Up to 5 research topics..." aria-label="Research Topic">
         </div>
         <h5 class="fw-bold mb-3 text-start ">Open AI API Key:</h5>
         <div class="input-group mb-3">
-          <input :type="passwordFieldType" v-model="apiKey" class="form-control" placeholder="Enter API Key. We DO NOT save your key." aria-label="API Key">
+          <input :type="passwordFieldType" v-model="apiKey" class="form-control" placeholder="API Key..." aria-label="API Key">
           <button class="btn btn-outline-dark" type="button" @click="togglePasswordField">{{ passwordFieldType === 'password' ? 'Show' : 'Hide' }}</button>
         </div>
         <a href="https://mirage-oval-bce.notion.site/Tutorials-FAQs-d026f83b53c1471589ba8ff49445dc3e" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new tab" class="mb-3 d-inline-block text-center w-100">How to get an API key?</a>
@@ -90,6 +90,7 @@ async search() {
 
     const response = await this.callApi();
     if (response['Key'] === 'Valid') {
+      console.log(this.searchqueries)
       this.$router.push({ path: '/preference' });
     } else {
       this.buttonText = "Start";
@@ -135,9 +136,12 @@ async callApi() {
 
   
 <style scoped>
+.form-control{
+  font-style: italic;
+}
 @media (max-width: 768px) {
   h5, .btn, .form-control {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 }
 h5, .btn, .form-control {

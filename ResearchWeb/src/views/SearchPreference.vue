@@ -119,7 +119,7 @@ async submitForm() {
             searchqueries: this.searchQueries,
             apiKey: this.apiKey,
         };
-        // console.log(data)
+        console.log(data)
         try {
             
             this.buttonText = "Searching...";
@@ -190,7 +190,6 @@ async submitForm() {
   .form-check-label{
       padding: 2em 0.4em;
       margin: 0.5em;
-      border: 2px solid #aaa;
       border-radius: 10px;
       text-align: center;
       background: #bbb;
