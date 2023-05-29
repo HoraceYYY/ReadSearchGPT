@@ -13,7 +13,7 @@ created() {
     this.$store.dispatch('setWidth', 8);
     this.$store.dispatch('setDepth', 0);
   } else if (this.searchType === 'Thorough Search') {
-    this.$store.dispatch('setWidth', 5);
+    this.$store.dispatch('setWidth', 8);
     this.$store.dispatch('setDepth', 1);
   }
   this.domain = "" 
@@ -25,7 +25,7 @@ watch: {
       this.$store.dispatch('setWidth', 8);
       this.$store.dispatch('setDepth', 0);
     } else if (newVal === 'Thorough Search') {
-      this.$store.dispatch('setWidth', 5);
+      this.$store.dispatch('setWidth', 8);
       this.$store.dispatch('setDepth', 1);
     }
   }
