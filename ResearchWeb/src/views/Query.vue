@@ -126,10 +126,10 @@ async callApi() {
         return data;
         //handle your response here
     } catch (error) {
-        this.buttonText = "Search"
-        console.error(error);
-        alert(`There is an error when checking the api key. Please try again! `);// handle error here
-    }
+      this.buttonText = "Search";
+    console.error('API key check failed:', error); // Print detailed error information
+    alert(`There is an error when checking the API key. Please try again! Error: ${error}`); // Show detailed error message
+  }
 },
   }
 };
