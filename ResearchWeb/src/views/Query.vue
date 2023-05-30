@@ -76,7 +76,7 @@ async search() {
     const filteredQueries = this.searchqueries.filter(query => query.trim() !== "");
     // Check if any of the search queries are empty
     if (filteredQueries.length === 0) {
-      alert("Please enter at least one search query before submitting.");
+      alert("Please enter at least one research topic before submitting.");
       return;
     }
 
@@ -103,9 +103,10 @@ async search() {
 },
 async callApi() {
     // console.log(this.searchqueries)
+    const trimmedApiKey = this.apiKey.trim();
     const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/testapi";  // replace with your API endpoint
     const payload = {
-        apiKey: this.apiKey,
+        apiKey: trimmedApiKey,
     };
     try {
         const response = await fetch(url, {
