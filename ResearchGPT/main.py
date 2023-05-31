@@ -41,20 +41,20 @@ def get_db():
     finally:
         db.close()
 
-origins = [
-    "http://localhost:5173",  # assuming your Vue.js app is running on port 3000
-    "https://readsearch.azurewebsites.net",
-    "www.readsearchgpt.com",
-    "https://readsearchgpt.com"
-]
+# origins = [
+#     "http://localhost:5173",  # assuming your Vue.js app is running on port 3000
+#     "https://readsearch.azurewebsites.net",
+#     "www.readsearchgpt.com",
+#     "https://readsearchgpt.com"
+# ]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 @app.post("/search") # this is the entry point of the search 
 async def startSearching(background_tasks: BackgroundTasks, search: Search, db: Session = Depends(get_db)):
