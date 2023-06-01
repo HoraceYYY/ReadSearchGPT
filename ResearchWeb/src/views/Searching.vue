@@ -17,6 +17,23 @@ export default {
       buttonClass() {
         return this.jsonData.Status === "Researching..." ? "cancel-button" : "newsearch-button";
       },
+      processedJsonData() {
+      // Deep clone the original data so we do not mutate the state directly
+      let processedData = JSON.parse(JSON.stringify(this.jsonData));
+
+      // Check if 'Research Topic(s)' exists and is a string
+      if (processedData['Research Topic(s)'] && typeof processedData['Research Topic(s)'] === 'string') {
+        // Remove brackets and quotes, then split string into array
+        let topics = processedData['Research Topic(s)'].replace(/[\[\]']+/g, '').split(', ');
+
+        // Format the 'Research Topic(s)' field
+        processedData['Research Topic(s)'] = topics.map((topic, index) => `${index + 1}. ${topic}`).join(', ');
+      }
+
+      return processedData;
+    },
+
+
   },
   methods: {
     async downloadResults() {
@@ -111,7 +128,7 @@ export default {
     </div>
     <div class="table-responsive text-start">
     <table class="table results-table mx-auto">
-      <tr v-for="(value, key) in jsonData" :key="key">
+      <tr v-for="(value, key) in processedJsonData" :key="key">
         <td class="key-column">{{ key }}</td>
         <td :class="{'task-id-value': key === 'Research ID', 'refresh-button-cell': key === 'Status'}">
           {{ value }}
