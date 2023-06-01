@@ -41,7 +41,7 @@ async def singleGPT(api_key, systemMessages, userMessage, temperature=1, top_p=1
       
 async def fetch_url(url, results = None):
     headers = {
-        'User-Agent': 'Chrome/89.0.4389.82 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36.'
     }
     timeout = aiohttp.ClientTimeout(total=10)
     session = aiohttp.ClientSession(timeout=timeout)
