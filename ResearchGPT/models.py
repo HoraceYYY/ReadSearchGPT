@@ -10,6 +10,7 @@ class Task(Base):
     __tablename__ = "tasks"
 
     id = Column(String, primary_key=True, index=True)
+    topic = Column(String)
     status = Column(String)
     start_time = Column(DateTime)
     end_time = Column(DateTime, default=None)

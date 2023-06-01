@@ -42,7 +42,7 @@ def get_db():
         db.close()
 
 # origins = [
-#     "http://localhost:5173",  # assuming your Vue.js app is running on port 3000
+#     "http://localhost:5173",  
 #     "https://readsearch.azurewebsites.net",
 #     "www.readsearchgpt.com",
 #     "https://readsearchgpt.com"
@@ -62,11 +62,11 @@ async def startSearching(background_tasks: BackgroundTasks, search: Search, db: 
     # file_path = await create_output_excel_file(task_id)
     start_time = datetime.now()
 
-    task = models.Task(id=task_id, start_time=start_time, file_path=None, status="Researching...")     # Add your task to the database
+    task = models.Task(id=task_id, topic=str(search.searchqueries),start_time=start_time, file_path=None, status="Researching...")     # Add your task to the database
     crud.create_task(db, task)
     # Use the existing session to create a new one for the background task
     background_tasks.add_task(run_task, task_id, search)
-    return {"Research ID": task_id, "Status": "Researching...", "Start Time": str(start_time).split('.')[0], "Search Results": "Available"}
+    return {"Research ID": task_id, "Research Topic(s)":str(search.searchqueries), "Status": "Researching...", "Start Time": str(start_time).split('.')[0], "Search Results": "Available"}
 
 async def run_task(task_id: str, search: Search):
     db = SessionLocal()  # Create a new session
@@ -100,7 +100,7 @@ async def task_status(task_id: str, db: Session = Depends(get_db)):
             elapsed_time = current_time - task.start_time
             task.time_spent = str(elapsed_time).split('.')[0]
             db.commit()
-        return {"Research ID": task_id, "Status": task.status, "Search Result": task.file_availability, "Start Time": task.start_time.strftime("%Y-%m-%d %H:%M:%S"), "Time Spent": task.time_spent}
+        return {"Research ID": task_id, "Research Topic(s)":task.topic, "Status": task.status, "Search Result": task.file_availability, "Start Time": task.start_time.strftime("%Y-%m-%d %H:%M:%S"), "Time Spent": task.time_spent}
     else:
         return {"Status": "Error", "Message": "Research not found"}
   
@@ -197,7 +197,7 @@ async def run_cleanup():
     try:
         # Find tasks that ended more than 24 hours ago
         old_tasks = db.query(models.Task).filter(
-            and_(models.Task.end_time < datetime.now() - timedelta(hours=1), 
+            and_(models.Task.end_time < datetime.now() - timedelta(hours=24), 
                  models.Task.file_availability == "Available")).all()
         for task in old_tasks:
             # Delete URL data associated with the task
