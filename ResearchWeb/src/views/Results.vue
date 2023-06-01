@@ -154,7 +154,7 @@
     <table class="table results-table mx-auto">
       <tr v-for="(value, key) in processedJsonData" :key="key">
         <td class="key-column">{{ key }}</td>
-        <td :class="{'status-green': key === 'Status' && (value === 'Researching...' || value === 'Completed'), 'status-red': key === 'Status' && value !== 'Researching...' && value !== 'Completed', 'refresh-button-cell': key === 'Status'}">
+        <td :class="{'status-green': key === 'Status' && (value === 'Researching...' || value === 'Completed'), 'status-red': key === 'Status' && value !== 'Researching...' && value !== 'Completed', 'refresh-button-cell': key === 'Status'}" >
           {{ value }}
           <button v-if="key === 'Status'" @click="refreshData" class="refresh-button btn btn-sm btn-outline-success float-end">↺</button>
           <button v-if="key === 'Research ID'" @click="copyToClipboard(value)" class="copy-button btn btn-sm btn-outline-primary float-end">&#x1F4CB</button>
@@ -204,6 +204,9 @@
 
 .refresh-button-cell {
   position: relative; /* needed for button positioning */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .btn-outline-success {
@@ -303,6 +306,7 @@
   background-color: #0c952c;
   color: #fff;
 }
+
 
 @media (max-width: 576px) {
   /* For mobile view */

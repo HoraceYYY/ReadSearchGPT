@@ -166,7 +166,7 @@ export default {
         </tr>
       </table>
     </div>
-    <div class="d-flex justify-content-center gap-5 mt-4">
+    <div class="d-flex justify-content-center gap-5 mt-2 mb-4">
       <button @click="downloadResults" class="download-button btn btn-outline-primary">Download Results</button>
       <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
     </div>
@@ -207,6 +207,10 @@ export default {
 
 .refresh-button-cell {
   position: relative; /* needed for button positioning */
+  position: relative; /* needed for button positioning */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .btn-outline-success {
@@ -300,4 +304,5 @@ export default {
     width: 100px; /* Make key column narrower */
   }
 }
+
 </style>
