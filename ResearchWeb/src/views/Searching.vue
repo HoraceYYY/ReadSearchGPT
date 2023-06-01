@@ -1,4 +1,5 @@
 <script>
+
 export default {
   computed: {
     jsonData: {
@@ -78,6 +79,23 @@ export default {
         } catch (error) {
           console.error(error);
         }
+    },
+    async refreshData() {
+      const taskId = this.jsonData['Research ID'];
+      const statusUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/status`;
+
+      try {
+        const response = await fetch(statusUrl, { method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        this.jsonData = await response.json();
+
+      } catch (error) {
+        console.error(error);
+      }
     }
   },
 };
@@ -92,13 +110,16 @@ export default {
       <p class="textbody">You need the Task ID to retrieve the results. <span class="important-notice">Make sure to save the Task ID to download the results later. It won't be displayed again.</span></p>
     </div>
     <div class="table-responsive text-start">
-      <table class="table results-table mx-auto">
-        <tr v-for="(value, key) in jsonData" :key="key">
-          <td class="key-column">{{ key }}</td>
-          <td :class="{'task-id-value': key === 'Research ID'}">{{ value }}</td>
-        </tr>
-      </table>
-    </div>
+    <table class="table results-table mx-auto">
+      <tr v-for="(value, key) in jsonData" :key="key">
+        <td class="key-column">{{ key }}</td>
+        <td :class="{'task-id-value': key === 'Research ID', 'refresh-button-cell': key === 'Status'}">
+          {{ value }}
+          <button v-if="key === 'Status'" @click="refreshData" class="refresh-button btn btn-sm btn-outline-success float-end">↺</button>
+        </td>
+      </tr>
+    </table>
+  </div>
     <div class="d-flex justify-content-center gap-5 mt-4">
       <button @click="downloadResults" class="download-button btn btn-outline-primary">Download Results</button>
       <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
@@ -107,6 +128,24 @@ export default {
 </template>
 
 <style scoped>
+.refresh-button {
+  padding: 0.25rem 0.5rem; /* make button smaller */
+}
+
+.refresh-button-cell {
+  position: relative; /* needed for button positioning */
+}
+
+.btn-outline-success {
+  color: #198754;
+  border-color: #198754;
+}
+
+.btn-outline-success:hover {
+  color: #fff;
+  background-color: #198754;
+  border-color: #198754;
+}
 .textheader {
   font-size: 1.25rem;
   font-weight: bold;

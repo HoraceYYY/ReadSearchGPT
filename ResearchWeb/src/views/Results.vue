@@ -79,7 +79,24 @@
         } catch (error) {
           console.error(error);
         }
+      },
+      async refreshData() {
+      const taskId = this.$store.state.taskId;
+      const statusUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/status`;
+
+      try {
+        const response = await fetch(statusUrl, { method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        this.jsonData = await response.json();
+
+      } catch (error) {
+        console.error(error);
       }
+    },
     }
   };
   </script>
@@ -91,14 +108,17 @@
   <div class="container">
     <div class="text-container text-start">
       <p class="textheader">Search Result:</p>
-      <div class="table-responsive">
-        <table class="table results-table mx-auto">
-          <tr v-for="(value, key) in jsonData" :key="key">
-            <td class="key-column">{{ key }}</td>
-            <td class="value-column" :class="{'status-green': key === 'Status' && (value === 'Researching...' || value === 'Completed'), 'status-red': key === 'Status' && value !== 'Researching...' && value !== 'Completed'}">{{ value }}</td>
-          </tr>
-        </table>
-      </div>
+      <div class="table-responsive text-start">
+    <table class="table results-table mx-auto">
+      <tr v-for="(value, key) in jsonData" :key="key">
+        <td class="key-column">{{ key }}</td>
+        <td :class="{'status-green': key === 'Status' && (value === 'Researching...' || value === 'Completed'), 'status-red': key === 'Status' && value !== 'Researching...' && value !== 'Completed', 'refresh-button-cell': key === 'Status'}">
+          {{ value }}
+          <button v-if="key === 'Status'" @click="refreshData" class="refresh-button btn btn-sm btn-outline-success float-end">↺</button>
+        </td>
+      </tr>
+    </table>
+  </div>
       <div class="d-flex justify-content-center gap-5 mt-4">
         <button @click="downloadResults" class="download-button btn btn-outline-primary">Download Results</button>
         <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
@@ -108,6 +128,24 @@
 </template>
   
 <style scoped>
+.refresh-button {
+  padding: 0.25rem 0.5rem; /* make button smaller */
+}
+
+.refresh-button-cell {
+  position: relative; /* needed for button positioning */
+}
+
+.btn-outline-success {
+  color: #198754;
+  border-color: #198754;
+}
+
+.btn-outline-success:hover {
+  color: #fff;
+  background-color: #198754;
+  border-color: #198754;
+}
 .container {
   width: 100%;
   display: flex;
