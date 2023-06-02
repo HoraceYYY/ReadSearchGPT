@@ -1,6 +1,15 @@
 <script>
 
 export default {
+  data() {
+    return {
+      // rest of your data properties
+      email1: '',
+      email2: '',
+      email3: '',
+      showModal: false,
+    };
+  },
   computed: {
     jsonData: {
         get() {
@@ -36,37 +45,25 @@ export default {
 
   },
   methods: {
-    async downloadResults() {
-        const taskId = this.jsonData['Research ID'];
+    async sendResultsToEmail() {
+      const emails = [this.email1, this.email2, this.email3];
+      const taskId = this.jsonData['Research ID'];
 
-        const url = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/webdownload`;
+      // Fetch the results
+      const response = await fetch(`https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/webdownload`, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const results = await response.json(); // or blob(), depending on the format of the response
 
-        try {
-          const response = await fetch(url, { method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          if (!response.ok) {
-            throw new Error("HTTP error " + response.status);
-        }
-        const blob = await response.blob();
-        const downloadUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = downloadUrl;
-        a.download = `${taskId}.xlsx`; // or any name you want to give to your file
-        document.body.appendChild(a);
-        a.click();
-        // After a timeout, remove the element and revoke the object URL
-        setTimeout(() => {
-            a.remove();
-            window.URL.revokeObjectURL(downloadUrl);
-        }, 0);
+      // TODO: Implement the function to send the results to the emails
+      // sendResultsToEmails(emails, results);
 
-        } catch (error) {
-          console.error(error);
-        }
-      },
+      // After sending the emails, you can clear the email inputs and hide the modal
+      this.email1 = '';
+      this.email2 = '';
+      this.email3 = '';
+      this.showModal = false;
+    },
       handleButtonClick() {
         if (this.jsonData.Status === "Researching...") {
           this.cancelSearch();
@@ -137,14 +134,89 @@ export default {
       </tr>
     </table>
   </div>
-    <div class="d-flex justify-content-center gap-5 mt-4">
-      <button @click="downloadResults" class="download-button btn btn-outline-primary">Download Results</button>
-      <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
+  <div class="d-flex justify-content-center gap-5 mt-2 mb-4">
+    <button @click="showModal = true" class="email-button btn btn-outline-primary">Email Results</button>
+    <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
+  </div>
+
+  <div v-if="showModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2 class="modal-title">Add max of 3 receiver of the research results</h2>
+      <form @submit.prevent="sendResultsToEmail">
+        <input v-model="email1" type="email" placeholder="Email 1" required>
+        <input v-model="email2" type="email" placeholder="Email 2" required>
+        <input v-model="email3" type="email" placeholder="Email 3" required>
+        <button type="submit">Send</button>
+      </form>
+      <button @click="showModal = false">Close</button>
     </div>
+  </div>
   </div>
 </template>
 
 <style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  max-width: 90%;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-content form input {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+}
+
+.modal-content form button {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+  background-color: #8e8ef7;
+  color: #fff;
+  cursor: pointer;
+}
+
+.modal-content form button:hover {
+  background-color: #6c6ce3;
+}
+
+.modal-content button {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+  background-color: #f8f9fa;
+  color: #212529;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background-color: #e9ecef;
+}
+.modal-title {
+  color: #424040;  /* Change this to any color you want */
+}
 .refresh-button {
   padding: 0.25rem 0.5rem; /* make button smaller */
 }
@@ -200,16 +272,6 @@ export default {
   color: red;
 }
 
-.download-button {
-  border-color: #8e8ef7;
-  color: #8e8ef7;
-}
-
-.download-button:hover {
-  background-color: #8e8ef7;
-  color: #fff;
-}
-
 .cancel-button {
   border-color: #ff4800;
   color: #ff4800;
@@ -229,7 +291,7 @@ export default {
   background-color: #0c952c;
   color: #fff;
 }
-.download-button,
+
 .cancel-button,
 .newsearch-button {
   width: 200px; /* Make both buttons the same width */
@@ -242,6 +304,9 @@ export default {
   
   .key-column {
     width: 100px; /* Make key column narrower */
+  }
+  .modal-content {
+    max-width: 350px;  /* Modal will be wider on screens larger than 576px */
   }
 }
 </style>
