@@ -1,6 +1,13 @@
 <script>
 
 export default {
+  data() {
+  return {
+    // Other data properties...
+    copyMessage: '',
+    copyMessageTheme: ''
+  };
+},
   computed: {
     jsonData: {
         get() {
@@ -113,7 +120,26 @@ export default {
       } catch (error) {
         console.error(error);
       }
-    }
+    },
+    copyToClipboard(value) {
+      navigator.clipboard.writeText(value)
+        .then(() => {
+          this.copyMessage = 'Research ID copied to clipboard!';
+          this.copyMessageTheme = 'success';
+          setTimeout(() => {
+            this.copyMessage = '';
+          }, 2500);
+        })
+        .catch(err => {
+          console.error('Could not copy text: ', err);
+          this.copyMessage = 'Failed to copy Research ID.';
+          this.copyMessageTheme = 'danger';
+          setTimeout(() => {
+            this.copyMessage = '';
+            this.copyMessageTheme = '';
+          }, 2500);
+        });
+    },
   },
 };
 </script>
@@ -122,22 +148,25 @@ export default {
 <template>
   <div class="container">
     <div class="text-container">
+      <div v-if="copyMessage" class="copy-message-popup" :class="copyMessageTheme">{{ copyMessage }}</div>
       <p class="textheader">Your AI assistant has begun your research!</p>
       <p class="textbody">Download partial results anytime during the search. Full results remain available for another 24 hours and will be automatically deleted after.</p>
       <p class="textbody">You need the Task ID to retrieve the results. <span class="important-notice">Make sure to save the Task ID to download the results later. It won't be displayed again.</span></p>
     </div>
     <div class="table-responsive text-start">
-    <table class="table results-table mx-auto">
-      <tr v-for="(value, key) in processedJsonData" :key="key">
-        <td class="key-column">{{ key }}</td>
-        <td :class="{'task-id-value': key === 'Research ID', 'refresh-button-cell': key === 'Status'}">
-          {{ value }}
-          <button v-if="key === 'Status'" @click="refreshData" class="refresh-button btn btn-sm btn-outline-success float-end">↺</button>
-        </td>
-      </tr>
-    </table>
-  </div>
-    <div class="d-flex justify-content-center gap-5 mt-4">
+      <table class="table results-table mx-auto">
+        <tr v-for="(value, key) in processedJsonData" :key="key">
+          <td class="key-column">{{ key }}</td>
+          <td :class="{'task-id-value': key === 'Research ID', 'refresh-button-cell': key === 'Status'}">
+            {{ value }}
+            <button v-if="key === 'Status'" @click="refreshData" class="refresh-button btn btn-sm btn-outline-success float-end">↺</button>
+            <button v-if="key === 'Research ID'" @click="copyToClipboard(value)" class="copy-button btn btn-sm btn-outline-primary float-end">&#x1F4CB</button>
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="d-flex justify-content-center gap-5 mt-2 mb-4">
       <button @click="downloadResults" class="download-button btn btn-outline-primary">Download Results</button>
       <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
     </div>
@@ -145,12 +174,43 @@ export default {
 </template>
 
 <style scoped>
+.copy-message-popup {
+  position: fixed;
+  top: 0;
+  left: 50%;  /* center the popup */
+  transform: translateX(-50%); /* shift it left by half its width */
+  padding: 1rem;
+  text-align: center;
+  max-width: 400px;  /* limit the width */
+  z-index: 1000;
+}
+
+.copy-message-popup.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.copy-message-popup.danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+.copy-button {
+  padding: 0.25rem 0.5rem; /* adjust as needed for size */
+  border: none; /* removes border */
+  background: transparent; /* makes background transparent */
+  font-size: 0.75rem; /* adjust as needed for size */
+}
 .refresh-button {
   padding: 0.25rem 0.5rem; /* make button smaller */
+  border: none; /* removes border */
 }
 
 .refresh-button-cell {
   position: relative; /* needed for button positioning */
+  position: relative; /* needed for button positioning */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .btn-outline-success {
@@ -244,4 +304,5 @@ export default {
     width: 100px; /* Make key column narrower */
   }
 }
+
 </style>
