@@ -2,6 +2,13 @@
   import { mapGetters } from 'vuex';
 
   export default {
+    data() {
+  return {
+    // Other data properties...
+    copyMessage: '',
+    copyMessageTheme: ''
+  };
+},
     computed: {
     ...mapGetters(['taskId']),
       jsonData: {
@@ -112,6 +119,25 @@
         console.error(error);
       }
     },
+    copyToClipboard(value) {
+      navigator.clipboard.writeText(value)
+        .then(() => {
+          this.copyMessage = 'Research ID copied to clipboard!';
+          this.copyMessageTheme = 'success';
+          setTimeout(() => {
+            this.copyMessage = '';
+          }, 2500);
+        })
+        .catch(err => {
+          console.error('Could not copy text: ', err);
+          this.copyMessage = 'Failed to copy Research ID.';
+          this.copyMessageTheme = 'danger';
+          setTimeout(() => {
+            this.copyMessage = '';
+            this.copyMessageTheme = '';
+          }, 2500);
+        });
+    },
     }
   };
   </script>
@@ -122,14 +148,16 @@
 <template>
   <div class="container">
     <div class="text-container text-start">
+      <div v-if="copyMessage" class="copy-message-popup" :class="copyMessageTheme">{{ copyMessage }}</div>
       <p class="textheader">Search Result:</p>
       <div class="table-responsive text-start">
     <table class="table results-table mx-auto">
       <tr v-for="(value, key) in processedJsonData" :key="key">
         <td class="key-column">{{ key }}</td>
-        <td :class="{'status-green': key === 'Status' && (value === 'Researching...' || value === 'Completed'), 'status-red': key === 'Status' && value !== 'Researching...' && value !== 'Completed', 'refresh-button-cell': key === 'Status'}">
+        <td :class="{'status-green': key === 'Status' && (value === 'Researching...' || value === 'Completed'), 'status-red': key === 'Status' && value !== 'Researching...' && value !== 'Completed', 'refresh-button-cell': key === 'Status'}" >
           {{ value }}
           <button v-if="key === 'Status'" @click="refreshData" class="refresh-button btn btn-sm btn-outline-success float-end">↺</button>
+          <button v-if="key === 'Research ID'" @click="copyToClipboard(value)" class="copy-button btn btn-sm btn-outline-primary float-end">&#x1F4CB</button>
         </td>
       </tr>
     </table>
@@ -143,12 +171,42 @@
 </template>
   
 <style scoped>
+.copy-message-popup {
+  position: fixed;
+  top: 0;
+  left: 50%;  /* center the popup */
+  transform: translateX(-50%); /* shift it left by half its width */
+  padding: 1rem;
+  text-align: center;
+  max-width: 400px;  /* limit the width */
+  z-index: 1000;
+}
+
+.copy-message-popup.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.copy-message-popup.danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+.copy-button {
+  padding: 0.25rem 0.5rem; /* adjust as needed for size */
+  border: none; /* removes border */
+  background: transparent; /* makes background transparent */
+  font-size: 0.75rem; /* adjust as needed for size */
+}
 .refresh-button {
   padding: 0.25rem 0.5rem; /* make button smaller */
+  border: none; /* removes border */
 }
 
 .refresh-button-cell {
   position: relative; /* needed for button positioning */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .btn-outline-success {
@@ -248,6 +306,7 @@
   background-color: #0c952c;
   color: #fff;
 }
+
 
 @media (max-width: 576px) {
   /* For mobile view */

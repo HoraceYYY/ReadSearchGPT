@@ -21,8 +21,8 @@
 
     <nav class="navbar navbar-expand-lg">
       <div class="container-fluid justify-content-end navbar-nav">
-        <a href="https://mirage-oval-bce.notion.site/Terms-8289e5d1596d45e49215df02bff2839f" class="nav-link" target="_blank">Terms</a>
-        <a href="https://mirage-oval-bce.notion.site/Privacy-354ba4e4b7f94e218ea4cbfad27b751a" class="nav-link" target="_blank">Privacy</a>
+        <!-- <a href="https://mirage-oval-bce.notion.site/Terms-8289e5d1596d45e49215df02bff2839f" class="nav-link" target="_blank">Privacy</a> -->
+        <a href="https://mirage-oval-bce.notion.site/Terms-8289e5d1596d45e49215df02bff2839f" class="nav-link" target="_blank">Privacy & Terms</a>
       </div>
     </nav>
   </div>

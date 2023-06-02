@@ -2,14 +2,16 @@
 
 export default {
   data() {
-    return {
-      // rest of your data properties
-      email1: '',
-      email2: '',
-      email3: '',
-      showModal: false,
-    };
-  },
+  return {
+    // Other data properties...
+    copyMessage: '',
+    copyMessageTheme: '',
+    email1: '',
+    email2: '',
+    email3: '',
+    showModal: false,
+  };
+},
   computed: {
     jsonData: {
         get() {
@@ -110,7 +112,26 @@ export default {
       } catch (error) {
         console.error(error);
       }
-    }
+    },
+    copyToClipboard(value) {
+      navigator.clipboard.writeText(value)
+        .then(() => {
+          this.copyMessage = 'Research ID copied to clipboard!';
+          this.copyMessageTheme = 'success';
+          setTimeout(() => {
+            this.copyMessage = '';
+          }, 2500);
+        })
+        .catch(err => {
+          console.error('Could not copy text: ', err);
+          this.copyMessage = 'Failed to copy Research ID.';
+          this.copyMessageTheme = 'danger';
+          setTimeout(() => {
+            this.copyMessage = '';
+            this.copyMessageTheme = '';
+          }, 2500);
+        });
+    },
   },
 };
 </script>
@@ -119,6 +140,7 @@ export default {
 <template>
   <div class="container">
     <div class="text-container">
+      <div v-if="copyMessage" class="copy-message-popup" :class="copyMessageTheme">{{ copyMessage }}</div>
       <p class="textheader">Your AI assistant has begun your research!</p>
       <p class="textbody">Download partial results anytime during the search. Full results remain available for another 24 hours and will be automatically deleted after.</p>
       <p class="textbody">You need the Task ID to retrieve the results. <span class="important-notice">Make sure to save the Task ID to download the results later. It won't be displayed again.</span></p>
@@ -134,95 +156,25 @@ export default {
       </tr>
     </table>
   </div>
-  <div class="d-flex justify-content-center gap-5 mt-2 mb-4">
-    <button @click="showModal = true" class="email-button btn btn-outline-primary">Email Results</button>
-    <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
-  </div>
-
-  <div v-if="showModal" class="modal-overlay">
-    <div class="modal-content">
-      <h2 class="modal-title">Add max of 3 receiver of the research results</h2>
-      <form @submit.prevent="sendResultsToEmail">
-        <input v-model="email1" type="email" placeholder="Email 1" required>
-        <input v-model="email2" type="email" placeholder="Email 2" required>
-        <input v-model="email3" type="email" placeholder="Email 3" required>
-        <button type="submit">Send</button>
-      </form>
-      <button @click="showModal = false">Close</button>
+    <div class="d-flex justify-content-center gap-5 mt-4">
+      <button @click="downloadResults" class="download-button btn btn-outline-primary">Download Results</button>
+      <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
     </div>
-  </div>
   </div>
 </template>
 
 <style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content {
-  max-width: 90%;
-  background-color: #fff;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  width: 100%;
-  max-width: 400px;
-}
-
-.modal-content form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.modal-content form input {
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #ced4da;
-}
-
-.modal-content form button {
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #ced4da;
-  background-color: #8e8ef7;
-  color: #fff;
-  cursor: pointer;
-}
-
-.modal-content form button:hover {
-  background-color: #6c6ce3;
-}
-
-.modal-content button {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #ced4da;
-  background-color: #f8f9fa;
-  color: #212529;
-  cursor: pointer;
-}
-
-.modal-content button:hover {
-  background-color: #e9ecef;
-}
-.modal-title {
-  color: #424040;  /* Change this to any color you want */
-}
 .refresh-button {
   padding: 0.25rem 0.5rem; /* make button smaller */
+  border: none; /* removes border */
 }
 
 .refresh-button-cell {
   position: relative; /* needed for button positioning */
+  position: relative; /* needed for button positioning */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .btn-outline-success {
@@ -309,4 +261,5 @@ export default {
     max-width: 350px;  /* Modal will be wider on screens larger than 576px */
   }
 }
+
 </style>
