@@ -51,14 +51,11 @@ export default {
       const emails = [this.email1, this.email2, this.email3];
       const taskId = this.jsonData['Research ID'];
 
-      // Fetch the results
-      const response = await fetch(`https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/webdownload`, {
-        headers: { 'Content-Type': 'application/json' },
-      });
-      const results = await response.json(); // or blob(), depending on the format of the response
-
-      // TODO: Implement the function to send the results to the emails
-      // sendResultsToEmails(emails, results);
+      // add a post request to the back end to take the research Id and emails to handle the function of sending emails'
+      // const response = await fetch(`https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/webdownload`, {
+      //   headers: { 'Content-Type': 'application/json' },
+      // });
+      // const results = await response.json(); // or blob(), depending on the format of the response
 
       // After sending the emails, you can clear the email inputs and hide the modal
       this.email1 = '';
@@ -152,18 +149,120 @@ export default {
         <td :class="{'task-id-value': key === 'Research ID', 'refresh-button-cell': key === 'Status'}">
           {{ value }}
           <button v-if="key === 'Status'" @click="refreshData" class="refresh-button btn btn-sm btn-outline-success float-end">↺</button>
+          <button v-if="key === 'Research ID'" @click="copyToClipboard(value)" class="copy-button btn btn-sm btn-outline-primary float-end">&#x1F4CB</button>
         </td>
       </tr>
     </table>
   </div>
-    <div class="d-flex justify-content-center gap-5 mt-4">
-      <button @click="downloadResults" class="download-button btn btn-outline-primary">Download Results</button>
-      <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
+  <div class="d-flex justify-content-center gap-5 mt-2 mb-4">
+    <button @click="showModal = true" class="email-button btn btn-outline-primary">Email Results</button>
+    <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
+  </div>
+
+  <div v-if="showModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2 class="modal-title">The complete results will be emailed to the following recipients. </h2>
+      <form @submit.prevent="sendResultsToEmail">
+        <input v-model="email1" type="email" placeholder="Email 1" required>
+        <input v-model="email2" type="email" placeholder="Email 2" >
+        <input v-model="email3" type="email" placeholder="Email 3" >
+        <button type="submit">Send</button>
+      </form>
+      <button @click="showModal = false">Close</button>
     </div>
+  </div>
   </div>
 </template>
 
 <style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-content form input {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+}
+
+.modal-content form button {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+  background-color: #8e8ef7;
+  color: #fff;
+  cursor: pointer;
+}
+
+.modal-content form button:hover {
+  background-color: #6c6ce3;
+}
+
+.modal-content button {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+  background-color: #f8f9fa;
+  color: #212529;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background-color: #e9ecef;
+}
+.modal-title {
+  color: #585858;  /* Change this to any color you want */
+}
+.copy-message-popup {
+  position: fixed;
+  top: 0;
+  left: 50%;  /* center the popup */
+  transform: translateX(-50%); /* shift it left by half its width */
+  padding: 1rem;
+  text-align: center;
+  max-width: 400px;  /* limit the width */
+  z-index: 1000;
+}
+
+.copy-message-popup.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.copy-message-popup.danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+.copy-button {
+  padding: 0.25rem 0.5rem; /* adjust as needed for size */
+  border: none; /* removes border */
+  background: transparent; /* makes background transparent */
+  font-size: 0.75rem; /* adjust as needed for size */
+}
 .refresh-button {
   padding: 0.25rem 0.5rem; /* make button smaller */
   border: none; /* removes border */
