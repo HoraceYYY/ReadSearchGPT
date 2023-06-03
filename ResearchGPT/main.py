@@ -44,20 +44,20 @@ def get_db():
     finally:
         db.close()
 
-# origins = [
-#     "http://localhost:5173",  
-#     "https://readsearch.azurewebsites.net",
-#     "www.readsearchgpt.com",
-#     "https://readsearchgpt.com"
-# ]
+origins = [
+    "http://localhost:5173",  
+    "https://readsearch.azurewebsites.net",
+    "www.readsearchgpt.com",
+    "https://readsearchgpt.com"
+]
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/search") # this is the entry point of the search 
 async def startSearching(background_tasks: BackgroundTasks, search: Search, db: Session = Depends(get_db)):
@@ -122,8 +122,8 @@ async def stop_task(task_id: str, db: Session = Depends(get_db)):
     else:
         return {"Status": "Error", "Message": "Research not found"}
 
-@app.get("/task/{task_id}/localdownload") # this is to download from the loacal database only
-async def download_excel(task_id: str, db: Session = Depends(get_db)):
+
+async def download_excel(task_id: str, db):
     # Find the URL data for the specified task ID
     url_data_list = db.query(models.URLData).filter(models.URLData.task_id == task_id).all()
 
@@ -149,50 +149,29 @@ async def download_excel(task_id: str, db: Session = Depends(get_db)):
         related.to_excel(writer, sheet_name='Related', index=False)
         unrelated.to_excel(writer, sheet_name='Unrelated', index=False)
         unchecked.to_excel(writer, sheet_name='Unchecked Material', index=False)
-
     return file_path
 
 @app.get("/task/{task_id}/webdownload")
-async def download_excel(task_id: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    # Find the URL data for the specified task ID
-    url_data_list = db.query(models.URLData).filter(models.URLData.task_id == task_id).all()
-
-    if not url_data_list:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    # Create data frames for each category
-    related = pd.DataFrame(columns=['URL', 'Title', 'Content'])
-    unrelated = pd.DataFrame(columns=['URL', 'Title', 'Content'])
-    unchecked = pd.DataFrame(columns=['PDFs', 'Additional Links'])
-
-    for url_data in url_data_list:
-        if url_data.category == 'Related':
-            related = pd.concat([related, pd.DataFrame([{'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}])], ignore_index=True)
-        elif url_data.category == 'Unrelated':
-            unrelated = pd.concat([unrelated, pd.DataFrame([{'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}])], ignore_index=True)
-        elif url_data.category == 'Unchecked Material':
-            unchecked = pd.concat([unchecked, pd.DataFrame([{'PDFs': url_data.pdfs, 'Additional Links': url_data.additional_links}])], ignore_index=True)
-
-    # Write data to Excel file with each DataFrame as a separate sheet
-    file_path = f"Results/{task_id}.xlsx"
-    with pd.ExcelWriter(file_path) as writer:
-        related.to_excel(writer, sheet_name='Related', index=False)
-        unrelated.to_excel(writer, sheet_name='Unrelated', index=False)
-        unchecked.to_excel(writer, sheet_name='Unchecked Material', index=False)
-
-    # Add a background task to delete the file after 1 minute
-    background_tasks.add_task(delete_file_after_delay, file_path, delay=60)
-
-    # Return the file as a response
-    return FileResponse(file_path, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename=f"{task_id}.xlsx")
+async def web_download_excel(task_id: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    file_path = await download_excel(task_id, db)
+    background_tasks.add_task(delete_file_after_delay, file_path, delay=60) # Add a background task to delete the file after 1 minute
+    return FileResponse(file_path, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename=f"{task_id}.xlsx")     # Return the file as a response
 
 def delete_file_after_delay(file_path: str, delay: int):
     time.sleep(delay)
     if os.path.exists(file_path):
         os.remove(file_path)
 
+class EmailRequest(BaseModel):
+    research_id: str
+    emails: List[str]
+
 @app.post("/add_email")
-async def add_email(research_id: str, emails: List[str], background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+async def add_email(email_request: EmailRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    research_id=email_request.research_id
+    emails=email_request.emails
+    print(research_id)
+    print(emails)
     task = db.query(models.Task).filter(models.Task.id == research_id).first()
     if not task:
         raise HTTPException(status_code=404, detail="Research not found")
@@ -211,7 +190,7 @@ async def add_email(research_id: str, emails: List[str], background_tasks: Backg
     db.commit()
 
     if task.status in ["Completed", "Cancelled"] and task.file_availability == "Available":
-        file_path = download_excel(research_id, db)
+        file_path = await download_excel(research_id, db)
         user = 'henryyu.business@gmail.com'
         password = "gaoshou123"
         header = "Your ReadSearch Results Are Ready"

@@ -43,13 +43,17 @@ export default {
 
       return processedData;
     },
-
-
   },
   methods: {
     async sendResultsToEmail() {
-      const emails = [this.email1, this.email2, this.email3];
+      let emails = [this.email1, this.email2, this.email3];
       const taskId = this.jsonData['Research ID'];
+      emails = emails.filter(email => email); // Filter out empty emails
+      const data = {
+        research_id: taskId,
+        emails: emails
+      };
+      console.log(data)
       try {
         // Add a post request to the back end to take the research Id and emails to handle the function of sending emails'
         const response = await fetch('http://localhost:8000/add_email', {
@@ -57,7 +61,7 @@ export default {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ research_id: taskId, emails: emails })
+          body: JSON.stringify(data)
         });
 
         if (response.ok) {
