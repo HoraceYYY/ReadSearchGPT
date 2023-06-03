@@ -50,18 +50,29 @@ export default {
     async sendResultsToEmail() {
       const emails = [this.email1, this.email2, this.email3];
       const taskId = this.jsonData['Research ID'];
+      try {
+        // Add a post request to the back end to take the research Id and emails to handle the function of sending emails'
+        const response = await fetch('http://localhost:8000/add_email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ research_id: taskId, emails: emails })
+        });
 
-      // add a post request to the back end to take the research Id and emails to handle the function of sending emails'
-      // const response = await fetch(`https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/webdownload`, {
-      //   headers: { 'Content-Type': 'application/json' },
-      // });
-      // const results = await response.json(); // or blob(), depending on the format of the response
-
-      // After sending the emails, you can clear the email inputs and hide the modal
-      this.email1 = '';
-      this.email2 = '';
-      this.email3 = '';
-      this.showModal = false;
+        if (response.ok) {
+          // After sending the emails, you can clear the email inputs and hide the modal
+          this.email1 = '';
+          this.email2 = '';
+          this.email3 = '';
+          this.showModal = false;
+        } else {
+          // You can handle error here, like showing error message to user
+          console.error(`Error: ${response.status}`);
+        }
+      } catch (error) {
+        console.error(`Error: ${error}`);
+      }
     },
       handleButtonClick() {
         if (this.jsonData.Status === "Researching...") {
@@ -72,8 +83,8 @@ export default {
       },
     async cancelSearch() {
       const taskId = this.jsonData['Research ID'];
-      const cancelUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/stop`;
-      const statusUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/status`;
+      const cancelUrl = `http://localhost:8000/task/${taskId}/stop`;
+      const statusUrl = `http://localhost:8000/task/${taskId}/status`;
       try {
           this.buttonText = "Cancelling..."
           await fetch(cancelUrl, { method: 'POST',
@@ -95,7 +106,7 @@ export default {
     },
     async refreshData() {
       const taskId = this.jsonData['Research ID'];
-      const statusUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/status`;
+      const statusUrl = `http://localhost:8000/task/${taskId}/status`;
 
       try {
         const response = await fetch(statusUrl, { method: 'GET',

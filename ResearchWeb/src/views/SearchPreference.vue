@@ -111,7 +111,7 @@ async submitForm() {
 
     async callApi() {
         this.validateInput()
-        const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/search";  // replace with your API endpoint
+        const url = "http://localhost:8000/search";  // replace with your API endpoint
         const data = {
             searchWidth: this.width,
             max_depth: this.depth,

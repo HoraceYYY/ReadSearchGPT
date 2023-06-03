@@ -1,8 +1,11 @@
 from Google import async_google
 from aiohttp import ClientSession
-
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email import encoders
 import asyncio, uuid, time,os
-
 from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -139,14 +142,15 @@ async def download_excel(task_id: str, db: Session = Depends(get_db)):
             unrelated = pd.concat([unrelated, pd.DataFrame([{'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}])], ignore_index=True)
         elif url_data.category == 'Unchecked Material':
             unchecked = pd.concat([unchecked, pd.DataFrame([{'PDFs': url_data.pdfs, 'Additional Links': url_data.additional_links}])], ignore_index=True)
-
+    
+    file_path = f"Results/{task_id}.xlsx"
     # Write data to Excel file with each DataFrame as a separate sheet
-    with pd.ExcelWriter(f"Results/{task_id}.xlsx") as writer:
+    with pd.ExcelWriter(file_path) as writer:
         related.to_excel(writer, sheet_name='Related', index=False)
         unrelated.to_excel(writer, sheet_name='Unrelated', index=False)
         unchecked.to_excel(writer, sheet_name='Unchecked Material', index=False)
 
-    return {f"Results/{task_id}.xlsx"}
+    return file_path
 
 @app.get("/task/{task_id}/webdownload")
 async def download_excel(task_id: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
@@ -187,6 +191,60 @@ def delete_file_after_delay(file_path: str, delay: int):
     if os.path.exists(file_path):
         os.remove(file_path)
 
+@app.post("/add_email")
+async def add_email(research_id: str, emails: List[str], background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    task = db.query(models.Task).filter(models.Task.id == research_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Research not found")
+    
+    old_emails = db.query(models.Email).filter(
+        models.Email.research_id == research_id,
+        models.Email.status == True
+    ).all()
+    for old_email in old_emails:
+        old_email.status = False
+
+    for email in emails:
+        new_email = models.Email(research_id=research_id, email=email, status=True)
+        db.add(new_email)
+    
+    db.commit()
+
+    if task.status in ["Completed", "Cancelled"] and task.file_availability == "Available":
+        file_path = download_excel(research_id, db)
+        user = 'henryyu.business@gmail.com'
+        password = "gaoshou123"
+        header = "Your ReadSearch Results Are Ready"
+        message = f"Please see attached results for the following search topic. \n\nResearch Topic: {task.topic}. \n\nPlease use the following Research ID if you wish to download the result again within the next 24 hours: {task.id} \n\n Thank you for using ReadSearchGPT!"
+        background_tasks.add_task(send_email_outlook, user, password, emails, header, message, file_path)
+        background_tasks.add_task(delete_file_after_delay, file_path, delay=60)
+        
+def send_email_outlook(user, password, mail_to, subject, message, file_path):
+    msg = MIMEMultipart()
+    msg['From'] = user
+    msg['To'] = ', '.join(mail_to)
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(message, 'plain'))
+
+    # Setup the attachment
+    filename = os.path.basename(file_path)
+    attachment = open(file_path, "rb")
+    part = MIMEBase('application', 'octet-stream')
+    part.set_payload(attachment.read())
+    encoders.encode_base64(part)
+    part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+
+    # Attach the attachment to the MIMEMultipart object
+    msg.attach(part)
+    
+    server = smtplib.SMTP('smtp.office365.com', 587)
+    server.starttls()
+    server.login(user, password)
+    text = msg.as_string()
+    server.sendmail(user, mail_to, text)
+    server.quit()
+    
 @app.post("/task/cleanup")
 async def cleanup(background_tasks: BackgroundTasks):
     background_tasks.add_task(run_cleanup)
