@@ -72,6 +72,7 @@ export default {
 
         if (response.ok) {
           this.showModal = false;
+          this.sendingEmail = false
           // After sending the emails, you can clear the email inputs and hide the modal
           this.email1 = '';
           this.email2 = '';
@@ -386,7 +387,16 @@ export default {
   background-color: #0c952c;
   color: #fff;
 }
+.email-button {
+    border-color: rgb(227, 193, 235); /* change the border color */
+    color: rgb(227, 193, 235); /* change the text color */
+  }
 
+  .email-button:hover {
+    background-color: rgb(227, 193, 235); /* change the background color when hovered */
+    color: #fff; /* change the text color when hovered */
+  }
+.email-button,
 .cancel-button,
 .newsearch-button {
   width: 200px; /* Make both buttons the same width */
