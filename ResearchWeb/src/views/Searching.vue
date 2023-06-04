@@ -3,13 +3,19 @@
 export default {
   data() {
   return {
-    // Other data properties...
+    // this is for showing the copy confimation message
     copyMessage: '',
     copyMessageTheme: '',
+    // this is to create the initial value of the email 
     email1: '',
     email2: '',
     email3: '',
     showModal: false,
+    // this is for the pop up message after user enter the email 
+    showPopup: false,
+    popupMessage: '',
+    // this is to control the button text for sending email
+    sendingEmail: false
   };
 },
   computed: {
@@ -53,9 +59,9 @@ export default {
         research_id: taskId,
         emails: emails
       };
-      console.log(data)
       try {
         // Add a post request to the back end to take the research Id and emails to handle the function of sending emails'
+        this.sendingEmail = true; // Set sendingEmail to true when sending starts
         const response = await fetch('http://localhost:8000/add_email', {
           method: 'POST',
           headers: {
@@ -65,16 +71,26 @@ export default {
         });
 
         if (response.ok) {
+          this.showModal = false;
           // After sending the emails, you can clear the email inputs and hide the modal
           this.email1 = '';
           this.email2 = '';
           this.email3 = '';
-          this.showModal = false;
+          // Show the popup
+          this.popupMessage = 'Results will be sent once ready!';
+          this.showPopup = true;
+          // Hide the popup after 2 seconds
+          setTimeout(() => {
+            this.showPopup = false;
+          }, 2000);
+
         } else {
           // You can handle error here, like showing error message to user
+          this.sendingEmail = false; // Reset sendingEmail when sending is done
           console.error(`Error: ${response.status}`);
         }
       } catch (error) {
+        this.sendingEmail = false; // Reset sendingEmail when sending is done
         console.error(`Error: ${error}`);
       }
     },
@@ -181,15 +197,28 @@ export default {
         <input v-model="email1" type="email" placeholder="Email 1" required>
         <input v-model="email2" type="email" placeholder="Email 2" >
         <input v-model="email3" type="email" placeholder="Email 3" >
-        <button type="submit">Send</button>
+        <button type="submit">{{ sendingEmail ? 'Adding...' : 'Add Emails' }}</button>
       </form>
       <button @click="showModal = false">Close</button>
     </div>
   </div>
+  <div v-if="showPopup" class="popup-message">{{ popupMessage }}</div>
   </div>
 </template>
 
 <style scoped>
+.popup-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #d4edda;
+  color: #155724;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  z-index: 1000; 
+}
 .modal-overlay {
   position: fixed;
   top: 0;
