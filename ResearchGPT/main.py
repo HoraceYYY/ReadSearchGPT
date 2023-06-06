@@ -17,7 +17,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 import models, crud
 
-
 class EmailRequest(BaseModel):
     research_id: str
     emails: List[str]
