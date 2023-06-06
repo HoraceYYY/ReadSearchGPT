@@ -207,8 +207,8 @@ async def add_email(email_request: EmailRequest, background_tasks: BackgroundTas
 
 async def draft_email(research_id, task, db): ## update email to the readsearch domain
     file_path = await download_excel(research_id, db)
-    user = 'henryyu.business@gmail.com'
-    password = "tdvaumvdmivjyagl"
+    user = 'readsearchgpt@gmail.com'
+    password = "cqrdmoxaeduoqxtj"
     header = f"Your ReadSearch Results Are Ready - Research ID: {research_id}"
     topic_list = ast.literal_eval(task.topic)
     topics = '\n'.join(f'{i+1}. {topic}' for i, topic in enumerate(topic_list))
