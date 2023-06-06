@@ -45,7 +45,7 @@
     methods: {
       async downloadResults() {
 
-        const url = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${this.taskId}/webdownload`;
+        const url = `http://localhost:8000/task/${this.taskId}/webdownload`;
 
         try {
           const response = await fetch(url, { method: 'GET',
@@ -81,8 +81,8 @@
         }
       },
       async cancelSearch() {
-        const cancelUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${this.taskId}/stop`;
-        const statusUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${this.taskId}/status`;
+        const cancelUrl = `http://localhost:8000/task/${this.taskId}/stop`;
+        const statusUrl = `http://localhost:8000/task/${this.taskId}/status`;
         try {
           this.buttonText = "Cancelling..."
           await fetch(cancelUrl, { method: 'POST',

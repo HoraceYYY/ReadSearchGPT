@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, ForeignKey, Text, func
+from sqlalchemy import Boolean, Column, String, DateTime, ForeignKey, Text, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -19,6 +19,7 @@ class Task(Base):
     file_path = Column(String)
     
     url_data = relationship("URLData", back_populates="task")
+    email = relationship("Email", back_populates="task")
 
 class URLData(Base):
     __tablename__ = "url_data"
@@ -41,3 +42,11 @@ class Feedback(Base):
     feedback = Column(Text)  # User's feedback on the product
     timestamp = Column(DateTime, default=func.now())  # The time when feedback was submitted
 
+class Email(Base):
+    __tablename__ = "email"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    research_id = Column(String, ForeignKey('tasks.id'), nullable=False)  # link to the task id
+    email = Column(String)
+    status = Column(Boolean, default=True)  # True = in use, False = not in use
+
+    task = relationship("Task", back_populates="email")

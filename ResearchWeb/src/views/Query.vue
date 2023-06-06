@@ -104,7 +104,7 @@ async search() {
 async callApi() {
     // console.log(this.searchqueries)
     const trimmedApiKey = this.apiKey.trim();
-    const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/testapi";  // replace with your API endpoint
+    const url = "http://localhost:8000/testapi";  // replace with your API endpoint
     const payload = {
         apiKey: trimmedApiKey,
     };

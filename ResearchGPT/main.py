@@ -1,8 +1,10 @@
 from Google import async_google
 from aiohttp import ClientSession
-
-import asyncio, uuid, time,os
-
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email import encoders
+import asyncio, uuid, time,os, ast, smtplib
 from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -15,8 +17,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 import models, crud
 
-class SearchRequest(BaseModel): # currently not used
-    userAsk: str
+
+class EmailRequest(BaseModel):
+    research_id: str
+    emails: List[str]
 
 class APIKey(BaseModel):
     apiKey: str
@@ -41,20 +45,20 @@ def get_db():
     finally:
         db.close()
 
-# origins = [
-#     "http://localhost:5173",  
-#     "https://readsearch.azurewebsites.net",
-#     "www.readsearchgpt.com",
-#     "https://readsearchgpt.com"
-# ]
+origins = [
+    "http://localhost:5173",  
+    "https://readsearch.azurewebsites.net",
+    "www.readsearchgpt.com",
+    "https://readsearchgpt.com"
+]
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/search") # this is the entry point of the search 
 async def startSearching(background_tasks: BackgroundTasks, search: Search, db: Session = Depends(get_db)):
@@ -65,10 +69,10 @@ async def startSearching(background_tasks: BackgroundTasks, search: Search, db: 
     task = models.Task(id=task_id, topic=str(search.searchqueries),start_time=start_time, file_path=None, status="Researching...")     # Add your task to the database
     crud.create_task(db, task)
     # Use the existing session to create a new one for the background task
-    background_tasks.add_task(run_task, task_id, search)
+    background_tasks.add_task(run_task, task_id, search, background_tasks)
     return {"Research ID": task_id, "Research Topic(s)":str(search.searchqueries), "Status": "Researching...", "Start Time": str(start_time).split('.')[0], "Search Results": "Available"}
 
-async def run_task(task_id: str, search: Search):
+async def run_task(task_id: str, search: Search, background_tasks: BackgroundTasks):
     db = SessionLocal()  # Create a new session
     try:
         searchqueries = search.searchqueries
@@ -87,6 +91,23 @@ async def run_task(task_id: str, search: Search):
         task.end_time = end_time
         db.commit()
         print(f"Task Completed in {execution_time}")
+        
+        """
+        Check if there are email address to deliver to
+        """
+        emails = db.query(models.Email).filter(
+            models.Email.research_id == task_id,
+            models.Email.status == True
+        ).all()
+        if emails: 
+            email_addresses = [email.email for email in emails]
+            user, password, header, message, file_path = await draft_email(task_id, task, db)
+            success, error_msg = send_email(user, password, email_addresses, header, message, file_path)
+            background_tasks.add_task(delete_file_after_delay, file_path, delay=60)
+            if not success:
+                print("Email sending failed with error:", error_msg)
+            else:
+                print("Email sent")
     finally:    
         db.close()
 
@@ -119,8 +140,8 @@ async def stop_task(task_id: str, db: Session = Depends(get_db)):
     else:
         return {"Status": "Error", "Message": "Research not found"}
 
-@app.get("/task/{task_id}/localdownload") # this is to download from the loacal database only
-async def download_excel(task_id: str, db: Session = Depends(get_db)):
+
+async def download_excel(task_id: str, db):
     # Find the URL data for the specified task ID
     url_data_list = db.query(models.URLData).filter(models.URLData.task_id == task_id).all()
 
@@ -139,54 +160,94 @@ async def download_excel(task_id: str, db: Session = Depends(get_db)):
             unrelated = pd.concat([unrelated, pd.DataFrame([{'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}])], ignore_index=True)
         elif url_data.category == 'Unchecked Material':
             unchecked = pd.concat([unchecked, pd.DataFrame([{'PDFs': url_data.pdfs, 'Additional Links': url_data.additional_links}])], ignore_index=True)
-
-    # Write data to Excel file with each DataFrame as a separate sheet
-    with pd.ExcelWriter(f"Results/{task_id}.xlsx") as writer:
-        related.to_excel(writer, sheet_name='Related', index=False)
-        unrelated.to_excel(writer, sheet_name='Unrelated', index=False)
-        unchecked.to_excel(writer, sheet_name='Unchecked Material', index=False)
-
-    return {f"Results/{task_id}.xlsx"}
-
-@app.get("/task/{task_id}/webdownload")
-async def download_excel(task_id: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    # Find the URL data for the specified task ID
-    url_data_list = db.query(models.URLData).filter(models.URLData.task_id == task_id).all()
-
-    if not url_data_list:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    # Create data frames for each category
-    related = pd.DataFrame(columns=['URL', 'Title', 'Content'])
-    unrelated = pd.DataFrame(columns=['URL', 'Title', 'Content'])
-    unchecked = pd.DataFrame(columns=['PDFs', 'Additional Links'])
-
-    for url_data in url_data_list:
-        if url_data.category == 'Related':
-            related = pd.concat([related, pd.DataFrame([{'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}])], ignore_index=True)
-        elif url_data.category == 'Unrelated':
-            unrelated = pd.concat([unrelated, pd.DataFrame([{'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}])], ignore_index=True)
-        elif url_data.category == 'Unchecked Material':
-            unchecked = pd.concat([unchecked, pd.DataFrame([{'PDFs': url_data.pdfs, 'Additional Links': url_data.additional_links}])], ignore_index=True)
-
-    # Write data to Excel file with each DataFrame as a separate sheet
+    
     file_path = f"Results/{task_id}.xlsx"
+    # Write data to Excel file with each DataFrame as a separate sheet
     with pd.ExcelWriter(file_path) as writer:
         related.to_excel(writer, sheet_name='Related', index=False)
         unrelated.to_excel(writer, sheet_name='Unrelated', index=False)
         unchecked.to_excel(writer, sheet_name='Unchecked Material', index=False)
+    return file_path
 
-    # Add a background task to delete the file after 1 minute
-    background_tasks.add_task(delete_file_after_delay, file_path, delay=60)
-
-    # Return the file as a response
-    return FileResponse(file_path, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename=f"{task_id}.xlsx")
+@app.get("/task/{task_id}/webdownload")
+async def web_download_excel(task_id: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    file_path = await download_excel(task_id, db)
+    background_tasks.add_task(delete_file_after_delay, file_path, delay=60) # Add a background task to delete the file after 1 minute
+    return FileResponse(file_path, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename=f"{task_id}.xlsx")     # Return the file as a response
 
 def delete_file_after_delay(file_path: str, delay: int):
     time.sleep(delay)
     if os.path.exists(file_path):
         os.remove(file_path)
 
+@app.post("/add_email")
+async def add_email(email_request: EmailRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    research_id=email_request.research_id
+    emails=email_request.emails
+    task = db.query(models.Task).filter(models.Task.id == research_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Research not found")   
+    old_emails = db.query(models.Email).filter(
+        models.Email.research_id == research_id,
+        models.Email.status == True
+    ).all()
+    for old_email in old_emails:
+        old_email.status = False
+    for email in emails:
+        new_email = models.Email(research_id=research_id, email=email, status=True)
+        db.add(new_email) 
+    db.commit()
+    if task.status in ["Completed", "Cancelled"] and task.file_availability == "Available":
+        user, password, header, message, file_path = await draft_email(research_id, task, db)
+        success, error_msg = send_email(user, password, emails, header, message, file_path)
+        background_tasks.add_task(delete_file_after_delay, file_path, delay=60)
+        if not success:
+            return print("Email sending failed with error:", error_msg)
+        return print("Email sent")
+
+async def draft_email(research_id, task, db): ## update email to the readsearch domain
+    file_path = await download_excel(research_id, db)
+    user = 'readsearchgpt@gmail.com'
+    password = "cqrdmoxaeduoqxtj"
+    header = f"Your ReadSearch Results Are Ready - Research ID: {research_id}"
+    topic_list = ast.literal_eval(task.topic)
+    topics = '\n'.join(f'{i+1}. {topic}' for i, topic in enumerate(topic_list))
+    message = f"Please see attached results for the following research topics: \n{topics}. \n\nPlease use your Research ID if you wish to download the result again within the next 24 hours. Thank you for using ReadSearchGPT!"
+    return user, password, header, message, file_path
+        
+def send_email(user, password, mail_to, subject, message, file_path):
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = user
+        msg['To'] = ', '.join(mail_to)
+        msg['Subject'] = subject
+
+        msg.attach(MIMEText(message, 'plain'))
+
+        # Setup the attachment
+        filename = os.path.basename(file_path)
+        attachment = open(file_path, "rb")
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+
+        # Attach the attachment to the MIMEMultipart object
+        msg.attach(part)
+        
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(user, password)
+        text = msg.as_string()
+        server.sendmail(user, mail_to, text)
+        server.quit()
+
+        return True, ""
+
+    except Exception as e:
+        return False, str(e)
+
+    
 @app.post("/task/cleanup")
 async def cleanup(background_tasks: BackgroundTasks):
     background_tasks.add_task(run_cleanup)

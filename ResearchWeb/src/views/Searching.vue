@@ -3,9 +3,19 @@
 export default {
   data() {
   return {
-    // Other data properties...
+    // this is for showing the copy confimation message
     copyMessage: '',
-    copyMessageTheme: ''
+    copyMessageTheme: '',
+    // this is to create the initial value of the email 
+    email1: '',
+    email2: '',
+    email3: '',
+    showModal: false,
+    // this is for the pop up message after user enter the email 
+    showPopup: false,
+    popupMessage: '',
+    // this is to control the button text for sending email
+    sendingEmail: false
   };
 },
   computed: {
@@ -39,41 +49,52 @@ export default {
 
       return processedData;
     },
-
-
   },
   methods: {
-    async downloadResults() {
-        const taskId = this.jsonData['Research ID'];
+    async sendResultsToEmail() {
+      let emails = [this.email1, this.email2, this.email3];
+      const taskId = this.jsonData['Research ID'];
+      emails = emails.filter(email => email); // Filter out empty emails
+      const data = {
+        research_id: taskId,
+        emails: emails
+      };
+      try {
+        // Add a post request to the back end to take the research Id and emails to handle the function of sending emails'
+        this.sendingEmail = true; // Set sendingEmail to true when sending starts
+        const response = await fetch('http://localhost:8000/add_email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
 
-        const url = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/webdownload`;
+        if (response.ok) {
+          this.showModal = false;
+          this.sendingEmail = false
+          // After sending the emails, you can clear the email inputs and hide the modal
+          this.email1 = '';
+          this.email2 = '';
+          this.email3 = '';
+          // Show the popup
+          this.popupMessage = 'Results will be sent once ready!';
+          this.showPopup = true;
+          // Hide the popup after 2 seconds
+          setTimeout(() => {
+            this.showPopup = false;
+          }, 2000);
 
-        try {
-          const response = await fetch(url, { method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          if (!response.ok) {
-            throw new Error("HTTP error " + response.status);
+        } else {
+          // You can handle error here, like showing error message to user
+          this.sendingEmail = false; // Reset sendingEmail when sending is done
+          console.error(`Error: ${response.status}`);
         }
-        const blob = await response.blob();
-        const downloadUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = downloadUrl;
-        a.download = `${taskId}.xlsx`; // or any name you want to give to your file
-        document.body.appendChild(a);
-        a.click();
-        // After a timeout, remove the element and revoke the object URL
-        setTimeout(() => {
-            a.remove();
-            window.URL.revokeObjectURL(downloadUrl);
-        }, 0);
-
-        } catch (error) {
-          console.error(error);
-        }
-      },
+      } catch (error) {
+        this.sendingEmail = false; // Reset sendingEmail when sending is done
+        console.error(`Error: ${error}`);
+      }
+    },
       handleButtonClick() {
         if (this.jsonData.Status === "Researching...") {
           this.cancelSearch();
@@ -83,8 +104,8 @@ export default {
       },
     async cancelSearch() {
       const taskId = this.jsonData['Research ID'];
-      const cancelUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/stop`;
-      const statusUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/status`;
+      const cancelUrl = `http://localhost:8000/task/${taskId}/stop`;
+      const statusUrl = `http://localhost:8000/task/${taskId}/status`;
       try {
           this.buttonText = "Cancelling..."
           await fetch(cancelUrl, { method: 'POST',
@@ -106,7 +127,7 @@ export default {
     },
     async refreshData() {
       const taskId = this.jsonData['Research ID'];
-      const statusUrl = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/${taskId}/status`;
+      const statusUrl = `http://localhost:8000/task/${taskId}/status`;
 
       try {
         const response = await fetch(statusUrl, { method: 'GET',
@@ -154,26 +175,113 @@ export default {
       <p class="textbody">You need the Task ID to retrieve the results. <span class="important-notice">Make sure to save the Task ID to download the results later. It won't be displayed again.</span></p>
     </div>
     <div class="table-responsive text-start">
-      <table class="table results-table mx-auto">
-        <tr v-for="(value, key) in processedJsonData" :key="key">
-          <td class="key-column">{{ key }}</td>
-          <td :class="{'task-id-value': key === 'Research ID', 'refresh-button-cell': key === 'Status'}">
-            {{ value }}
-            <button v-if="key === 'Status'" @click="refreshData" class="refresh-button btn btn-sm btn-outline-success float-end">↺</button>
-            <button v-if="key === 'Research ID'" @click="copyToClipboard(value)" class="copy-button btn btn-sm btn-outline-primary float-end">&#x1F4CB</button>
-            
-          </td>
-        </tr>
-      </table>
+    <table class="table results-table mx-auto">
+      <tr v-for="(value, key) in processedJsonData" :key="key">
+        <td class="key-column">{{ key }}</td>
+        <td :class="{'task-id-value': key === 'Research ID', 'refresh-button-cell': key === 'Status'}">
+          {{ value }}
+          <button v-if="key === 'Status'" @click="refreshData" class="refresh-button btn btn-sm btn-outline-success float-end">↺</button>
+          <button v-if="key === 'Research ID'" @click="copyToClipboard(value)" class="copy-button btn btn-sm btn-outline-primary float-end">&#x1F4CB</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="d-flex justify-content-center gap-5 mt-2 mb-4">
+    <button @click="showModal = true" class="email-button btn btn-outline-primary">Email Results</button>
+    <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
+  </div>
+
+  <div v-if="showModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2 class="modal-title">The complete results will be emailed to the following recipients. </h2>
+      <form @submit.prevent="sendResultsToEmail">
+        <input v-model="email1" type="email" placeholder="Email 1" required>
+        <input v-model="email2" type="email" placeholder="Email 2" >
+        <input v-model="email3" type="email" placeholder="Email 3" >
+        <button type="submit">{{ sendingEmail ? 'Adding...' : 'Add Emails' }}</button>
+      </form>
+      <button @click="showModal = false">Close</button>
     </div>
-    <div class="d-flex justify-content-center gap-5 mt-2 mb-4">
-      <button @click="downloadResults" class="download-button btn btn-outline-primary">Download Results</button>
-      <button @click="handleButtonClick" :class="['btn btn-outline', buttonClass]">{{ buttonText }}</button>
-    </div>
+  </div>
+  <div v-if="showPopup" class="popup-message">{{ popupMessage }}</div>
   </div>
 </template>
 
 <style scoped>
+.popup-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #d4edda;
+  color: #155724;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  z-index: 1000; 
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-content form input {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+}
+
+.modal-content form button {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+  background-color: #8e8ef7;
+  color: #fff;
+  cursor: pointer;
+}
+
+.modal-content form button:hover {
+  background-color: #6c6ce3;
+}
+
+.modal-content button {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+  background-color: #f8f9fa;
+  color: #212529;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background-color: #e9ecef;
+}
+.modal-title {
+  color: #585858;  /* Change this to any color you want */
+}
 .copy-message-popup {
   position: fixed;
   top: 0;
@@ -260,16 +368,6 @@ export default {
   color: red;
 }
 
-.download-button {
-  border-color: #8e8ef7;
-  color: #8e8ef7;
-}
-
-.download-button:hover {
-  background-color: #8e8ef7;
-  color: #fff;
-}
-
 .cancel-button {
   border-color: #ff4800;
   color: #ff4800;
@@ -289,7 +387,16 @@ export default {
   background-color: #0c952c;
   color: #fff;
 }
-.download-button,
+.email-button {
+    border-color: rgb(227, 193, 235); /* change the border color */
+    color: rgb(227, 193, 235); /* change the text color */
+  }
+
+  .email-button:hover {
+    background-color: rgb(227, 193, 235); /* change the background color when hovered */
+    color: #fff; /* change the text color when hovered */
+  }
+.email-button,
 .cancel-button,
 .newsearch-button {
   width: 200px; /* Make both buttons the same width */
@@ -302,6 +409,9 @@ export default {
   
   .key-column {
     width: 100px; /* Make key column narrower */
+  }
+  .modal-content {
+    max-width: 350px;  /* Modal will be wider on screens larger than 576px */
   }
 }
 
