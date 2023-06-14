@@ -24,25 +24,24 @@ class EmailRequest(BaseModel):
 class APIKey(BaseModel):
     apiKey: str
 
-class Search(BaseModel):
+class additionalSearch(BaseModel):
+    queryID: str
+    apiKey: str
+
+class firstSearch(BaseModel):
     searchqueries: List[str]
     searchDomain: str | None = None
-    max_depth: int  # 0 - 3 Use the DepthLevel Enum
-    searchWidth: int # 1-10
+    apiKey: str
+
+class deepsearch(BaseModel):
+    queryID: str
+    searchDomain: str | None = None
     apiKey: str
 
 class FeedbackBase(BaseModel):
     feedback: str
 
 app = FastAPI()
-
-# Get a db session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 origins = [
     "http://localhost:5173",  
@@ -58,87 +57,51 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# Get a db session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-@app.post("/search") # this is the entry point of the search 
-async def startSearching(background_tasks: BackgroundTasks, search: Search, db: Session = Depends(get_db)):
-    task_id = str(uuid.uuid4())
-    # file_path = await create_output_excel_file(task_id)
-    start_time = datetime.now()
-
-    task = models.Task(id=task_id, topic=str(search.searchqueries),start_time=start_time, file_path=None, status="Researching...")     # Add your task to the database
-    crud.create_task(db, task)
-    # Use the existing session to create a new one for the background task
-    background_tasks.add_task(run_task, task_id, search, background_tasks)
-    return {"Research ID": task_id, "Research Topic(s)":str(search.searchqueries), "Status": "Researching...", "Start Time": str(start_time).split('.')[0], "Search Results": "Available"}
-
-async def run_task(task_id: str, search: Search, background_tasks: BackgroundTasks):
-    db = SessionLocal()  # Create a new session
+@app.post("/firstsearch") # this is the entry point of the search, this will search all the topics entered
+async def first_search(search: firstSearch, db: Session = Depends(get_db)):
     try:
         searchqueries = search.searchqueries
         userDomain = search.searchDomain
-        max_depth = search.max_depth  # Get the integer value of max_depth
-        searchWidth = search.searchWidth
         api_key = search.apiKey
-        
-        await asyncio.create_task(async_google.main(task_id, searchqueries, userDomain, max_depth, searchWidth, api_key))
-        task = crud.get_task(db, task_id)
-        end_time = datetime.now()
-        execution_time = end_time - task.start_time
-        if task.status == "Researching...":
-            task.status = "Completed"
-        task.time_spent = str(execution_time).split('.')[0]
-        task.end_time = end_time
+        research_id, querywithresult = await async_google.first_search(db, searchqueries, userDomain, api_key)
         db.commit()
-        print(f"Task Completed in {execution_time}")
-        
-        """
-        Check if there are email address to deliver to
-        """
-        emails = db.query(models.Email).filter(
-            models.Email.research_id == task_id,
-            models.Email.status == True
-        ).all()
-        if emails: 
-            email_addresses = [email.email for email in emails]
-            user, password, header, message, file_path = await draft_email(task_id, task, db)
-            success, error_msg = send_email(user, password, email_addresses, header, message, file_path)
-            background_tasks.add_task(delete_file_after_delay, file_path, delay=60)
-            if not success:
-                print("Email sending failed with error:", error_msg)
-            else:
-                print("Email sent")
+        print(f"Task Completed")
     finally:    
         db.close()
+    return research_id, querywithresult
 
-@app.get("/task/{task_id}/status")
-async def task_status(task_id: str, db: Session = Depends(get_db)):
-    task = crud.get_task(db, task_id)
-    if task:
-        #check status
-        if task.status == "Researching...":
-            current_time = datetime.now()
-            elapsed_time = current_time - task.start_time
-            task.time_spent = str(elapsed_time).split('.')[0]
-            db.commit()
-        return {"Research ID": task_id, "Research Topic(s)":task.topic, "Status": task.status, "Search Result": task.file_availability, "Start Time": task.start_time.strftime("%Y-%m-%d %H:%M:%S"), "Time Spent": task.time_spent}
-    else:
-        return {"Status": "Error", "Message": "Research not found"}
-  
-@app.post("/task/{task_id}/stop")
-async def stop_task(task_id: str, db: Session = Depends(get_db)):
-    task = crud.get_task(db, task_id)
-    if task:
-        if task.status == "Researching...":
-            task.status = "Cancelled"
-            task.end_time = datetime.now()
-            task.time_spent = str(task.end_time - task.start_time).split('.')[0]
-            db.commit()
-            return {"Status": "Research has been cancelled"}
-        else:
-            return {"message": "Search was not running."}
-    else:
-        return {"Status": "Error", "Message": "Research not found"}
+@app.post("/secondsearch")
+async def second_search(search: additionalSearch, db: Session = Depends(get_db)):
+    try:
+        queryid = search.queryID
+        api_key = search.apiKey
+        querywithresult = await async_google.second_search(db, queryid, api_key) # this results includes the initial search as well
+        db.commit()
+        print(f"Task Completed")
+    finally:
+        db.close()
+    return querywithresult
 
+@app.post("/firstdeepsearch")
+async def first_deep_search(search: deepsearch, db: Session = Depends(get_db)):
+    try:
+        queryid = search.queryID
+        userDomain = search.searchDomain
+        api_key = search.apiKey
+        querywithresult = await async_google.first_deep_search(db, queryid, userDomain, api_key) # this results includes the initial search as well
+        db.commit()
+        print(f"Task Completed")
+    finally:
+        db.close()
+    return querywithresult
 
 async def download_excel(task_id: str, db):
     # Find the URL data for the specified task ID

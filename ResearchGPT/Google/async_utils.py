@@ -7,7 +7,7 @@ import models
 from urllib.parse import urlparse, parse_qsl, unquote_plus, urljoin, urldefrag
 
 # see https://github.com/openai/openai-python for async api details
-async def singleGPT(api_key, systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.5-turbo'):
+async def singleGPT(api_key, systemMessages, userMessage, temperature=1, top_p=1, model='gpt-3.5-turbo-0613'):
     ##load_dotenv()
     ##openai.organization = os.getenv("OPENAI_ORG")
     openai.api_key = api_key
@@ -38,12 +38,46 @@ async def singleGPT(api_key, systemMessages, userMessage, temperature=1, top_p=1
     # Close the aiohttp session at the end
     await openai.aiosession.get().close()
     return response["choices"][0]["message"]["content"]
-      
-async def fetch_url(url, results = None):
+
+async def GPT3(api_key,prompt):
+    openai.api_key = api_key
+    openai.aiosession.set(aiohttp.ClientSession())
+
+    max_retries = 3
+    response = None
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            response = await openai.Completion.acreate(
+                model="text-babbage-001",
+                prompt=prompt,
+                temperature=1,
+                max_tokens=256,
+                top_p=1,
+                frequency_penalty=0,
+                presence_penalty=0
+            )
+            break  # If successful, break out of the loop
+        except Exception as e:
+            if attempt < max_retries:
+                print(f"An error occurred: {str(e)}")
+                print(f"Retrying in 2 seconds... (attempt {attempt} of {max_retries})")
+                await asyncio.sleep(2)
+            else:
+                print(f"An error occurred: {str(e)}")
+                print(f"Reached the maximum number of retries ({max_retries}). Aborting.")
+                await openai.aiosession.get().close()
+                return str(e)  # You can return None or an appropriate default value here
+    # Close the aiohttp session at the end
+    await openai.aiosession.get().close()
+
+    return response["choices"][0]["text"]
+
+async def fetch_url(url):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36.'
     }
-    timeout = aiohttp.ClientTimeout(total=10)
+    timeout = aiohttp.ClientTimeout(total=3)
     session = aiohttp.ClientSession(timeout=timeout)
     try:
         async with session.get(url, headers=headers) as response:
@@ -60,25 +94,36 @@ async def fetch_url(url, results = None):
                 return soup, content_type, status_code
             else:
                 print(f"Failed to fetch the page. Status code: {status_code}")
-                results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True) # remove if database works
+                
                 return None, None, status_code
     except Exception as e:
         print(f"An error occurred. ERROR TYPE: {type(e)}; ERROR: {str(e)}")
-        results['Unchecked Material'] = pd.concat([results['Unchecked Material'], pd.DataFrame([{'Additional Links': url}])], ignore_index=True) # remove if database works
+        
         return None, None, None
     finally:
         await session.close()
 
-async def add_to_db(session, task_id, category, url=None, title=None, content=None,  pdfs = None, additional_links=None):
+async def add_to_URLData_db(session, queryid, category, url=None, title=None, content=None,  pdfs = None, additional_links=None):
     try:
         new_data = models.URLData(
-            task_id=task_id,
+            query_id=queryid,
             url=url,
             title=title,
             content=content,
-            pdfs=pdfs,
-            additional_links=additional_links,
             category=category
+        )
+        session.add(new_data)
+        session.commit()
+    except Exception as e:
+        print(f"An error occurred while adding data to the database: {e}")
+        session.rollback()
+
+async def add_to_URL_db(session, queryid, source, result):
+    try:
+        new_data = models.URL(
+            query_id=queryid,
+            source=source,
+            result=result
         )
         session.add(new_data)
         session.commit()
@@ -105,27 +150,27 @@ async def download_pdf(url): # not being used
                     await output_file.write(chunk)
             print(colored(f'PDF downloaded and saved to {output_path}', 'green', attrs=['bold']))
 
-async def relaventURL(url_prompt, links, api_key):
+async def relaventURL(query, links, api_key):
     try:
         linksString = ','.join(links)
         #print(linksString)
         messages = [
             {"role": "system", 
             "content": f"From the URLs below, delimted by three dashes(-), extract the URLs that are most relevant to the target information I provide. \
-If there are no URLs that are relevant to the target information, refrain from returning any messages. Instead of returning any messages, only return 'NONE'. \
-Otherwise, return no more than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. Refrain from returning more than 15 URLs in total. \
+Return less than 10 URLs that are extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
 Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url, for example: url1,url2,url3. Refrain from using any other format for the output.\
-Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL.\n\n\
+Refrain from returning any URL that is not relevant to the target information. \
+If you are not sure if the URL is relevant, refrain from returning the URL. \
+If there are no URLs that are relevant to the target information, refrain from returning any messages. Instead of returning any messages, only return 'NONE'. \n\n\
 ---\n{linksString}\n---"}]
         ## pass the list of message to GPT
-
         token = num_tokens_from_string(linksString)
         if token <= 3500:
-            urlMessage = "Target Information:" + url_prompt
+            urlMessage = "Target Information:" + query
             relaventURLs = await singleGPT(api_key, messages,urlMessage, temperature=0.0, top_p=1)
         else:
-            relaventURLs = await LinksBreakUp(api_key, token, url_prompt, linksString) # split the links into subarrays of 3000 tokens
+            relaventURLs = await LinksBreakUp(api_key, token, query, linksString) # split the links into subarrays of 3000 tokens
         
         if relaventURLs:
             relaventURLs = [url.strip() for url in relaventURLs.split(',')] # remove the white space from the string and convert the string into a list
@@ -153,11 +198,12 @@ async def LinksBreakUp(api_key, token, url_prompt, linksString): # convert the l
             messages = [
                 {"role": "system", 
                  "content": f"From the URLs below, delimted by three dashes(-), extract the URLs that are most relevant to the target information I provide. \
-If there are no URLs that are relevant to the target information, refrain from returning any messages. Instead of returning any messages, only return 'NONE'. \
-Otherwise, return no more than 10 URLs unless there are additional URLs that are still extremely relevant to the target information. Refrain from returning more than 15 URLs in total. \
+Return less than 10 URLs that are extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
-Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url, for example: url1,url2,url3. Refrain from using any other format for the output. \
-Refrain from returning any URL that is not relevant to the target information. If you are not sure if the URL is relevant, refrain from returning the URL.\n\n\
+Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url, for example: url1,url2,url3. Refrain from using any other format for the output.\
+Refrain from returning any URL that is not relevant to the target information. \
+If you are not sure if the URL is relevant, refrain from returning the URL. \
+If there are no URLs that are relevant to the target information, refrain from returning any messages. Instead of returning any messages, only return 'NONE'. \n\n\
 ---\n{section}\n---"}]
             urlMessage = "Target Information:" + url_prompt
             relaventURLs_list.append(await singleGPT(api_key, messages,urlMessage, temperature=0.0, top_p=1))
@@ -179,52 +225,35 @@ def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=3000):
     return encoding.encode(text)[:max_tokens]
 
 #break up the content of long webpages into smaller chunks and pass each into GPT3.5 to avoid the token limit and return the summary of the whole webpage
-async def pageBreakUp(api_key, content_prompt, content): 
+async def pageBreakUp(api_key, query, content): 
     pageSummary = ''
-    sectionNum = math.ceil(num_tokens_from_string(content) // 2800) + 1 
+    sectionNum = math.ceil(num_tokens_from_string(content) // 1500) + 1 
     cutoffIndex = math.ceil(len(content) // sectionNum)
     for i in range(sectionNum): #split the content into multiple section and use a new GPT3.5 for each section to avoid the token limit
         start_index = i * cutoffIndex
         end_index = (i + 1) * cutoffIndex
         section = content[start_index:end_index]
-        section_messages = [
-        {"role": "system", 
-         "content": f"From the text below, delimted by three dashes(-), extract the information that are relevant to the target information I provide. \
-You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
-If the text does not contain any of the target information, refrain from summarizing the text. Instead of summarizing the task, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
-Otherwise, for each target information, provide a summarization from the relevant text with as much detail as possible. Use the target information as the title of the summarization. \n\n\
----\n{section}\n---"}]
-        pageMessage = "Target Informtion:\n"+ content_prompt
-        pageSummary += await singleGPT(api_key, section_messages, pageMessage)
-    if num_tokens_from_string(pageSummary) > 3000: #if the summary is still too long, truncate it to 3500 tokens
-        pageSummary = truncate_text_tokens(pageSummary)
+        prompt = f"From the text below, delimted by three dashes(-), in as much detail as possible, summarize the information that are relevant to the target information . \
+Answer 'None' if the text does not contain any of the target information and refrain from answer anything else. \n\
+Target Information: {query} \n\
+---\n{section}\n--- \n\
+Answer:"
+        pageSummary += await GPT3(api_key, prompt)      
+    # if num_tokens_from_string(pageSummary) > 3000: #if the summary is still too long, truncate it to 3500 tokens
+    #     pageSummary = truncate_text_tokens(pageSummary)
     return pageSummary
 
-async def PageResult(api_key, content_prompt, content):
+async def PageResult(api_key, query, content):
     pageSummary = ''
-    if num_tokens_from_string(content) <= 3500: #if the content is less than 3500 tokens, pass the whole content to GPT
-        messages = [
-        {"role": "system", 
-         "content": f"From the text below, delimted by three dashes(-), extract the information that are relevant to the target information I provide. \
-You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
-If the text does not contain any of the target information, refrain from summarizing the text. Instead of summarizing the task, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
-Otherwise, for each target information, provide a summarization from the relevant text with as much detail as possible. Use the target information as the title of the summarization. \n\n\
----\n{content}\n---"}]
-        pageMessage = "Target Informtion:\n" + content_prompt
-        pageSummary = await singleGPT(api_key, messages, pageMessage)
+    if num_tokens_from_string(content) <= 1500: #if the content is less than 3500 tokens, pass the whole content to GPT
+        prompt = f"From the text below, delimted by three dashes(-), in as much detail as possible, summarize the information that are relevant to the target information . \
+Answer 'None' if the text does not contain any of the target information and refrain from answer anything else. \n\
+Target Information: {query} \n\
+---\n{content}\n--- \n\
+Answer:"
+        pageSummary = await GPT3(api_key, prompt)
     else: #split the webpage content into multiple section to avoid the token limit
-        pageSummary = await pageBreakUp(api_key, content_prompt, content) #split the webpage content into multiple section and return the summary of the whole webpage
-        #print("pageSummary: ",pageSummary)
-        messages = [
-        {"role": "system", 
-         "content": f"From the text below, delimted by three dashes(-), extract the information that are relevant to the target information I provide. \
-You will start looking for the first target information from the text, and then look for the next target information until you finish looking for all the target information from the text.\n\
-If the text does not contain any of the target information, refrain from summarizing the text. Instead of summarizing the task, only reply '4b76bd04151ea7384625746cecdb8ab293f261d4' \
-Otherwise, for each target information, provide a summarization from the relevant text with as much detail as possible. Use the target information as the title of the summarization. \n\n\
----\n{pageSummary}\n---"}]
-        pageSummary = "Target Informtion:\n" + content_prompt
-        pageSummary = await singleGPT(api_key, messages, pageSummary)
-
+        pageSummary = await pageBreakUp(api_key, query, content) #split the webpage content into multiple section and return the summary of the whole webpage
     return pageSummary
 
 def getWebpageData(soup):
@@ -234,8 +263,12 @@ def getWebpageData(soup):
     clean_text = ' '.join(text_content.split()) # Clean up the extracted text by removing extra whitespace, line breaks, and other unnecessary characters
     # find all the links in the page
     title_tag = soup.find('title')
-    page_Title = title_tag.text if title_tag else None
-    return clean_text, page_Title
+    if title_tag:  # Ensure title_tag is not None before trying to access its text
+        page_Title = title_tag.text
+        clean_title = ' '.join(page_Title.split())
+    else:  # In case there's no title tag, set clean_title to None or any default value
+        clean_title = None
+    return clean_text, clean_title
 
 def getWebpageLinks(soup, searchDomain, url):
     links = []
@@ -315,10 +348,41 @@ class Url(object):
     def is_from_domain(self, domain):
         return self.parts.netloc == domain
 
-def getContentPrompt(query_list):
-    content_prompt = "\n".join(f"{i+1}. {obj}" for i, obj in enumerate(query_list))
-    return content_prompt
+async def query_summary(api_key, query, content):
+    pageSummary = ''
+    if num_tokens_from_string(content) <= 2000: #if the content is less than 3500 tokens, pass the whole content to GPT
+        messages = [
+            {"role":"system",
+             "content":f"summarize the information below in as much detail as possible to answer the question. Reply 'No Information Found' if the information below does not answer the question and refain from summarizing unrelated information. \n\
+---\n{content}\n---"}]
+        query_message = "question: " + query
+        pageSummary = await singleGPT(api_key, messages, query_message)
+    else: #split the webpage content into multiple section to avoid the token limit
+        pageSummary = await querysummaryBreakUp(api_key, query, content) #split the webpage content into multiple section and return the summary of the whole webpage
+    return pageSummary
 
-def getURLPrompt(query_list):
-    url_prompt = ", ".join([f"{obj}" for obj in query_list])
-    return url_prompt
+async def querysummaryBreakUp(api_key, query, content): 
+    pageSummary = ''
+    sectionNum = math.ceil(num_tokens_from_string(content) // 2000) + 1 
+    cutoffIndex = math.ceil(len(content) // sectionNum)
+    for i in range(sectionNum): #split the content into multiple section and use a new GPT3.5 for each section to avoid the token limit
+        start_index = i * cutoffIndex
+        end_index = (i + 1) * cutoffIndex
+        section = content[start_index:end_index]
+        messages = [
+            {"role":"system",
+             "content":f"summarize the information below in as much detail as possible to answer the question. Reply 'No Information Found' if the information below does not answer the question and refain from summarizing unrelated information. \n\
+---\n{section}\n---"}]
+        query_message = "question: " + query
+        pageSummary += await singleGPT(api_key, messages, query_message)
+     
+    if num_tokens_from_string(pageSummary) > 3000: #if the summary is still too long, truncate it to 3500 tokens
+        pageSummary = truncate_text_tokens(pageSummary)
+    messages = [
+            {"role":"system",
+             "content":f"summarize the information below in as much detail as possible to answer the question. Reply 'No Information Found' if the information below does not answer the question and refain from summarizing unrelated information. \n\
+---\n{pageSummary}\n---"}]
+    query_message = "question: " + query
+    pageSummary = await singleGPT(api_key, messages, query_message)
+
+    return pageSummary
