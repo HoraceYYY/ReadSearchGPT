@@ -116,16 +116,15 @@ async def first_search(db, searchqueries, userDomain, api_key):
     for query in searchqueries:
         if userDomain is not None:  # If the user wants to search within a domain
             searchDomain = async_utils.get_domain(userDomain)
-            query = query + " site:" + searchDomain
-
-        # Save the search results associated with each query
-        search_results[query] = google_official_search(query) ## this need to finish runing before doing consumer task in parallel 
+            querywithsites = query + " site:" + searchDomain
+            search_results[query] = google_official_search(querywithsites) ##  Save the search results associated with each query
+        else:
+            search_results[query] = google_official_search(query)
 
     research = crud.create_research(db) 
     
     all_tasks = []
     queryids = []
-    results = {}  # List to store results from url_consumer
     for query in searchqueries:
         #create task database entry and query db entry
         query_row = models.Query(task_id = research.id, query = query)
@@ -142,21 +141,20 @@ async def first_search(db, searchqueries, userDomain, api_key):
             all_tasks.append(task)
     await asyncio.gather(*all_tasks) ## make sure all searches are done
     
+    pageResults = {}  # List to store results from url_consumer
     for index, queryid in enumerate(queryids):
         url_data_objects = db.query(models.URLData.url, models.URLData.title, models.URLData.content).filter(models.URLData.query_id == queryid).all()
-        results[queryid] = [{"url": obj[0], "title": obj[1], "content": obj[2]} for obj in url_data_objects]
+        pageResults[queryid] = [{"url": obj[0], "title": obj[1], "content": obj[2]} for obj in url_data_objects]
         contents = [obj[2] for obj in url_data_objects if obj[2] is not None]  # Extract non-null contents
         concatenated_content = " ".join(contents)  # Concatenate all contents with a space in between
-        concatenated_content = ' '.join(concatenated_content.split())  # Remove all extra spaces
-        print(concatenated_content)
-        query = searchqueries[index]
-        querysummary = await async_utils.query_summary(api_key,query,concatenated_content)
+        clean_content = ' '.join(concatenated_content.split())  # Remove all extra spaces
+        # print(concatenated_content)
+        querysummary = await async_utils.query_summary(api_key,searchqueries[index],clean_content)
         queru_summary_db = models.URLSummary(query_id = queryid, summarytype = "first_search", summary = querysummary)
         db.add(queru_summary_db)
         db.commit() 
-        results[queryid].append({"Summary": querysummary})
-    queryresults = dict(zip(queryids, zip(searchqueries,results.values())))
-    
+        pageResults[queryid].append({"Summary": querysummary})
+    queryresults = dict(zip(queryids, zip(searchqueries,pageResults.values())))
     return research.id, queryresults
 
 async def second_search(db, queryid, api_key):
