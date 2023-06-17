@@ -74,6 +74,7 @@ async def url_consumer(db, url, query, queryid, api_key):
             if content_type.lower() == 'application/pdf': # check if the content is pdf and download it
                 await async_utils.add_to_URLData_db(db, queryid, category="PDFs", url=url) # add pdf link to database
                 print("\u2714\uFE0F", colored(' Consumer: Done! PDF link has been saved!','green',attrs=['bold']))
+                return
             print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
             content, page_Title = async_utils.getWebpageData(soup) # get the page title,content, and links
             pageSummary = await async_utils.PageResult(api_key, query, content) # get the page summary based on the search query

@@ -14,7 +14,7 @@
     </nav>
 
     <main class="my-auto d-flex flex-column align-items-center justify-content-center text-center">
-      <h1 class="display-4 mb-3 fw-bold">ReadSearch GPT</h1>
+      <h1 class="display-4 mb-1 fw-bold">ReadSearch GPT</h1>
       <h2 class="h3 mb-5 fw-bold">Use AI for online research</h2>
       <router-view  />
     </main>

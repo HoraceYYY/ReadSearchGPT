@@ -6,8 +6,8 @@
       </div>
       <div class="card-body">
         <h5 class="fw-bold mb-3 text-start ">Enter Research Topics:</h5>
-        <div class="input-group mb-3" v-for="(item, index) in searchqueries" :key="index">
-          <input type="text" class="form-control" v-model="searchqueries[index]" @input="addItemAuto" placeholder="Up to 3 research topics..." aria-label="Research Topic">
+        <div class="input-group mb-3" v-for="(item, index) in searchQueries" :key="index">
+          <input type="text" class="form-control" v-model="searchQueries[index]" @input="addItemAuto" placeholder="Up to 3 research topics..." aria-label="Research Topic">
         </div>
         <h5 class="fw-bold mb-3 text-start ">Enter A Website to Limit the Search Domain:</h5>
         <div class="input-group mb-3">
@@ -37,17 +37,17 @@ export default {
       };
     },
     created() {
-  this.searchqueries = [""],//clear the input from previous input of the same session
+  this.searchQueries = [""],//clear the input from previous input of the same session
   this.apiKey = "", //clear the input from previous input of the same session
   this.domain = "" 
 },
 computed: {
-  searchqueries: {
+  searchQueries: {
     get() {
-      return this.$store.getters.searchQueries;
+      return this.$store.state.searchQueries;
     },
     set(value) {
-      this.$store.dispatch('SearchQueries', value);
+      this.$store.dispatch('setSearchQueries', value);
     }
   },
   apiKey: {
@@ -80,9 +80,9 @@ methods: {
      this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
    },
     addItemAuto() {
-      if (this.searchqueries.length < 3 && this.searchqueries[this.searchqueries.length - 1] !== "") {
-          this.searchqueries.push("");
-          this.searchqueries = [...this.searchqueries];
+      if (this.searchQueries.length < 3 && this.searchQueries[this.searchQueries.length - 1] !== "") {
+          this.searchQueries.push("");
+          this.searchQueries = [...this.searchQueries];
       }
     },
     validateInput() {
@@ -106,7 +106,7 @@ methods: {
     },
 async search() {
   try {
-    const filteredQueries = this.searchqueries.filter(query => query.trim() !== "");
+    const filteredQueries = this.searchQueries.filter(query => query.trim() !== "");
     // Check if any of the search queries are empty
     if (filteredQueries.length === 0) { 
       alert("Please enter at least one research topic before submitting.");
@@ -125,12 +125,12 @@ async search() {
     }
     this.isLoading = true;
     // If all fields are filled in, start calling api
-    this.searchqueries = [...filteredQueries];
+    this.searchQueries = [...filteredQueries];
     this.buttonText = "Checking Key...";
 
     const response = await this.testApi();
     if (response['Key'] === 'Valid') {
-      console.log(this.searchqueries)
+      console.log(this.searchQueries)
       console.log(this.domain)
       await this.firstSearch()
       this.isLoading = false;
@@ -145,7 +145,7 @@ async search() {
   }
 },
 async testApi() {
-    // console.log(this.searchqueries)
+    // console.log(this.searchQueries)
     const trimmedApiKey = this.apiKey.trim();
     const url = "http://localhost:8000/testapi";  // replace with your API endpoint
     const payload = {
@@ -176,7 +176,7 @@ async testApi() {
 async firstSearch(){
   const url = "http://localhost:8000/firstsearch";  // replace with your API endpoint
   const data = {
-      searchqueries: this.searchqueries,
+      searchqueries: this.searchQueries,
       searchDomain: this.domain.trim().toLowerCase(),  
       apiKey: this.apiKey,
     };

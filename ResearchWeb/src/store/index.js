@@ -2,15 +2,19 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    searchQueries: [""],
+    queryIDs: [],
+    searchQueries: [""], 
     apiKey: "",
     domain: "",
     jsonData: {},
-    taskId: ""
+    researchId: "",
+    queries: {}, //a dictionary of queryID:query
+    urlResults: {}, //a dict of queryID: [url, title, content]
+    urlSummaries: {}, // a dict of queryID: summary
   },
   mutations: {
-    setSearchQueries(state, searchQueries) {
-      state.searchQueries = searchQueries;
+    setQueryID(state, queryIDs) {
+      state.queryIDs = queryIDs;
     },
     setApiKey(state, apiKey) {
       state.apiKey = apiKey;
@@ -22,13 +26,25 @@ export default createStore({
       //state.jsonData = { ...jsonData };
       state.jsonData = jsonData;
     },
-    setTaskId(state, taskId) {
-      state.taskId = taskId;
+    setResearchId(state, researchId) {
+      state.researchId = researchId;
+    },
+    setQueries(state, queries) {
+      state.queries = queries;
+    },
+    setUrlResults(state, urlResults) {
+      state.urlResults = urlResults;
+    },
+    setUrlSummaries(state, urlSummaries) {
+      state.urlSummaries = urlSummaries;
+    },
+    setSearchQueries(state, searchQueries) {
+      state.searchQueries = searchQueries;
     },
   },
   actions: {
-    SearchQueries({ commit }, searchQueries) {
-      commit('setSearchQueries', searchQueries);
+    setQueryID({ commit }, queryIDs) {
+      commit('setQueryID', queryIDs);
     },
     ApiKey({ commit }, apiKey) {
       commit('setApiKey', apiKey);
@@ -39,15 +55,31 @@ export default createStore({
     setJsonData({ commit }, jsonData) {
       commit('setJsonData', jsonData);
     },
-    setTaskId({ commit }, taskId) {
-      commit('setTaskId', taskId);
-    }
+    setResearchId({ commit }, researchId) {
+      commit('setResearchId', researchId);
+    },
+    setQueries({ commit }, queries) {
+      commit('setQueries', queries);
+    },
+    setUrlResults({ commit }, urlResults) {
+      commit('setUrlResults', urlResults);
+    },
+    setUrlSummaries({ commit }, urlSummaries) {
+      commit('setUrlSummaries', urlSummaries);
+    },
+    setSearchQueries({ commit }, searchQueries) {
+      commit('setSearchQueries', searchQueries);
+    },
   },
   getters: {
-    searchQueries: state => state.searchQueries,
+    searchQueries: state => state.queryIDs,
     apiKey: state => state.apiKey,
     domain: state => state.domain,
     jsonData: state => state.jsonData,
-    taskId: state => state.taskId
+    researchId: state => state.researchId,
+    queries: state => state.queries,
+    urlResults: state => state.urlResults,
+    urlSummaries: state => state.urlSummaries,
+    searchQueries: state => state.searchQueries,
   }
 })
