@@ -13,9 +13,6 @@ export default createStore({
     urlSummaries: {}, // a dict of queryID: summary
   },
   mutations: {
-    setQueryID(state, queryIDs) {
-      state.queryIDs = queryIDs;
-    },
     setApiKey(state, apiKey) {
       state.apiKey = apiKey;
     },
@@ -29,23 +26,11 @@ export default createStore({
     setResearchId(state, researchId) {
       state.researchId = researchId;
     },
-    setQueries(state, queries) {
-      state.queries = queries;
-    },
-    setUrlResults(state, urlResults) {
-      state.urlResults = urlResults;
-    },
-    setUrlSummaries(state, urlSummaries) {
-      state.urlSummaries = urlSummaries;
-    },
     setSearchQueries(state, searchQueries) {
       state.searchQueries = searchQueries;
     },
   },
   actions: {
-    setQueryID({ commit }, queryIDs) {
-      commit('setQueryID', queryIDs);
-    },
     ApiKey({ commit }, apiKey) {
       commit('setApiKey', apiKey);
     },
@@ -58,28 +43,15 @@ export default createStore({
     setResearchId({ commit }, researchId) {
       commit('setResearchId', researchId);
     },
-    setQueries({ commit }, queries) {
-      commit('setQueries', queries);
-    },
-    setUrlResults({ commit }, urlResults) {
-      commit('setUrlResults', urlResults);
-    },
-    setUrlSummaries({ commit }, urlSummaries) {
-      commit('setUrlSummaries', urlSummaries);
-    },
     setSearchQueries({ commit }, searchQueries) {
       commit('setSearchQueries', searchQueries);
     },
   },
   getters: {
-    searchQueries: state => state.queryIDs,
     apiKey: state => state.apiKey,
     domain: state => state.domain,
     jsonData: state => state.jsonData,
     researchId: state => state.researchId,
-    queries: state => state.queries,
-    urlResults: state => state.urlResults,
-    urlSummaries: state => state.urlSummaries,
     searchQueries: state => state.searchQueries,
   }
 })
