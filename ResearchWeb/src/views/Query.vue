@@ -2,7 +2,7 @@
   <div class="container pt-0 d-flex justify-content-center align-items-center" style="min-height: 1vh;">
     <div class="card p-4 mb-4 rounded shadow" style="position: relative; max-width: 1000px; width: 100%;">
       <div v-if="isLoading" class="overlay">
-        <p class="loading-text">Research should be done in a few seconds...</p>
+        <p class="loading-text">Your research will take about 1-2 minutes.</p>
       </div>
       <div class="card-body">
         <h5 class="fw-bold mb-3 text-start ">Enter Research Topics:</h5>
@@ -130,8 +130,8 @@ async search() {
 
     const response = await this.testApi();
     if (response['Key'] === 'Valid') {
-      console.log(this.searchQueries)
-      console.log(this.domain)
+      // console.log(this.searchQueries)
+      // console.log(this.domain)
       await this.firstSearch()
       this.isLoading = false;
     } else {
@@ -180,7 +180,7 @@ async firstSearch(){
       searchDomain: this.domain.trim().toLowerCase(),  
       apiKey: this.apiKey,
     };
-    console.log(data)
+    // console.log(data)
     try {
       this.buttonText = "Searching...";
       const response = await fetch(url, {

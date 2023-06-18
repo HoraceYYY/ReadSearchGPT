@@ -6,8 +6,8 @@
                 <div class="card">
                     <div class="card-content">
                         <div class="mb-4 text-start text-black">
-                            <h3 class="font-weight-bold query-title">{{ queries[queryIDs[currentQueryId]] }}</h3>
-                            <p>{{ urlSummaries[queryIDs[currentQueryId]] }}</p>
+                            <h3 class="font-weight-bold query-title fst-italic">{{ queries[queryIDs[currentQueryId]] }}</h3>
+                            <p v-html="urlSummaries[queryIDs[currentQueryId]]"></p>
                         </div>
                     </div>
                     <div class="card-footer">
@@ -17,13 +17,13 @@
                 </div>
             </div>
             <div class="col-12 col-md-5 pl-md-2">
-                <h2 class="card-header">Relevant Websites and Information</h2>
+                <h2 class="card-header">Individual Web Results</h2>
                 <div class="card">
                     <div class="card-content">
                         <div>
-                            <div v-for="result in urlResults[queryIDs[currentQueryId]]" :key="result.url" class="mb-4 text-start">
-                                <a :href="result.url" target="_blank" style="font-weight: bold;">{{ result.title }}</a>
-                                <p class="text-black">{{ result.content }}</p>
+                            <div v-for="result in urlResults[queryIDs[currentQueryId]]" :key="result.url" class="mb-0 text-start">
+                                <a :href="result.url" target="_blank" class="fs-5 font-weight-bold fst-italic">{{ result.title }}</a>
+                                <p class="text-black" v-html="result.content"></p>
                             </div>
                         </div>
                     </div>
@@ -55,6 +55,7 @@ export default {
     },
     jsonData: {
         get() {
+            console.log(this.$store.state.jsonData)
             return this.$store.state.jsonData;
         },
         set(value) {

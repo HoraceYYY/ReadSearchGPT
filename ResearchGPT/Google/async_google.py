@@ -1,10 +1,9 @@
-import os, json, sys, asyncio
+import os, json, sys, asyncio, time
+from duckduckgo_search import DDGS
 from dotenv import load_dotenv
-import pandas as pd
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from termcolor import colored
-from database import SessionLocal
 import crud, models
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import async_utils
@@ -12,10 +11,8 @@ import async_utils
 ## take the google search query and return the top 8 results URL
 def google_official_search(query: str) -> str | list[str]:
     """Return the results of a Google search using the official Google API
-
     Args:
         query (str): The search query.
-        num_results (int): The number of results to return.
 
     Returns:
         str: The results of the search.
@@ -67,6 +64,26 @@ def google_official_search(query: str) -> str | list[str]:
     return search_results_links
     #return safe_google_results(search_results_links)
 
+def duckduckgo_search(query: str) -> str | list[str]:
+    try:
+        print(colored("\nSearch Query Created:", 'blue',attrs=["bold", "underline"]), f" {query}")
+        print(colored("\n\U0001F9D0 Searching...", 'yellow',attrs=["bold"]))
+        with DDGS() as ddgs:
+            results = ddgs.text(query, region='wt-wt', safesearch='Off', timelimit='y')
+            urls = []
+            for i, r in enumerate(results):
+                if i >= 10: 
+                    break
+                urls.append(r['href'])
+        print("\n \u2714\uFE0F ", colored('Found following websites to search:', 'green',attrs=["bold", "underline"]))
+        for url in urls:
+            print(url)
+        return urls
+
+    except Exception as e:
+    # Handle the exception here
+        print(f"An error occurred: {e}")
+    
 async def url_consumer(db, url, query, queryid, api_key):
     try:
         soup, content_type, status_code = await async_utils.fetch_url(url) # fetch the url
@@ -77,6 +94,8 @@ async def url_consumer(db, url, query, queryid, api_key):
                 return
             print(colored('\n\U0001F9D0 Consumer: Reading the website for queried information: ', 'yellow', attrs=['bold']), url)
             content, page_Title = async_utils.getWebpageData(soup) # get the page title,content, and links
+            # print(page_Title, "   ",query)
+            # print(content)
             pageSummary = await async_utils.PageResult(api_key, query, content) # get the page summary based on the search query
             await async_utils.add_to_URLData_db(db, queryid, category='Website_Content', url = url, title=page_Title, content=pageSummary)                      
             print("\u2714\uFE0F", colored(' Consumer: Done! Results has been saved!','green',attrs=['bold']))
@@ -110,6 +129,8 @@ async def url_producer(db, searchDomain, url, query, queryid, api_key):
         raise
 
 async def first_search(db, searchqueries, userDomain, api_key):
+    start_time = time.time()
+    print("Timer Starts: ", start_time)
     if userDomain is not None and userDomain.strip() == "":
         userDomain = None
     searchDomain = None    
@@ -118,10 +139,11 @@ async def first_search(db, searchqueries, userDomain, api_key):
         if userDomain is not None:  # If the user wants to search within a domain
             searchDomain = async_utils.get_domain(userDomain)
             querywithsites = query + " site:" + searchDomain
-            search_results[query] = google_official_search(querywithsites) ##  Save the search results associated with each query
+            search_results[query] = duckduckgo_search(querywithsites) ##  Save the search results associated with each query
         else:
-            search_results[query] = google_official_search(query)
-
+            search_results[query] = duckduckgo_search(query)
+    timer1 = time.time()
+    print("Web search is done. Time Used: ",timer1-start_time)
     research = crud.create_research(db) 
     
     all_tasks = []
@@ -142,20 +164,27 @@ async def first_search(db, searchqueries, userDomain, api_key):
             all_tasks.append(task)
     await asyncio.gather(*all_tasks) ## make sure all searches are done
     
+    timer2 = time.time()
+    print("Individual web summary done. Time Used: ",timer2-timer1, "starting summary")
+    
     pageResults = {}  # List to store results from url_consumer
     for index, queryid in enumerate(queryids):
+        starttime = time.time()
         url_data_objects = db.query(models.URLData.url, models.URLData.title, models.URLData.content).filter(models.URLData.query_id == queryid).all()
         pageResults[queryid] = [{"url": obj[0], "title": obj[1], "content": obj[2]} for obj in url_data_objects]
         contents = [obj[2] for obj in url_data_objects if obj[2] is not None]  # Extract non-null contents
         concatenated_content = " ".join(contents)  # Concatenate all contents with a space in between
         clean_content = ' '.join(concatenated_content.split())  # Remove all extra spaces
-        # print(concatenated_content)
         querysummary = await async_utils.query_summary(api_key,searchqueries[index],clean_content)
         queru_summary_db = models.URLSummary(query_id = queryid, summarytype = "first_search", summary = querysummary)
         db.add(queru_summary_db)
         db.commit() 
         pageResults[queryid].append({"Summary": querysummary})
+        print(f"summary loop {index} done, time {time.time()-starttime}")
     queryresults = dict(zip(queryids, zip(searchqueries,pageResults.values())))
+    
+    timer3 = time.time()
+    print("web summary done. Time Used: ",timer3-timer2)
     return research.id, queryresults
 
 async def second_search(db, queryid, api_key):

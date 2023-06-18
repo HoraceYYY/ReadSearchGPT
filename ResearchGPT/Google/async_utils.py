@@ -1,4 +1,4 @@
-import os,  openai, tiktoken, math, asyncio, aiofiles, aiohttp
+import os,  openai, tiktoken, math, asyncio, aiofiles, aiohttp, markdown
 from termcolor import colored
 ##from dotenv import load_dotenv 
 from bs4 import BeautifulSoup
@@ -219,7 +219,7 @@ def num_tokens_from_string(string: str, encoding_name = 'cl100k_base' ) -> int:
     num_tokens = len(encoding.encode(string))
     return num_tokens
 
-def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=3000):
+def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=2000):
     """Truncate a string to have `max_tokens` according to the given encoding."""
     encoding = tiktoken.get_encoding(encoding_name)
     return encoding.encode(text)[:max_tokens]
@@ -227,34 +227,45 @@ def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=3000):
 #break up the content of long webpages into smaller chunks and pass each into GPT3.5 to avoid the token limit and return the summary of the whole webpage
 async def pageBreakUp(api_key, query, content): 
     pageSummary = ''
-    sectionNum = math.ceil(num_tokens_from_string(content) // 1500) + 1 
+    sectionNum = math.ceil(num_tokens_from_string(content) // 2000)+1
     cutoffIndex = math.ceil(len(content) // sectionNum)
     for i in range(sectionNum): #split the content into multiple section and use a new GPT3.5 for each section to avoid the token limit
         start_index = i * cutoffIndex
         end_index = (i + 1) * cutoffIndex
         section = content[start_index:end_index]
-        prompt = f"From the text below, delimted by three dashes(-), in as much detail as possible, summarize the information that are relevant to the target information . \
-Answer 'None' if the text does not contain any of the target information and refrain from answer anything else. \n\
-Target Information: {query} \n\
----\n{section}\n--- \n\
-Answer:"
-        pageSummary += await GPT3(api_key, prompt)      
-    # if num_tokens_from_string(pageSummary) > 3000: #if the summary is still too long, truncate it to 3500 tokens
-    #     pageSummary = truncate_text_tokens(pageSummary)
+        messages = [
+            {"role":"system",
+             "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
+Please structure the answer into a mix of paragraphs and bullet points as appropriate, for readability and comprehension. Maintain logical flow and coherence in the narrative. \n\
+Text: {section}"}]
+        query_message = "Question: " + query
+        pageSummary += await singleGPT(api_key, messages, query_message)
+    if num_tokens_from_string(pageSummary) > 2000: #if the summary is still too long, truncate it to 1300 tokens
+        pageSummary = truncate_text_tokens(pageSummary)
+    messages = [
+        {"role":"system",
+             "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
+Please structure the response using Markdown formatting to include paragraphs, bullet points, nested bullet points, numbered lists, nested numbered lists, headings and subheadings. Use bold (**text**) and italic (_text_) for emphasis where appropriate. Include line breaks for readability. Maintain logical flow and coherence in the narrative. The output should be suitable for conversion to HTML from Markdown. \
+Maintain logical flow and coherence in the narrative. \n\
+Text: {pageSummary} "}]
+    query_message = "Question: " + query
+    pageSummary = await singleGPT(api_key, messages, query_message)
     return pageSummary
 
 async def PageResult(api_key, query, content):
     pageSummary = ''
-    if num_tokens_from_string(content) <= 1500: #if the content is less than 3500 tokens, pass the whole content to GPT
-        prompt = f"From the text below, delimted by three dashes(-), in as much detail as possible, summarize the information that are relevant to the target information . \
-Answer 'None' if the text does not contain any of the target information and refrain from answer anything else. \n\
-Target Information: {query} \n\
----\n{content}\n--- \n\
-Answer:"
-        pageSummary = await GPT3(api_key, prompt)
+    if num_tokens_from_string(content) <= 2000: #if the content is less than 3500 tokens, pass the whole content to GPT
+        messages = [
+            {"role":"system",
+             "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
+Please structure the response using Markdown formatting to include paragraphs, bullet points, nested bullet points, numbered lists, nested numbered lists, headings and subheadings. Use bold (**text**) and italic (_text_) for emphasis where appropriate. Include line breaks for readability. Maintain logical flow and coherence in the narrative. The output should be suitable for conversion to HTML from Markdown. \
+Maintain logical flow and coherence in the narrative. \n\
+Text: {content} "}]
+        query_message = "Question: " + query
+        pageSummary = await singleGPT(api_key, messages, query_message)
     else: #split the webpage content into multiple section to avoid the token limit
         pageSummary = await pageBreakUp(api_key, query, content) #split the webpage content into multiple section and return the summary of the whole webpage
-    return pageSummary
+    return markdown.markdown(pageSummary)
 
 def getWebpageData(soup):
     for script in soup(['script', 'style']):# Remove any unwanted elements, such as scripts and styles, which may contain text that you don't want to extract
@@ -350,20 +361,22 @@ class Url(object):
 
 async def query_summary(api_key, query, content):
     pageSummary = ''
-    if num_tokens_from_string(content) <= 2000: #if the content is less than 3500 tokens, pass the whole content to GPT
+    if num_tokens_from_string(content) <= 2000: #if the content is less than 2500 tokens, pass the whole content to GPT
         messages = [
             {"role":"system",
-             "content":f"summarize the information below in as much detail as possible to answer the question. Reply 'No Information Found' if the information below does not answer the question and refain from summarizing unrelated information. \n\
----\n{content}\n---"}]
-        query_message = "question: " + query
+             "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
+Please structure the response using Markdown formatting to include paragraphs, bullet points, nested bullet points, numbered lists, nested numbered lists, headings and subheadings. Use bold (**text**) and italic (_text_) for emphasis where appropriate. Include line breaks for readability. Maintain logical flow and coherence in the narrative. The output should be suitable for conversion to HTML from Markdown. \
+Maintain logical flow and coherence in the narrative. \n\
+Text: {content} "}]
+        query_message = "Question: " + query
         pageSummary = await singleGPT(api_key, messages, query_message)
     else: #split the webpage content into multiple section to avoid the token limit
         pageSummary = await querysummaryBreakUp(api_key, query, content) #split the webpage content into multiple section and return the summary of the whole webpage
-    return pageSummary
+    return markdown.markdown(pageSummary)
 
 async def querysummaryBreakUp(api_key, query, content): 
     pageSummary = ''
-    sectionNum = math.ceil(num_tokens_from_string(content) // 2000) + 1 
+    sectionNum = math.ceil(num_tokens_from_string(content) // 2000) + 1
     cutoffIndex = math.ceil(len(content) // sectionNum)
     for i in range(sectionNum): #split the content into multiple section and use a new GPT3.5 for each section to avoid the token limit
         start_index = i * cutoffIndex
@@ -371,18 +384,21 @@ async def querysummaryBreakUp(api_key, query, content):
         section = content[start_index:end_index]
         messages = [
             {"role":"system",
-             "content":f"summarize the information below in as much detail as possible to answer the question. Reply 'No Information Found' if the information below does not answer the question and refain from summarizing unrelated information. \n\
----\n{section}\n---"}]
-        query_message = "question: " + query
+             "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
+Please structure the answer into a mix of paragraphs and bullet points as appropriate, for readability and comprehension. Maintain logical flow and coherence in the narrative. \n\
+Text: {section}"}]
+        query_message = "Question: " + query
         pageSummary += await singleGPT(api_key, messages, query_message)
      
-    if num_tokens_from_string(pageSummary) > 3000: #if the summary is still too long, truncate it to 3500 tokens
+    if num_tokens_from_string(pageSummary) > 2000: #if the summary is still too long, truncate it to 3500 tokens
         pageSummary = truncate_text_tokens(pageSummary)
     messages = [
             {"role":"system",
-             "content":f"summarize the information below in as much detail as possible to answer the question. Reply 'No Information Found' if the information below does not answer the question and refain from summarizing unrelated information. \n\
----\n{pageSummary}\n---"}]
-    query_message = "question: " + query
+             "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
+Please structure the response using Markdown formatting to include paragraphs, bullet points, nested bullet points, numbered lists, nested numbered lists, headings and subheadings. Use bold (**text**) and italic (_text_) for emphasis where appropriate. Include line breaks for readability. Maintain logical flow and coherence in the narrative. The output should be suitable for conversion to HTML from Markdown. \
+Maintain logical flow and coherence in the narrative. \n\
+Text: {pageSummary}"}]
+    query_message = "Question: " + query
     pageSummary = await singleGPT(api_key, messages, query_message)
 
     return pageSummary
