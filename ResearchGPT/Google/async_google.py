@@ -205,7 +205,7 @@ async def second_search(db, queryid, api_key):
     contents = [obj[2] for obj in url_data_objects if obj[2] is not None]  # Extract non-null contents
     concatenated_content = " ".join(contents)  # Concatenate all contents with a space in between
     concatenated_content = ' '.join(concatenated_content.split())  # Remove all extra spaces
-    print(concatenated_content)
+    # print(concatenated_content)
     querysummary = await async_utils.query_summary(api_key,query,concatenated_content)
     queru_summary_db = models.URLSummary(query_id = queryid, summarytype = "second_search", summary = querysummary)
     db.add(queru_summary_db)

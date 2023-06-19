@@ -28,8 +28,8 @@ async def singleGPT(api_key, systemMessages, userMessage, temperature=1, top_p=1
         except Exception as e:
             if attempt < max_retries:
                 print(f"An error occurred: {str(e)}")
-                print(f"Retrying in 5 seconds... (attempt {attempt} of {max_retries})")
-                await asyncio.sleep(5)
+                print(f"Retrying in 2 seconds... (attempt {attempt} of {max_retries})")
+                await asyncio.sleep(2)
             else:
                 print(f"An error occurred: {str(e)}")
                 print(f"Reached the maximum number of retries ({max_retries}). Aborting.")

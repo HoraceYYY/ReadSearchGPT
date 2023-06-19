@@ -214,9 +214,9 @@ async firstSearch(){
 
 .loading-text {
   margin-bottom: 40px;
-  color: #315388;
+  color: #032152;
   font-size: 2em;
-  animation: fade 2s linear infinite; 
+  animation: fade 3s linear infinite; 
 }
 .overlay {
   position: absolute;

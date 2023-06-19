@@ -5,13 +5,19 @@
                 <h2 class="card-header text-start">Research Summary</h2>
                 <div class="card">
                     <div class="card-content">
-                        <div class="mb-4 text-start text-black">
-                            <h3 class="font-weight-bold query-title fst-italic">{{ queries[queryIDs[currentQueryId]] }}</h3>
-                            <p v-html="urlSummaries[queryIDs[currentQueryId]]"></p>
+                        <div class="overlay-wrapper">
+                            <div class="mb-4 text-start text-black">
+                                <h3 class="font-weight-bold query-title fst-italic">{{ queries[queryIDs[currentQueryId]] }}</h3>
+                                <p v-html="urlSummaries[queryIDs[currentQueryId]]"></p>
+                            </div>
+                            <div class="overlay" v-show="searchState[queryIDs[currentQueryId]] === 'searching'">
+                                <p class="loading-text">The additional search will take about 1-2 minutes.</p>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer">
                         <button @click="previousQuery" :class="{'invisible-button': currentQueryId === 0, 'btn-success': true}" >Previous</button>
+                        <button @click="handleSearchClick" :class="{'btn-success': true}" :disabled="isButtonDisabled">{{ buttonText }}</button>
                         <button @click="nextQuery" :class="{'invisible-button': currentQueryId === maxQueryId - 1, 'btn-success': true}" >Next</button>
                     </div>
                 </div>
@@ -43,10 +49,13 @@ export default {
       return {
         currentQueryId: 0,
         researchId: "",
+        apiKey: "",
         queryIDs: [],
         queries: {},
         urlResults: {},
         urlSummaries: {},
+        searchState: {},
+
         };
     },
     computed: {
@@ -61,36 +70,131 @@ export default {
         set(value) {
             this.$store.dispatch('setJsonData', value);
         }
+    },
+    buttonText() {
+        // Check the searchState for the current queryId
+        switch (this.searchState[this.queryIDs[this.currentQueryId]]) {
+            case "initial":
+                return "Broader Search";
+            case "broad":
+                return "Deeper Search";
+            case "searching":
+                return "Searching...";
+            default:
+                return "Search is Done";
+        }
+    },
+    isButtonDisabled() {
+        const currentSearchState = this.searchState[this.queryIDs[this.currentQueryId]];
+        return currentSearchState === "done" || currentSearchState === "searching";
     }
     },
     created() {
     this.parsedata();
+    for (const queryId of this.queryIDs) {
+        this.searchState[queryId] = "initial";
+    }
 },
+
 methods: {
     parsedata(){
-        const data = this.jsonData;
-        this.researchId = data[0];
-        const queryData = data[1];
-        for (const [queryId, value] of Object.entries(queryData)) {
-            const query = value[0];
-            const results = value[1];
-    
-            // Add the queryId to the list of queryIds
-            this.queryIDs.push(queryId);
-            // Add the query to the queries dictionary
-            this.queries[queryId] = query;
-            this.urlResults[queryId] = []; // Initialize an empty list for the results of this queryId
+        if (this.jsonData){
+            const data = this.jsonData;
+            this.researchId = data[0];
+            const queryData = data[1];
+            this.apiKey = data[2]
+            if (queryData) {
+                for (const [queryId, value] of Object.entries(queryData)) {
+                    const query = value[0];
+                    const results = value[1];
             
-            for (const result of results) { // Go through the results
-                if ('Summary' in result) {
-                    // If the result is a summary, add it to the summaries dictionary
-                    this.urlSummaries[queryId] = result.Summary;
-                } else {
-                    // Otherwise, add it to the list of results for this queryId
-                    this.urlResults[queryId].push(result);
+                        // Check if the queryId already exists in the list of queryIds
+                    if (!this.queryIDs.includes(queryId)) {
+                        // Add the queryId to the list of queryIds
+                        this.queryIDs.push(queryId);
+                    }
+                    // Add the query to the queries dictionary
+                    this.queries[queryId] = query;
+                    this.urlResults[queryId] = []; // Initialize an empty list for the results of this queryId
+                    
+                    for (const result of results) { // Go through the results
+                        if ('Summary' in result) {
+                            // If the result is a summary, add it to the summaries dictionary
+                            this.urlSummaries[queryId] = result.Summary;
+                        } else {
+                            // Otherwise, add it to the list of results for this queryId
+                            this.urlResults[queryId].push(result);
+                        }
+                    }
                 }
+            }else{
+                this.$router.push({ path: '/newsearch' });
+            }
+        }else{
+        this.$router.push({ path: '/newsearch' });
+    }   
+    },
+    async handleSearchClick() {
+        const queryId = this.queryIDs[this.currentQueryId];
+        switch (this.searchState[queryId]) {
+            case "initial":
+                const url = "http://localhost:8000/secondsearch";  // replace with your API endpoint
+                const data = {
+                    queryID: queryId,
+                    apiKey: this.apiKey,
+                    };
+                this.searchState[queryId] = "searching";
+                //console.log(data); 
+                try {
+                    const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                    });
+                    const searchResult = await response.json();
+                    this.updateJsonData(searchResult,this.jsonData)
+                    this.parsedata()
+                    this.searchState[queryId] = "broad";
+                } catch (error) {
+                    console.error(error);
+                    alert(`There is an error duing the search: ${error}`);// handle error here
+                    this.searchState[queryId] = "initial"
+                }
+                break;
+            case "broad":
+                // Perform the deeper search, then...
+                this.searchState[queryId] = "done";
+                break;
+            default:
+                // The search is already done, do nothing
+                break;
+        }
+    },
+    updateJsonData(searchResult, jsondata) {
+        // Get the new data from the searchResult
+        const newQueryData = searchResult[0]; // As per your data structure
+
+        // Iterate over the keys in newQueryData (i.e., the query ids)
+        for (let queryId in newQueryData) {
+            // Find the corresponding query id in jsondata
+            const jsonDataIndex = jsondata.findIndex((element, index) => {
+                // Check if element is an object (to avoid error with string elements)
+                if (typeof element === 'object' && element !== null) {
+                    // Return true (i.e., we've found our index) if the query id exists in the object
+                    return element.hasOwnProperty(queryId);
+                }
+            });
+
+            // If we found a matching query id in jsondata
+            if (jsonDataIndex !== -1) {
+                // Replace the value for that query id in jsondata with the new data from searchResult
+                jsondata[jsonDataIndex][queryId] = newQueryData[queryId];
             }
         }
+
+        return jsondata;
     },
     nextQuery() {
             if (this.currentQueryId < this.maxQueryId - 1) {
@@ -107,6 +211,36 @@ methods: {
 </script>
 
 <style scoped>
+@keyframes fade {
+  0% {opacity: 1;}
+  50% {opacity: 0.2;}
+  100% {opacity: 1;}
+}
+.overlay-wrapper {
+  position: relative;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.loading-text {
+  margin-bottom: 40px;
+  color: #032152;
+  font-size: 2em;
+  animation: fade 3s linear infinite; 
+}
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
 a {
   color: #007bff;
   text-decoration: none;
@@ -127,9 +261,10 @@ h3, p {
   justify-content: space-between; 
 }
 .card-content {
-    overflow-y: auto;
-    padding: 12px;
-  flex-grow: 1;
+ position: relative;
+ overflow-y: auto;
+ padding: 12px;
+ flex-grow: 1;
 }
 .card-footer {
     display: flex;

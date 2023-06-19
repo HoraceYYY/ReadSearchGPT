@@ -76,7 +76,7 @@ async def first_search(search: firstSearch, db: Session = Depends(get_db)):
         print(f"Task Completed")
     finally:    
         db.close()
-    return research_id, querywithresult
+    return research_id, querywithresult, api_key
 
 @app.post("/secondsearch")
 async def second_search(search: additionalSearch, db: Session = Depends(get_db)):
@@ -88,7 +88,7 @@ async def second_search(search: additionalSearch, db: Session = Depends(get_db))
         print(f"Task Completed")
     finally:
         db.close()
-    return querywithresult
+    return querywithresult, api_key
 
 @app.post("/firstdeepsearch")
 async def first_deep_search(search: deepsearch, db: Session = Depends(get_db)):
@@ -101,7 +101,7 @@ async def first_deep_search(search: deepsearch, db: Session = Depends(get_db)):
         print(f"Task Completed")
     finally:
         db.close()
-    return querywithresult
+    return querywithresult, api_key
 
 async def download_excel(task_id: str, db):
     # Find the URL data for the specified task ID
