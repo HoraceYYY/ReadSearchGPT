@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button class="btn-success">Download Report</button>
+                        <button class="btn-success" @click="handleDownloadReport">Download Report</button>
                         <button class="btn-success">Email Report</button>
                     </div>
                 </div>
@@ -55,7 +55,7 @@ export default {
         urlResults: {},
         urlSummaries: {},
         searchState: {},
-
+        userDomain: "",
         };
     },
     computed: {
@@ -102,7 +102,8 @@ methods: {
             const data = this.jsonData;
             this.researchId = data[0];
             const queryData = data[1];
-            this.apiKey = data[2]
+            this.apiKey = data[2];
+            this.userDomain = data[3];
             if (queryData) {
                 for (const [queryId, value] of Object.entries(queryData)) {
                     const query = value[0];
@@ -138,23 +139,23 @@ methods: {
         const queryId = this.queryIDs[this.currentQueryId];
         switch (this.searchState[queryId]) {
             case "initial":
-                const url = "http://localhost:8000/secondsearch";  // replace with your API endpoint
-                const data = {
+                const url1 = "http://localhost:8000/secondsearch";  // replace with your API endpoint
+                const data1 = {
                     queryID: queryId,
                     apiKey: this.apiKey,
                     };
                 this.searchState[queryId] = "searching";
                 //console.log(data); 
                 try {
-                    const response = await fetch(url, {
+                    const response = await fetch(url1, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(data),
+                    body: JSON.stringify(data1),
                     });
-                    const searchResult = await response.json();
-                    this.updateJsonData(searchResult,this.jsonData)
+                    const searchResult1 = await response.json();
+                    this.updateJsonData(searchResult1,this.jsonData)
                     this.parsedata()
                     this.searchState[queryId] = "broad";
                 } catch (error) {
@@ -164,8 +165,30 @@ methods: {
                 }
                 break;
             case "broad":
-                // Perform the deeper search, then...
-                this.searchState[queryId] = "done";
+                const url2 = "http://localhost:8000/firstdeepsearch";  // replace with your API endpoint
+                const data2 = {
+                    queryID: queryId,
+                    searchDomain: this.userDomain,
+                    apiKey: this.apiKey,
+                    };
+                this.searchState[queryId] = "searching";
+                try {
+                    const response = await fetch(url2, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data2),
+                    });
+                    const searchResult2 = await response.json();
+                    this.updateJsonData(searchResult2,this.jsonData)
+                    this.parsedata()
+                    this.searchState[queryId] = "done";
+                } catch (error) {
+                    console.error(error);
+                    alert(`There is an error duing the search: ${error}`);// handle error here
+                    this.searchState[queryId] = "broad"
+                }
                 break;
             default:
                 // The search is already done, do nothing
@@ -205,8 +228,36 @@ methods: {
         if (this.currentQueryId > 0) {
             this.currentQueryId -= 1;
         }
+    },
+    async handleDownloadReport() {
+        const url = `http://localhost:8000//task/${this.researchId}/webdownload`;  // Replace with your API endpoint URL
+        try {
+            const response = await fetch(url, { method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error("HTTP error " + response.status);
+            }
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = downloadUrl;
+            a.download = `${this.taskId}.docx`; // or any name you want to give to your file
+            document.body.appendChild(a);
+            a.click();
+            // After a timeout, remove the element and revoke the object URL
+            setTimeout(() => {
+                a.remove();
+                window.URL.revokeObjectURL(downloadUrl);
+            }, 0);
+            } 
+        catch (error) {
+            console.error(error);
+            }
+  }
     }
-}
 }   
 </script>
 

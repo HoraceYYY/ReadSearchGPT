@@ -34,10 +34,10 @@ class URLData(Base):
     __tablename__ = "url_data"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     query_id = Column(UUID, ForeignKey('queries.id'), nullable=False)
-    url = Column(String)  # URL for all types of content
-    title = Column(String)  # Title for 'Related' and 'Unrelated' categories
-    content = Column(Text)  # In case content can be quite long for 'Related' and 'Unrelated' categories
-    category = Column(String)  # Can be 'Related', 'Unrelated', or 'Unchecked Material'
+    url = Column(String)  # URL for all categories
+    title = Column(String)  # Title for 'website content'
+    content = Column(Text)  # Only for website content category
+    category = Column(String)  # Can be 'Website_Content', 'Unread_Websites', or 'PDFs'
 
 class URLSummary(Base):
     __tablename__ = "url_summary"

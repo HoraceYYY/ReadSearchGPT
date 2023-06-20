@@ -3,8 +3,6 @@ import MySearch from '../views/MySearch.vue'
 import Landing from '../views/Landing.vue'
 import Feedback from '../views/Feedback.vue'
 import Query from '../views/Query.vue'
-import Searching from '../views/Searching.vue'
-import SearchPreference from '../views/SearchPreference.vue'
 import SearchResults from '../views/SearchResults.vue'
 
 const router = createRouter({

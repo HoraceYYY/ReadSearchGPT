@@ -1,10 +1,12 @@
 from Google import async_google
 from aiohttp import ClientSession
+from docx import Document
+from bs4 import BeautifulSoup
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email import encoders
-import asyncio, uuid, time,os, ast, smtplib
+import time, os, ast, smtplib
 from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -23,6 +25,9 @@ class EmailRequest(BaseModel):
 
 class APIKey(BaseModel):
     apiKey: str
+
+class ResearchID(BaseModel):
+    taskID: str
 
 class additionalSearch(BaseModel):
     queryID: str
@@ -76,7 +81,7 @@ async def first_search(search: firstSearch, db: Session = Depends(get_db)):
         print(f"Task Completed")
     finally:    
         db.close()
-    return research_id, querywithresult, api_key
+    return research_id, querywithresult, api_key, userDomain # returning api key to store in the front end to make the second and deep search, returning the userDomain for the deep search
 
 @app.post("/secondsearch")
 async def second_search(search: additionalSearch, db: Session = Depends(get_db)):
@@ -88,9 +93,9 @@ async def second_search(search: additionalSearch, db: Session = Depends(get_db))
         print(f"Task Completed")
     finally:
         db.close()
-    return querywithresult, api_key
+    return querywithresult, api_key # returning api key to store in the front end to make the next search
 
-@app.post("/firstdeepsearch")
+@app.post("/firstdeepsearch/")
 async def first_deep_search(search: deepsearch, db: Session = Depends(get_db)):
     try:
         queryid = search.queryID
@@ -103,39 +108,69 @@ async def first_deep_search(search: deepsearch, db: Session = Depends(get_db)):
         db.close()
     return querywithresult, api_key
 
-async def download_excel(task_id: str, db):
-    # Find the URL data for the specified task ID
-    url_data_list = db.query(models.URLData).filter(models.URLData.task_id == task_id).all()
+@app.get("/downloadsearchresult/{task_id}")
+async def download_word(task_id, db: Session = Depends(get_db)):
 
-    if not url_data_list:
-        raise HTTPException(status_code=404, detail="Task not found")
+    document = Document() # Initialize a new Word document
+    data = {}  # Initialize a dictionary to store the data
 
-    # Create data frames for each category
-    related = pd.DataFrame(columns=['URL', 'Title', 'Content'])
-    unrelated = pd.DataFrame(columns=['URL', 'Title', 'Content'])
-    unchecked = pd.DataFrame(columns=['PDFs', 'Additional Links'])
+    query_ids = db.query(models.Query.id).filter(models.Query.task_id == task_id).all()
+    if not query_ids:
+        raise HTTPException(status_code=404, detail="No queries found for this task ID")
+    query_ids = [id_[0] for id_ in query_ids]    # Convert list of tuples to list of IDs
 
-    for url_data in url_data_list:
-        if url_data.category == 'Related':
-            related = pd.concat([related, pd.DataFrame([{'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}])], ignore_index=True)
-        elif url_data.category == 'Unrelated':
-            unrelated = pd.concat([unrelated, pd.DataFrame([{'URL': url_data.url, 'Title': url_data.title, 'Content': url_data.content}])], ignore_index=True)
-        elif url_data.category == 'Unchecked Material':
-            unchecked = pd.concat([unchecked, pd.DataFrame([{'PDFs': url_data.pdfs, 'Additional Links': url_data.additional_links}])], ignore_index=True)
+    for query_id in query_ids: # Fetch the Query, URLData and URLSummary from the database
+        query = db.query(models.Query).filter(models.Query.id == query_id).first()
+        url_data = db.query(models.URLData).filter(models.URLData.query_id == query_id).all()
+        url_summary = db.query(models.URLSummary).filter(models.URLSummary.query_id == query_id).all()
+        
+        data[query_id] = { # Save the data in the dictionary
+            'query': query.query,
+            'url_data': [{'title': item.title, 'content': item.content, 'category': item.category, 'url': item.url} for item in url_data],
+            'url_summary': [{'summarytype': item.summarytype, 'summary': item.summary} for item in url_summary]
+        }
     
-    file_path = f"Results/{task_id}.xlsx"
-    # Write data to Excel file with each DataFrame as a separate sheet
-    with pd.ExcelWriter(file_path) as writer:
-        related.to_excel(writer, sheet_name='Related', index=False)
-        unrelated.to_excel(writer, sheet_name='Unrelated', index=False)
-        unchecked.to_excel(writer, sheet_name='Unchecked Material', index=False)
+    document.add_heading('Research Summry', level=1)
+    for query_id, info in data.items(): # Loop over the data dictionary to populate the Word document
+        document.add_heading(info['query'].capitalize(), level=2) # Add the Query to the Word document
+        for summary in info['url_summary']:
+            document.add_heading(f'{summary["summarytype"]}', level=3)
+            soup = BeautifulSoup(summary["summary"], 'html.parser')
+            text = soup.get_text()
+            document.add_paragraph(f'Summary: {text}')
+    
+    document.add_heading('Individual Web Results', level=1)
+    for query_id, info in data.items():
+        document.add_heading(info['query'].capitalize(), level=2)    
+        # Add the URLData to the Word document
+        for data in [d for d in info['url_data'] if d["category"] == 'Website_Content']:
+            para = document.add_paragraph()
+            run = para.add_run(f'{data["title"]}')
+            run.bold = True
+            document.add_paragraph(f'{data["url"]}')
+            soup = BeautifulSoup(data["content"])
+            text = soup.get_text()
+            document.add_paragraph(f'{text}')
+        para = document.add_paragraph()
+        run = para.add_run('Additional PDFs')
+        run.bold = True
+        for data in [d for d in info['url_data'] if d["category"] == 'PDFs']:
+            document.add_paragraph(f'URL: {data["url"]}')
+        para = document.add_paragraph()
+        run = para.add_run('Additional Relevant Websites')
+        run.bold = True
+        for data in [d for d in info['url_data'] if d["category"] == "Unread_Websites"]:
+            document.add_paragraph(f'URL: {data["url"]}')
+    # Save the document
+    file_path = f"Results/{task_id}.docx"
+    document.save(file_path)
     return file_path
 
 @app.get("/task/{task_id}/webdownload")
 async def web_download_excel(task_id: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    file_path = await download_excel(task_id, db)
+    file_path = await download_word(task_id, db)
     background_tasks.add_task(delete_file_after_delay, file_path, delay=60) # Add a background task to delete the file after 1 minute
-    return FileResponse(file_path, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename=f"{task_id}.xlsx")     # Return the file as a response
+    return FileResponse(file_path, media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document', filename=f"{task_id}.docx")  # Return the Word document as a response
 
 def delete_file_after_delay(file_path: str, delay: int):
     time.sleep(delay)
@@ -168,7 +203,7 @@ async def add_email(email_request: EmailRequest, background_tasks: BackgroundTas
         return print("Email sent")
 
 async def draft_email(research_id, task, db): ## update email to the readsearch domain
-    file_path = await download_excel(research_id, db)
+    file_path = await download_word(research_id, db)
     user = 'readsearchgpt@gmail.com'
     password = "cqrdmoxaeduoqxtj"
     header = f"Your ReadSearch Results Are Ready - Research ID: {research_id}"

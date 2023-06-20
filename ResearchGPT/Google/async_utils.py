@@ -157,7 +157,7 @@ async def relaventURL(query, links, api_key):
         messages = [
             {"role": "system", 
             "content": f"From the URLs below, delimted by three dashes(-), extract the URLs that are most relevant to the target information I provide. \
-Return less than 10 URLs that are extremely relevant to the target information. \
+Return less than 6 URLs that are extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
 Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url, for example: url1,url2,url3. Refrain from using any other format for the output.\
 Refrain from returning any URL that is not relevant to the target information. \
@@ -198,7 +198,7 @@ async def LinksBreakUp(api_key, token, url_prompt, linksString): # convert the l
             messages = [
                 {"role": "system", 
                  "content": f"From the URLs below, delimted by three dashes(-), extract the URLs that are most relevant to the target information I provide. \
-Return less than 10 URLs that are extremely relevant to the target information. \
+Return less than 6 URLs that are extremely relevant to the target information. \
 The order of relevance is important. The first URL should be the most relevant. \
 Refrain from generating any additional text associated with the URLs. Only return the URL in comma_seperated_list_of_url, for example: url1,url2,url3. Refrain from using any other format for the output.\
 Refrain from returning any URL that is not relevant to the target information. \
@@ -219,29 +219,30 @@ def num_tokens_from_string(string: str, encoding_name = 'cl100k_base' ) -> int:
     num_tokens = len(encoding.encode(string))
     return num_tokens
 
-def truncate_text_tokens(text, encoding_name='cl100k_base', max_tokens=2000):
-    """Truncate a string to have `max_tokens` according to the given encoding."""
-    encoding = tiktoken.get_encoding(encoding_name)
-    return encoding.encode(text)[:max_tokens]
-
 #break up the content of long webpages into smaller chunks and pass each into GPT3.5 to avoid the token limit and return the summary of the whole webpage
 async def pageBreakUp(api_key, query, content): 
     pageSummary = ''
     sectionNum = math.ceil(num_tokens_from_string(content) // 2000)+1
     cutoffIndex = math.ceil(len(content) // sectionNum)
     for i in range(sectionNum): #split the content into multiple section and use a new GPT3.5 for each section to avoid the token limit
-        start_index = i * cutoffIndex
-        end_index = (i + 1) * cutoffIndex
-        section = content[start_index:end_index]
-        messages = [
-            {"role":"system",
-             "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
+        if num_tokens_from_string(pageSummary) < 2000:
+            start_index = i * cutoffIndex
+            end_index = (i + 1) * cutoffIndex
+            section = content[start_index:end_index]
+            print(f"Section #{i}: {num_tokens_from_string(section)}")
+            messages = [
+                {"role":"system",
+                "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
 Please structure the answer into a mix of paragraphs and bullet points as appropriate, for readability and comprehension. Maintain logical flow and coherence in the narrative. \n\
 Text: {section}"}]
-        query_message = "Question: " + query
-        pageSummary += await singleGPT(api_key, messages, query_message)
-    if num_tokens_from_string(pageSummary) > 2000: #if the summary is still too long, truncate it to 1300 tokens
-        pageSummary = truncate_text_tokens(pageSummary)
+            query_message = "Question: " + query
+            sectionSummary = await singleGPT(api_key, messages, query_message)
+            pageSummary += sectionSummary
+            print(f"Section Summary #{i}: {num_tokens_from_string(sectionSummary)}")
+            print(f"Page Summary: {num_tokens_from_string(pageSummary)}")
+        else:
+            break
+    
     messages = [
         {"role":"system",
              "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
@@ -249,6 +250,7 @@ Please structure the response using Markdown formatting to include paragraphs, b
 Maintain logical flow and coherence in the narrative. \n\
 Text: {pageSummary} "}]
     query_message = "Question: " + query
+    print(f"Summary token input: {num_tokens_from_string(pageSummary)}")
     pageSummary = await singleGPT(api_key, messages, query_message)
     return pageSummary
 
@@ -379,19 +381,18 @@ async def querysummaryBreakUp(api_key, query, content):
     sectionNum = math.ceil(num_tokens_from_string(content) // 2000) + 1
     cutoffIndex = math.ceil(len(content) // sectionNum)
     for i in range(sectionNum): #split the content into multiple section and use a new GPT3.5 for each section to avoid the token limit
-        start_index = i * cutoffIndex
-        end_index = (i + 1) * cutoffIndex
-        section = content[start_index:end_index]
-        messages = [
-            {"role":"system",
-             "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
-Please structure the answer into a mix of paragraphs and bullet points as appropriate, for readability and comprehension. Maintain logical flow and coherence in the narrative. \n\
-Text: {section}"}]
-        query_message = "Question: " + query
-        pageSummary += await singleGPT(api_key, messages, query_message)
-     
-    if num_tokens_from_string(pageSummary) > 2000: #if the summary is still too long, truncate it to 3500 tokens
-        pageSummary = truncate_text_tokens(pageSummary)
+        if num_tokens_from_string(pageSummary) < 2000:
+            start_index = i * cutoffIndex
+            end_index = (i + 1) * cutoffIndex
+            section = content[start_index:end_index]
+            messages = [
+                {"role":"system",
+                "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
+    Please structure the answer into a mix of paragraphs and bullet points as appropriate, for readability and comprehension. Maintain logical flow and coherence in the narrative. \n\
+    Text: {section}"}]
+            query_message = "Question: " + query
+            pageSummary += await singleGPT(api_key, messages, query_message)
+    
     messages = [
             {"role":"system",
              "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
