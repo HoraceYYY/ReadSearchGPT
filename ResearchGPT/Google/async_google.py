@@ -128,7 +128,7 @@ async def url_producer(db, searchDomain, url, query, queryid, api_key):
         print(colored('\u2714\uFE0F  Producer: Task Cancelled!','red',attrs=['bold']))
         raise
 
-async def first_search(db, searchqueries, userDomain, api_key):
+async def first_search(db, searchqueries, userDomain, api_key, userid):
     start_time = time.time()
     print("Timer Starts: ", start_time)
     if userDomain is not None and userDomain.strip() == "":
@@ -144,7 +144,7 @@ async def first_search(db, searchqueries, userDomain, api_key):
             search_results[query] = duckduckgo_search(query)
     timer1 = time.time()
     print("Web search is done. Time Used: ",timer1-start_time)
-    research = crud.create_research(db) 
+    research = crud.create_research(db, userid) 
     
     all_tasks = []
     queryids = []

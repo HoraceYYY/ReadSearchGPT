@@ -9,6 +9,8 @@ Base = declarative_base()
 class Task(Base):
     __tablename__ = "tasks"
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
+    userid = Column(String, index=True) # assuming user id is a string
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
     # One-to-many relationship with Query
     queries = relationship("Query", backref="task")
 

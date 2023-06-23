@@ -35,7 +35,9 @@
                     </div>
                     <div class="card-footer">
                         <button class="btn-success" @click="handleDownloadReport">Download Report</button>
-                        <button class="btn-success">Email Report</button>
+                        <a href="https://www.buymeacoffee.com/readsearch" target="_blank">
+                            <button class="coffee-button">Buy Me A Coffee</button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -64,7 +66,6 @@ export default {
     },
     jsonData: {
         get() {
-            console.log(this.$store.state.jsonData)
             return this.$store.state.jsonData;
         },
         set(value) {
@@ -230,7 +231,7 @@ methods: {
         }
     },
     async handleDownloadReport() {
-        const url = `http://localhost:8000//task/${this.researchId}/webdownload`;  // Replace with your API endpoint URL
+        const url = `http://localhost:8000/task/${this.researchId}/webdownload`;  // Replace with your API endpoint URL
         try {
             const response = await fetch(url, { method: 'GET',
                 headers: {
@@ -244,7 +245,7 @@ methods: {
             const downloadUrl = window.URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = downloadUrl;
-            a.download = `${this.taskId}.docx`; // or any name you want to give to your file
+            a.download = `${this.researchId}.docx`; // or any name you want to give to your file
             document.body.appendChild(a);
             a.click();
             // After a timeout, remove the element and revoke the object URL
@@ -262,6 +263,23 @@ methods: {
 </script>
 
 <style scoped>
+.coffee-button {
+background-color: #FFDD00; /* Yellow background */
+color: black; /* Black text */
+border-radius: 5px; /* Add rounded corners */
+padding: 5px 10px;
+text-align: center; /* Centered text */
+text-decoration: none; /* No underline */
+display: inline-block;
+font-size: 16px;
+transition-duration: 0.4s; /* Transition effect */
+cursor: pointer; /* Add a mouse pointer on hover */
+}
+
+.coffee-button:hover {
+background-color: black; /* Black background */
+color: white; /* White text */
+}
 @keyframes fade {
   0% {opacity: 1;}
   50% {opacity: 0.2;}

@@ -1,18 +1,20 @@
 <template>
-  <div class="container pt-0 d-flex justify-content-center align-items-center" style="min-height: 1vh;">
-    <div class="card p-4 mb-4 rounded shadow" style="position: relative; max-width: 1000px; width: 100%;">
+  <h1 class="display-4 mb-1 fw-bold">ReadSearch GPT</h1>  
+  <h2 class="h3 mb-1 fw-bold" style="font-style: italic;">Use AI for online research</h2>
+  <div class="container pt-0 d-flex justify-content-center align-items-center" style="min-height: 1vh;"> 
+    <div class="card p-4 mb-4 mt-1 rounded shadow" style="position: relative; max-width: 1000px; width: 100%;">
       <div v-if="isLoading" class="overlay">
         <p class="loading-text">Your research will take about 1-2 minutes.</p>
       </div>
       <div class="card-body">
         <h5 class="fw-bold mb-3 text-start ">Enter Research Topics:</h5>
         <div class="input-group mb-3" v-for="(item, index) in searchQueries" :key="index">
-          <input type="text" class="form-control" v-model="searchQueries[index]" @input="addItemAuto" placeholder="Up to 3 research topics..." aria-label="Research Topic">
+          <input type="text" class="form-control" v-model="searchQueries[index]" @input="addItemAuto" placeholder="Up to 3 Research Topics... " aria-label="Research Topic">
         </div>
-        <h5 class="fw-bold mb-3 text-start ">Enter A Website to Limit the Search Domain:</h5>
+        <!-- <h5 class="fw-bold mb-3 text-start ">Enter A Website Domain to Narrow the Search:</h5>
         <div class="input-group mb-3">
-          <input type="text" class="form-control" v-model="domain" placeholder="https//... or keep empty to search the enter internet" aria-label="Domain">
-        </div>
+          <input type="text" class="form-control" v-model="domain" placeholder="https://example.com or leave blank to search the enter internet" aria-label="Domain">
+        </div> -->
         <h5 class="fw-bold mb-3 text-start ">Enter Open AI API Key:</h5>
         <div class="input-group mb-3">
           <input :type="passwordFieldType" v-model="apiKey" class="form-control" placeholder="API Key..." aria-label="API Key">
@@ -132,6 +134,7 @@ async search() {
     if (response['Key'] === 'Valid') {
       // console.log(this.searchQueries)
       // console.log(this.domain)
+      await this.checkCookie();
       await this.firstSearch()
       this.isLoading = false;
     } else {
@@ -185,6 +188,7 @@ async firstSearch(){
       this.buttonText = "Searching...";
       const response = await fetch(url, {
       method: 'POST',
+      credentials: 'include',
       headers: {
           'Content-Type': 'application/json',
       },
@@ -198,6 +202,43 @@ async firstSearch(){
           this.buttonText = "Search"
           console.error(error);
           alert(`There is an error duing the search: ${error}`);// handle error here
+      }
+  },
+  async checkCookie() {
+      const url = "http://localhost:8000/read-cookie"; // replace with your API endpoint
+      try {
+          const response = await fetch(url, {
+              method: 'GET',
+              credentials: 'include', // to include cookies
+          });
+
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          if (!data.userid || data.userid === null) {
+              await this.createCookie(); // If no cookie is present, create one.
+          }
+
+      } catch (error) {
+          console.error('API call failed:', error);
+      }
+  },
+  async createCookie() {
+      const url = "http://localhost:8000/create-cookie"; // replace with your API endpoint
+      try {
+          const response = await fetch(url, {
+              method: 'GET',
+              credentials: 'include', // to include cookies
+          });
+
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+      } catch (error) {
+          console.error('API call failed:', error);
       }
   },
 }
@@ -254,4 +295,7 @@ h5, .btn, .form-control {
   background-color: #006c22;
   border-color: #006c22;
 }
+h1, h2 {
+    color: #5781c0; /* Using the primary color for headings */
+  }
 </style>

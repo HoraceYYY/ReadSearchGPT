@@ -366,7 +366,7 @@ async def query_summary(api_key, query, content):
     if num_tokens_from_string(content) <= 2000: #if the content is less than 2500 tokens, pass the whole content to GPT
         messages = [
             {"role":"system",
-             "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
+             "content":f"From the Text below, with as much detail as possible, answer the provided question. Summarize related information if there are no direct answers to the question or no text provided. Reply 'No Relevent Information Found' and refain from summarizing unrelated information if the text neither contain the direct answer nor has related information. \
 Please structure the response using Markdown formatting to include paragraphs, bullet points, nested bullet points, numbered lists, nested numbered lists, headings and subheadings. Use bold (**text**) and italic (_text_) for emphasis where appropriate. Include line breaks for readability. Maintain logical flow and coherence in the narrative. The output should be suitable for conversion to HTML from Markdown. \
 Maintain logical flow and coherence in the narrative. \n\
 Text: {content} "}]

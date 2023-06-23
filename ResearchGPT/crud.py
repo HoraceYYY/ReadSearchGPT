@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 import models
 
-def create_research(db: Session):
-    task = models.Task()
+def create_research(db: Session, userid):
+    task = models.Task(userid=userid)
     db.add(task)
     db.commit()
     db.refresh(task)

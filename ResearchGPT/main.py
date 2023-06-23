@@ -2,22 +2,16 @@ from Google import async_google
 from aiohttp import ClientSession
 from docx import Document
 from bs4 import BeautifulSoup
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email.mime.text import MIMEText
-from email import encoders
-import time, os, ast, smtplib
-from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException
-from fastapi.responses import FileResponse
+import time, os
+from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException, Cookie, status
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel
 from typing import List
-import pandas as pd
 from fastapi.middleware.cors import CORSMiddleware # to allow CORS
 from datetime import datetime, timedelta
 from database import SessionLocal
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
-import models, crud
+import models, secrets
 
 class EmailRequest(BaseModel):
     research_id: str
@@ -71,12 +65,14 @@ def get_db():
         db.close()
 
 @app.post("/firstsearch") # this is the entry point of the search, this will search all the topics entered
-async def first_search(search: firstSearch, db: Session = Depends(get_db)):
+async def first_search(search: firstSearch, userid: str = Cookie(None), db: Session = Depends(get_db)):
     try:
+        if not userid:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Userid cookie is missing")
         searchqueries = search.searchqueries
         userDomain = search.searchDomain
         api_key = search.apiKey
-        research_id, querywithresult = await async_google.first_search(db, searchqueries, userDomain, api_key)
+        research_id, querywithresult = await async_google.first_search(db, searchqueries, userDomain, api_key, userid)
         db.commit()
         print(f"Task Completed")
     finally:    
@@ -169,109 +165,13 @@ async def download_word(task_id, db: Session = Depends(get_db)):
 @app.get("/task/{task_id}/webdownload")
 async def web_download_excel(task_id: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     file_path = await download_word(task_id, db)
-    background_tasks.add_task(delete_file_after_delay, file_path, delay=60) # Add a background task to delete the file after 1 minute
+    background_tasks.add_task(delete_file_after_delay, file_path, delay=30) # Add a background task to delete the file after 1 minute
     return FileResponse(file_path, media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document', filename=f"{task_id}.docx")  # Return the Word document as a response
 
 def delete_file_after_delay(file_path: str, delay: int):
     time.sleep(delay)
     if os.path.exists(file_path):
         os.remove(file_path)
-
-@app.post("/add_email")
-async def add_email(email_request: EmailRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    research_id=email_request.research_id
-    emails=email_request.emails
-    task = db.query(models.Task).filter(models.Task.id == research_id).first()
-    if not task:
-        raise HTTPException(status_code=404, detail="Research not found")   
-    old_emails = db.query(models.Email).filter(
-        models.Email.research_id == research_id,
-        models.Email.status == True
-    ).all()
-    for old_email in old_emails:
-        old_email.status = False
-    for email in emails:
-        new_email = models.Email(research_id=research_id, email=email, status=True)
-        db.add(new_email) 
-    db.commit()
-    if task.status in ["Completed", "Cancelled"] and task.file_availability == "Available":
-        user, password, header, message, file_path = await draft_email(research_id, task, db)
-        success, error_msg = send_email(user, password, emails, header, message, file_path)
-        background_tasks.add_task(delete_file_after_delay, file_path, delay=60)
-        if not success:
-            return print("Email sending failed with error:", error_msg)
-        return print("Email sent")
-
-async def draft_email(research_id, task, db): ## update email to the readsearch domain
-    file_path = await download_word(research_id, db)
-    user = 'readsearchgpt@gmail.com'
-    password = "cqrdmoxaeduoqxtj"
-    header = f"Your ReadSearch Results Are Ready - Research ID: {research_id}"
-    topic_list = ast.literal_eval(task.topic)
-    topics = '\n'.join(f'{i+1}. {topic}' for i, topic in enumerate(topic_list))
-    message = f"Please see attached results for the following research topics: \n{topics}. \n\nPlease use your Research ID if you wish to download the result again within the next 24 hours. Thank you for using ReadSearchGPT!"
-    return user, password, header, message, file_path
-        
-def send_email(user, password, mail_to, subject, message, file_path):
-    try:
-        msg = MIMEMultipart()
-        msg['From'] = user
-        msg['To'] = ', '.join(mail_to)
-        msg['Subject'] = subject
-
-        msg.attach(MIMEText(message, 'plain'))
-
-        # Setup the attachment
-        filename = os.path.basename(file_path)
-        attachment = open(file_path, "rb")
-        part = MIMEBase('application', 'octet-stream')
-        part.set_payload(attachment.read())
-        encoders.encode_base64(part)
-        part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-
-        # Attach the attachment to the MIMEMultipart object
-        msg.attach(part)
-        
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(user, password)
-        text = msg.as_string()
-        server.sendmail(user, mail_to, text)
-        server.quit()
-
-        return True, ""
-
-    except Exception as e:
-        return False, str(e)
-
-    
-@app.post("/task/cleanup")
-async def cleanup(background_tasks: BackgroundTasks):
-    background_tasks.add_task(run_cleanup)
-    return {"Status": "Cleanup started"}
-
-async def run_cleanup():
-    db = SessionLocal()  # Create a new session
-    try:
-        # Find tasks that ended more than 24 hours ago
-        old_tasks = db.query(models.Task).filter(
-            and_(models.Task.end_time < datetime.now() - timedelta(hours=24), 
-                 models.Task.file_availability == "Available")).all()
-        for task in old_tasks:
-            # Delete URL data associated with the task
-            db.query(models.URLData).filter(models.URLData.task_id == task.id).delete()
-            # Update file_availability status in the Task table
-            task.file_availability = "Expired"
-        
-        # Commit the changes to the database
-        db.commit()
-    finally:    
-        db.close()
-
-@app.get("/task/get_all_tasks")
-async def get_all_tasks(db: Session = Depends(get_db)):
-    tasks = crud.get_all_tasks(db)
-    return {"Tasks": [dict(task_id=task.id, status=task.status, start_time=task.start_time, time_spent=task.time_spent, file_path=task.file_path) for task in tasks]}
 
 @app.post("/testapi")
 async def testAPI(apiKey: APIKey):
@@ -309,3 +209,17 @@ async def create_feedback(feedback: FeedbackBase, db: Session = Depends(get_db))
     db.commit()
     db.refresh(new_feedback)
     return {"Message": "Feedback successfully submitted", "Feedback ID": new_feedback.id}
+
+@app.get("/create-cookie")
+def create_cookie():
+    response = Response()
+    unique_id = secrets.token_urlsafe(16) # generates a unique identifier
+    response.set_cookie(key="userid", value=unique_id)
+    return response
+
+class UserResponse(BaseModel):
+    userid: str | None = None
+
+@app.get("/read-cookie/", response_model=UserResponse)
+def read_cookie(userid: str | None = Cookie(None)):
+    return {"userid": userid}

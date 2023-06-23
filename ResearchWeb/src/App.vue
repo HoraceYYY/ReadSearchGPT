@@ -4,7 +4,7 @@
       <div class="container-fluid">
         <div class="navbar-nav me-auto mb-2 mb-lg-0 fw-bold">
           <router-link to="/newsearch" class="nav-link">New Search</router-link>
-          <router-link to="/mysearch" class="nav-link">Find My Results</router-link>
+          <router-link to="/mysearch" class="nav-link">Search History</router-link>
         </div>
         <div class="navbar-nav mb-2 mb-lg-0 ">
           <a href="https://mirage-oval-bce.notion.site/Tutorials-FAQs-d026f83b53c1471589ba8ff49445dc3e" class="nav-link" target="_blank">Tutorials & FAQs</a>
@@ -14,9 +14,6 @@
     </nav>
 
     <main class="my-auto d-flex flex-column align-items-center justify-content-center text-center">
-      <h1 class="display-4 mb-1 fw-bold">ReadSearch GPT</h1>  
-      <h2 class="h3 mb-1 fw-bold" style="font-style: italic;">Use AI for online research</h2>
-
       <router-view  />
     </main>
 
