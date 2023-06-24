@@ -1,9 +1,22 @@
 <template>
     <div class="container-fluid px-4">
-        <div class="row d-flex">
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-center mb-2 mt-0 gap-2">
+            <div class="text-center text-md-start mt-3 mt-md-0">
+                <h1 class="display-12 mb-1 fw-bold">ReadSearch</h1>
+            </div>
+            <div class="w-100 w-md-45">
+                <div class="input-group">
+                    <input type="text" v-model="inputValue" class="form-control" placeholder="Enter your search">
+                    <div class="input-group-append">
+                        <button @click="newSearch" class="btn-success btn-outline-primary">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row d-flex mt-3">
             <div class="col-12 col-md-7 pr-md-2">
                 <h2 class="card-header text-start">Research Summary</h2>
-                <div class="card">
+                <div class="card mb-2">
                     <div class="card-content">
                         <div class="overlay-wrapper">
                             <div class="mb-4 text-start text-black">
@@ -49,15 +62,15 @@
 export default {
     data() {
       return {
-        currentQueryId: 0,
-        researchId: "",
+        currentQueryId: 0, // index used for [queryid]
         apiKey: "",
-        queryIDs: [],
-        queries: {},
-        urlResults: {},
-        urlSummaries: {},
-        searchState: {},
+        queryIDs: [], // a list of query ids [queryid]
+        queries: {}, // {queryid : query}
+        urlResults: {}, // {queryid : [title, url, content]}
+        urlSummaries: {}, // {queryid: summary}
+        searchState: {}, // {queryid: "state"}
         userDomain: "",
+        inputValue: [], //[query]
         };
     },
     computed: {
@@ -101,10 +114,8 @@ methods: {
     parsedata(){
         if (this.jsonData){
             const data = this.jsonData;
-            this.researchId = data[0];
-            const queryData = data[1];
-            this.apiKey = data[2];
-            this.userDomain = data[3];
+            const queryData = data[0];
+            this.apiKey = data[1];
             if (queryData) {
                 for (const [queryId, value] of Object.entries(queryData)) {
                     const query = value[0];
@@ -215,6 +226,8 @@ methods: {
             if (jsonDataIndex !== -1) {
                 // Replace the value for that query id in jsondata with the new data from searchResult
                 jsondata[jsonDataIndex][queryId] = newQueryData[queryId];
+            }else {
+                jsondata[0][queryId] = newQueryData[queryId];
             }
         }
 
@@ -231,13 +244,18 @@ methods: {
         }
     },
     async handleDownloadReport() {
-        const url = `http://localhost:8000/task/${this.researchId}/webdownload`;  // Replace with your API endpoint URL
+        const url = `http://localhost:8000/task/webdownload`;  // Replace with your API endpoint URL
+        const  downloadQuerise= {
+            queryIDs: this.queryIDs
+        }
         try {
-            const response = await fetch(url, { method: 'GET',
+            const response = await fetch(url, {
+                method: 'POST',
                 headers: {
-                'Content-Type': 'application/json',
+                    'Content-Type': 'application/json',
                 },
-            });
+                body: JSON.stringify(downloadQuerise),
+                });
             if (!response.ok) {
                 throw new Error("HTTP error " + response.status);
             }
@@ -245,7 +263,7 @@ methods: {
             const downloadUrl = window.URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = downloadUrl;
-            a.download = `${this.researchId}.docx`; // or any name you want to give to your file
+            a.download = `Readsearch_Report.docx`; // or any name you want to give to your file
             document.body.appendChild(a);
             a.click();
             // After a timeout, remove the element and revoke the object URL
@@ -257,12 +275,46 @@ methods: {
         catch (error) {
             console.error(error);
             }
-  }
+  },
+  async newSearch() {
+    const url = "http://localhost:8000/firstsearch";  // replace with your API endpoint000
+    const data = {
+        searchqueries: [this.inputValue],
+        apiKey: this.apiKey,
+    };
+    console.log(data)
+    try {
+        const response = await fetch(url, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+        });
+        const searchResult = await response.json();
+        let queryids = Object.keys(searchResult);
+        for (let queryid of queryids) {
+            this.searchState[queryid] = 'initial'; // add the queryid to the status dictionary and Set its value to 'initial'
+        }
+        this.updateJsonData(searchResult, this.jsonData)// add this new jsondata to the exising jsondata 
+        this.parsedata() // this will add the queryid in to the existing 
+        
+    } catch (error) {
+            console.error(error);
+            alert(`There is an error duing the search: ${error}`);// handle error here
+        }
+        },
     }
 }   
 </script>
 
 <style scoped>
+@media (min-width: 768px) {
+    .w-md-45 {
+        width: 45% !important;
+    }
+}
 .coffee-button {
 background-color: #FFDD00; /* Yellow background */
 color: black; /* Black text */
@@ -358,5 +410,7 @@ h3, p {
 .query-title {
   text-transform: capitalize;
 }
-
+h1 {
+    color: #5781c0; /* Using the primary color for headings */
+  }
 </style>

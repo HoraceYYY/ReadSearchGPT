@@ -8,7 +8,6 @@ from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware # to allow CORS
-from datetime import datetime, timedelta
 from database import SessionLocal
 from sqlalchemy.orm import Session
 import models, secrets
@@ -36,6 +35,9 @@ class deepsearch(BaseModel):
     queryID: str
     searchDomain: str | None = None
     apiKey: str
+
+class DownloadResult(BaseModel):
+    queryIDs: List[str]
 
 class FeedbackBase(BaseModel):
     feedback: str
@@ -72,12 +74,12 @@ async def first_search(search: firstSearch, userid: str = Cookie(None), db: Sess
         searchqueries = search.searchqueries
         userDomain = search.searchDomain
         api_key = search.apiKey
-        research_id, querywithresult = await async_google.first_search(db, searchqueries, userDomain, api_key, userid)
+        querywithresult = await async_google.first_search(db, searchqueries, userDomain, api_key, userid)
         db.commit()
         print(f"Task Completed")
     finally:    
         db.close()
-    return research_id, querywithresult, api_key, userDomain # returning api key to store in the front end to make the second and deep search, returning the userDomain for the deep search
+    return querywithresult, api_key# returning api key to store in the front end to make the second and deep search, returning the userDomain for the deep search
 
 @app.post("/secondsearch")
 async def second_search(search: additionalSearch, db: Session = Depends(get_db)):
@@ -104,18 +106,16 @@ async def first_deep_search(search: deepsearch, db: Session = Depends(get_db)):
         db.close()
     return querywithresult, api_key
 
-@app.get("/downloadsearchresult/{task_id}")
-async def download_word(task_id, db: Session = Depends(get_db)):
+
+async def download_word(queryids, db: Session = Depends(get_db)):
 
     document = Document() # Initialize a new Word document
     data = {}  # Initialize a dictionary to store the data
 
-    query_ids = db.query(models.Query.id).filter(models.Query.task_id == task_id).all()
-    if not query_ids:
+    if not queryids:
         raise HTTPException(status_code=404, detail="No queries found for this task ID")
-    query_ids = [id_[0] for id_ in query_ids]    # Convert list of tuples to list of IDs
 
-    for query_id in query_ids: # Fetch the Query, URLData and URLSummary from the database
+    for query_id in queryids: # Fetch the Query, URLData and URLSummary from the database
         query = db.query(models.Query).filter(models.Query.id == query_id).first()
         url_data = db.query(models.URLData).filter(models.URLData.query_id == query_id).all()
         url_summary = db.query(models.URLSummary).filter(models.URLSummary.query_id == query_id).all()
@@ -158,15 +158,17 @@ async def download_word(task_id, db: Session = Depends(get_db)):
         for data in [d for d in info['url_data'] if d["category"] == "Unread_Websites"]:
             document.add_paragraph(f'URL: {data["url"]}')
     # Save the document
-    file_path = f"Results/{task_id}.docx"
+    file_path = f"Results/Readsearch_Report.docx"
     document.save(file_path)
     return file_path
 
-@app.get("/task/{task_id}/webdownload")
-async def web_download_excel(task_id: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    file_path = await download_word(task_id, db)
+@app.post("/task/webdownload")
+async def web_download_excel(download: DownloadResult, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    queryids = download.queryIDs
+    print(queryids)
+    file_path = await download_word(queryids, db)
     background_tasks.add_task(delete_file_after_delay, file_path, delay=30) # Add a background task to delete the file after 1 minute
-    return FileResponse(file_path, media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document', filename=f"{task_id}.docx")  # Return the Word document as a response
+    return FileResponse(file_path, media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document', filename=f"Readsearch_Report.docx")  # Return the Word document as a response
 
 def delete_file_after_delay(file_path: str, delay: int):
     time.sleep(delay)
@@ -223,3 +225,21 @@ class UserResponse(BaseModel):
 @app.get("/read-cookie/", response_model=UserResponse)
 def read_cookie(userid: str | None = Cookie(None)):
     return {"userid": userid}
+
+@app.get("/queryhistory")
+async def get_queries(userid: str = Cookie(None), db: Session = Depends(get_db)):
+    if not userid:
+        return None
+
+    tasks = db.query(models.Task).filter(models.Task.userid == userid).all()
+
+    if not tasks:
+        return None
+
+    query_dict = {}
+    for task in tasks:
+        queries = db.query(models.Query).filter(models.Query.task_id == task.id).all()
+        for query in queries:
+            query_dict[str(query.id)] = query.query
+
+    return query_dict

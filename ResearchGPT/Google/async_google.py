@@ -129,6 +129,7 @@ async def url_producer(db, searchDomain, url, query, queryid, api_key):
         raise
 
 async def first_search(db, searchqueries, userDomain, api_key, userid):
+    print(searchqueries)
     start_time = time.time()
     print("Timer Starts: ", start_time)
     if userDomain is not None and userDomain.strip() == "":
@@ -176,7 +177,7 @@ async def first_search(db, searchqueries, userDomain, api_key, userid):
         concatenated_content = " ".join(contents)  # Concatenate all contents with a space in between
         clean_content = ' '.join(concatenated_content.split())  # Remove all extra spaces
         querysummary = await async_utils.query_summary(api_key,searchqueries[index],clean_content)
-        queru_summary_db = models.URLSummary(query_id = queryid, summarytype = "first_search", summary = querysummary)
+        queru_summary_db = models.URLSummary(query_id = queryid, summarytype = "Initial Search", summary = querysummary)
         db.add(queru_summary_db)
         db.commit() 
         pageResults[queryid].append({"Summary": querysummary})
@@ -185,7 +186,7 @@ async def first_search(db, searchqueries, userDomain, api_key, userid):
     
     timer3 = time.time()
     print("web summary done. Time Used: ",timer3-timer2)
-    return research.id, queryresults
+    return queryresults
 
 async def second_search(db, queryid, api_key):
     all_tasks = []
@@ -207,7 +208,7 @@ async def second_search(db, queryid, api_key):
     concatenated_content = ' '.join(concatenated_content.split())  # Remove all extra spaces
     # print(concatenated_content)
     querysummary = await async_utils.query_summary(api_key,query,concatenated_content)
-    queru_summary_db = models.URLSummary(query_id = queryid, summarytype = "second_search", summary = querysummary)
+    queru_summary_db = models.URLSummary(query_id = queryid, summarytype = "Broader Search", summary = querysummary)
     db.add(queru_summary_db)
     db.commit() 
     results.append({"Summary": querysummary})
@@ -231,7 +232,7 @@ async def first_deep_search(db, queryid, userDomain, api_key):
         task = asyncio.create_task(url_producer(db, searchDomain, url, query, queryid, api_key))
         all_producer_tasks.append(task)
     results = await asyncio.gather(*all_producer_tasks)  # this will contain all the relevantURLs from each task
-    flat_results_set = set(item for sublist in results for item in sublist)
+    flat_results_set = set(item for sublist in results if sublist is not None for item in sublist)
     urls_set = set(urls) # Convert urls to set
     relevantURLs = flat_results_set - urls_set # Subtract urls_set from flat_results_set to get only the new, unique URLs
 
@@ -249,7 +250,7 @@ async def first_deep_search(db, queryid, userDomain, api_key):
     concatenated_content = ' '.join(concatenated_content.split())  # Remove all extra spaces
     print(concatenated_content)
     querysummary = await async_utils.query_summary(api_key,query,concatenated_content)
-    queru_summary_db = models.URLSummary(query_id = queryid, summarytype = "first_deep_search", summary = querysummary)
+    queru_summary_db = models.URLSummary(query_id = queryid, summarytype = "Deep Search", summary = querysummary)
     db.add(queru_summary_db)
     db.commit() 
     results.append({"Summary": querysummary})
