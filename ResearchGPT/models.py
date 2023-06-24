@@ -47,12 +47,13 @@ class URLSummary(Base):
     query_id = Column(UUID, ForeignKey('queries.id'), nullable=False)
     summarytype = Column(String)
     summary = Column(String)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
 
 class Feedback(Base):
     __tablename__ = "feedback"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     feedback = Column(Text)  # User's feedback on the product
-    timestamp = Column(DateTime, default=func.now())  # The time when feedback was submitted
+    timestamp = Column(DateTime(timezone=True), default=func.now())  # The time when feedback was submitted
 
 class Email(Base):
     __tablename__ = "email"

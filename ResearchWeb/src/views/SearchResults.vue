@@ -1,4 +1,21 @@
 <template>
+    <div v-if="showApiKeyModal" class="modal d-block">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-black">Enter API Key</h5>
+          <button type="button" class="btn-close" aria-label="Close" @click="closeApiKeyModal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" v-model="apiKeyInput" class="form-control" placeholder="API Key">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="closeApiKeyModal">Cancel</button>
+          <button type="button" class="btn btn-primary" @click="submitApiKey">{{ apibuttonText }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
     <div class="container-fluid px-4">
         <div class="d-flex flex-column flex-md-row align-items-center justify-content-center mb-2 mt-0 gap-2">
             <div class="text-center text-md-start mt-3 mt-md-0">
@@ -63,7 +80,8 @@ export default {
     data() {
       return {
         currentQueryId: 0, // index used for [queryid]
-        apiKey: "",
+        apiKey: "", // api key from the query page
+        apiKeyInput:"", // api key from the current page user input
         queryIDs: [], // a list of query ids [queryid]
         queries: {}, // {queryid : query}
         urlResults: {}, // {queryid : [title, url, content]}
@@ -71,6 +89,8 @@ export default {
         searchState: {}, // {queryid: "state"}
         userDomain: "",
         inputValue: [], //[query]
+        showApiKeyModal: false,
+        apibuttonText: "Submit"
         };
     },
     computed: {
@@ -277,43 +297,122 @@ methods: {
             }
   },
   async newSearch() {
-    const url = "http://localhost:8000/firstsearch";  // replace with your API endpoint000
-    const data = {
-        searchqueries: [this.inputValue],
-        apiKey: this.apiKey,
+    if (this.inputValue.trim() !== ""){
+        if (this.apiKey === ""){
+            //show a pop up window for user to enter the api - use can choose to close this window
+            this.showApiKeyModal = true;
+            return            
+            //call testapi endpoint to check if api is valid
+        }
+        const url = "http://localhost:8000/firstsearch";  // replace with your API endpoint000
+        const data = {
+            searchqueries: [this.inputValue],
+            apiKey: this.apiKey,
+        };
+        console.log(data)
+        try {
+            const response = await fetch(url, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+            });
+            const searchResult = await response.json();
+            let queryids = Object.keys(searchResult);
+            for (let queryid of queryids) {
+                this.searchState[queryid] = 'initial'; // add the queryid to the status dictionary and Set its value to 'initial'
+            }
+            this.updateJsonData(searchResult, this.jsonData)// add this new jsondata to the exising jsondata 
+            this.parsedata() // this will add the queryid in to the existing 
+            
+        } catch (error) {
+                console.error(error);
+                alert(`There is an error duing the search: ${error}`);// handle error here
+            }
+    }
+    },
+    async submitApiKey() {
+    if (this.apiKeyInput.trim() !== "") {
+      // Perform API key validation (e.g., by calling the testapi endpoint)
+      this.apibuttonText = "Checking..."
+      try{
+        const response = await this.testApi();
+        if (response['Key'] === 'Valid') {
+            this.apiKey = this.apiKeyInput; // If the API key is valid, assign it to the `apiKey` data property
+            this.showApiKeyModal = false; // Hide the API key modal
+        }else{
+            alert("Please enter a valid API key");
+            return;
+        }
+      }catch (error) {
+        console.error(error);
+        alert("There was an error validating the API key.");
+        return;
+      } finally {
+      this.apibuttonText = "Submit"; // Change the button text back to "Submit"
+      }
+      this.newSearch(); // Call the newSearch method to proceed with the search
+    } else {
+      alert("Please enter a valid API key."); // Show an error message if the API key is empty
+    }
+  },
+  closeApiKeyModal() {
+    this.showApiKeyModal = false; // Hide the API key modal without submitting the key
+  },
+  async testApi() {
+    // console.log(this.searchQueries)
+    const trimmedApiKey = this.apiKeyInput.trim();
+    const url = "http://localhost:8000/testapi";  // replace with your API endpoint
+    const payload = {
+        apiKey: trimmedApiKey,
     };
-    console.log(data)
     try {
         const response = await fetch(url, {
         method: 'POST',
-        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
         });
-        const searchResult = await response.json();
-        let queryids = Object.keys(searchResult);
-        for (let queryid of queryids) {
-            this.searchState[queryid] = 'initial'; // add the queryid to the status dictionary and Set its value to 'initial'
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-        this.updateJsonData(searchResult, this.jsonData)// add this new jsondata to the exising jsondata 
-        this.parsedata() // this will add the queryid in to the existing 
-        
+        const data = await response.json();
+     
+        return data;
+        //handle your response here
     } catch (error) {
-            console.error(error);
-            alert(`There is an error duing the search: ${error}`);// handle error here
-        }
-        },
+      this.buttonText = "Search";
+    console.error('API key check failed:', error); // Print detailed error information
+    alert(`There is an error when checking the API key. Please try again! Error: ${error}`); // Show detailed error message
+  }
+},
+
     }
 }   
 </script>
 
 <style scoped>
-@media (min-width: 768px) {
-    .w-md-45 {
-        width: 45% !important;
-    }
+@media (max-width: 576px) {
+    .modal-dialog {
+    max-width: 80%;
+    margin: 0 auto
+  }
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
 }
 .coffee-button {
 background-color: #FFDD00; /* Yellow background */
