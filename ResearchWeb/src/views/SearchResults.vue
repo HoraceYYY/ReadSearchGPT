@@ -21,13 +21,18 @@
             <div class="text-center text-md-start mt-3 mt-md-0">
                 <h1 class="display-12 mb-1 fw-bold">ReadSearch</h1>
             </div>
-            <div class="w-100 w-md-45">
+            <div class="col-12 col-md-6">
                 <div class="input-group">
-                    <input type="text" v-model="inputValue" class="form-control" placeholder="Enter your search">
-                    <div class="input-group-append">
-                        <button @click="newSearch" class="btn-success btn-outline-primary">Search</button>
+                    <input type="text" v-model="inputValue" class="form-control" placeholder="Enter new search topic...">
+                    <div clas5s="input-group-append">
+                        <button @click="newSearch" class="btn-success btn-outline-primary">New Search</button>
                     </div>
                 </div>
+                <search-status-notification
+                    :visible="searchStatusVisible"
+                    :message="searchStatusMessage"
+                    :completed="searchStatusCompleted"
+                ></search-status-notification>
             </div>
         </div>
         <div class="row d-flex mt-3">
@@ -40,15 +45,15 @@
                                 <h3 class="font-weight-bold query-title fst-italic">{{ queries[queryIDs[currentQueryId]] }}</h3>
                                 <p v-html="urlSummaries[queryIDs[currentQueryId]]"></p>
                             </div>
-                            <div class="overlay" v-show="searchState[queryIDs[currentQueryId]] === 'searching'">
-                                <p class="loading-text">The additional search will take about 1-2 minutes.</p>
-                            </div>
+                            <div class="overlay" v-show="searchState[queryIDs[currentQueryId]] === 'searching'"></div>
                         </div>
+                        
+                        <p class="loading-text text-center" v-show="searchState[queryIDs[currentQueryId]] === 'searching'">The additional search will take about 1-2 minutes.</p>
                     </div>
                     <div class="card-footer">
-                        <button @click="previousQuery" :class="{'invisible-button': currentQueryId === 0, 'btn-success': true}" >Previous</button>
+                        <button @click="previousQuery" :class="{'invisible-button': currentQueryId === 0, 'btn-success': true}" >&#10550</button>
                         <button @click="handleSearchClick" :class="{'btn-success': true}" :disabled="isButtonDisabled">{{ buttonText }}</button>
-                        <button @click="nextQuery" :class="{'invisible-button': currentQueryId === maxQueryId - 1, 'btn-success': true}" >Next</button>
+                        <button @click="nextQuery" :class="{'invisible-button': currentQueryId === maxQueryId - 1, 'btn-success': true}" >&#10551</button>
                     </div>
                 </div>
             </div>
@@ -76,7 +81,12 @@
 </template>
 
 <script>
+import SearchStatusNotification from './SearchStatusNotification.vue';
+
 export default {
+    components: {
+        SearchStatusNotification,
+    },
     data() {
       return {
         currentQueryId: 0, // index used for [queryid]
@@ -90,7 +100,12 @@ export default {
         userDomain: "",
         inputValue: [], //[query]
         showApiKeyModal: false,
-        apibuttonText: "Submit"
+        apibuttonText: "Submit",
+        searchStatusVisible: false, // Whether the search status notification is visible
+        searchStatusMessage: '', // Message to display in the search status notification
+        searchStatusCompleted: false, // Whether the search is completed
+        searchCount: 0,
+        completedCount: 0,
         };
     },
     computed: {
@@ -109,9 +124,9 @@ export default {
         // Check the searchState for the current queryId
         switch (this.searchState[this.queryIDs[this.currentQueryId]]) {
             case "initial":
-                return "Broader Search";
+                return "Explore More";
             case "broad":
-                return "Deeper Search";
+                return "Dive Deeper";
             case "searching":
                 return "Searching...";
             default:
@@ -296,6 +311,30 @@ methods: {
             console.error(error);
             }
   },
+  showSearchStatusNotification(message, completed) {
+      // Show the search status notification with the provided message and completion status
+      this.searchStatusMessage = message;
+      this.searchStatusCompleted = completed;
+      this.searchStatusVisible = true;
+    },
+    completeSearch() {
+      // Increase the completed count
+      this.completedCount++;
+
+      // If all searches are completed
+      if (this.completedCount === this.searchCount) {
+        // Update the completion status of the search notification
+        this.showSearchStatusNotification('ReadSearch Completed', true);
+
+        // Hide the notification after 2 seconds
+        setTimeout(() => {
+            this.searchStatusVisible = false;;
+        }, 2000);
+      } else {
+        // Update the search status message
+        this.showSearchStatusNotification(`ReadSearching ${this.searchCount - this.completedCount} New Topics...`, false);
+      }
+    },
   async newSearch() {
     if (this.inputValue.trim() !== ""){
         if (this.apiKey === ""){
@@ -309,8 +348,10 @@ methods: {
             searchqueries: [this.inputValue],
             apiKey: this.apiKey,
         };
-        console.log(data)
+        //console.log(data)
         try {
+            this.searchCount++;
+            this.showSearchStatusNotification(`ReadSearching ${this.searchCount - this.completedCount}  New Topics...`, false);
             const response = await fetch(url, {
             method: 'POST',
             credentials: 'include',
@@ -320,17 +361,18 @@ methods: {
             body: JSON.stringify(data),
             });
             const searchResult = await response.json();
-            let queryids = Object.keys(searchResult);
+            let queryids = Object.keys(searchResult[0]);
             for (let queryid of queryids) {
                 this.searchState[queryid] = 'initial'; // add the queryid to the status dictionary and Set its value to 'initial'
             }
             this.updateJsonData(searchResult, this.jsonData)// add this new jsondata to the exising jsondata 
             this.parsedata() // this will add the queryid in to the existing 
-            
+            this.completeSearch()
         } catch (error) {
-                console.error(error);
-                alert(`There is an error duing the search: ${error}`);// handle error here
-            }
+            this.searchCount--;
+            console.error(error);
+            alert(`There is an error duing the search: ${error}`);// handle error here
+        }
     }
     },
     async submitApiKey() {
@@ -444,10 +486,15 @@ color: white; /* White text */
 }
 
 .loading-text {
+  position: absolute;  /* Update from absolute to fixed */
+  top: 50%;        /* New addition - Centering on viewport */
+  left: 50%;       /* New addition - Centering on viewport */
+  transform: translate(-50%, -50%); /* New addition - Centering on viewport */
   margin-bottom: 40px;
   color: #032152;
   font-size: 2em;
   animation: fade 3s linear infinite; 
+  z-index: 1001;
 }
 .overlay {
   position: absolute;
