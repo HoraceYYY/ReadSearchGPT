@@ -71,8 +71,10 @@ export default {
 
 <template>
   <div class="container">
+    <h1 class="display-4 mb-1 fw-bold">ReadSearch GPT</h1>  
+    <h2 class="h3 mb-1 fw-bold" style="font-style: italic;">Use AI for online research</h2>
     <form @submit.prevent="sendFeedback">
-      <div class="form-group">
+      <div class="form-group mt-2">
         <label for="feedback" class="form-label">Tell us about your experience of the product or new features you would like to see:</label>
         <textarea id="feedback" v-model="feedback" class="form-control" placeholder="Enter your feedback here..." maxlength="1500" rows="8" />
         <p v-if="wordCount > 1500" class="word-count-warning">Please limit your feedback to 1500 words</p>
@@ -146,4 +148,7 @@ export default {
 .error-message {
   color: red;
 }
+h1, h2 {
+    color: #5781c0; /* Using the primary color for headings */
+  }
 </style>
