@@ -10,6 +10,7 @@ from typing import List
 from fastapi.middleware.cors import CORSMiddleware # to allow CORS
 from database import SessionLocal
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 import models, secrets
 
 class EmailRequest(BaseModel):
@@ -41,6 +42,9 @@ class DownloadResult(BaseModel):
 
 class FeedbackBase(BaseModel):
     feedback: str
+
+class UserResponse(BaseModel):
+    userid: str | None = None
 
 app = FastAPI()
 
@@ -105,7 +109,6 @@ async def first_deep_search(search: deepsearch, db: Session = Depends(get_db)):
     finally:
         db.close()
     return querywithresult, api_key
-
 
 async def download_word(queryids, db: Session = Depends(get_db)):
 
@@ -219,9 +222,6 @@ def create_cookie():
     response.set_cookie(key="userid", value=unique_id)
     return response
 
-class UserResponse(BaseModel):
-    userid: str | None = None
-
 @app.get("/read-cookie/", response_model=UserResponse)
 def read_cookie(userid: str | None = Cookie(None)):
     return {"userid": userid}
@@ -230,12 +230,9 @@ def read_cookie(userid: str | None = Cookie(None)):
 async def get_queries(userid: str = Cookie(None), db: Session = Depends(get_db)):
     if not userid:
         return None
-
     tasks = db.query(models.Task).filter(models.Task.userid == userid).all()
-
     if not tasks:
         return None
-
     query_dict = {}
     for task in tasks:
         queries = db.query(models.Query).filter(models.Query.task_id == task.id).all()
@@ -243,3 +240,22 @@ async def get_queries(userid: str = Cookie(None), db: Session = Depends(get_db))
             query_dict[str(query.id)] = query.query
 
     return query_dict
+
+@app.post("/historicalresults")
+async def get_historical_results(queryids: DownloadResult, db: Session = Depends(get_db)):
+    query_ids = queryids.queryIDs
+    print(query_ids)
+    queryresults = {}
+    for query_id in query_ids:
+        query_object = db.query(models.Query.query).filter(models.Query.id == query_id).first()
+        url_data_objects = db.query(models.URLData.content, models.URLData.title, models.URLData.url).filter(models.URLData.query_id == query_id).all()
+        url_summary_object = db.query(models.URLSummary.summary).filter(models.URLSummary.query_id == query_id).order_by(desc(models.URLSummary.timestamp)).first()
+
+        if query_object and url_data_objects and url_summary_object:
+            query = query_object.query
+            results = [{"content": obj[0], "title": obj[1], "url": obj[2]} for obj in url_data_objects]
+            summary = url_summary_object.summary
+            results.append({"Summary": summary})
+            queryresults[query_id] = [query, results]
+
+    return queryresults, "" ## "" represents an empty api key

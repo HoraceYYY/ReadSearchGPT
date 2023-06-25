@@ -10,7 +10,7 @@ const router = createRouter({
   routes: [
     {
       path: '/mysearch',
-      name: 'Find My Search',
+      name: 'Search History',
       component: MySearch
     },
     {

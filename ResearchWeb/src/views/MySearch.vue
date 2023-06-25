@@ -36,6 +36,16 @@ export default {
   async created() {
     await this.fetchQueries();
   },
+  computed:{
+    jsonData: {
+        get() {
+            return this.$store.state.jsonData;
+        },
+        set(value) {
+            this.$store.dispatch('setJsonData', value);
+        }
+    }
+  },
   methods: {
     async fetchQueries() {
       const url = "http://localhost:8000/queryhistory";
@@ -48,7 +58,7 @@ export default {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log(data)
+        //console.log(data)
         if (data === null) {
           this.queries = {}
         } else {
@@ -60,9 +70,29 @@ export default {
         console.error('API call failed:', error);
       }
     },
-    handleQueryClick(queryId) {
-      console.log(`Query ${queryId} clicked.`);
-      // Call another API or do something else when a query button is clicked
+    async handleQueryClick(queryId) {
+      const url = "http://localhost:8000/historicalresults";  // Replace with your backend URL
+      const queryIdArray = {queryIDs : [queryId]}
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(queryIdArray)
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        //console.log(data);
+        // Do something with the data
+        this.jsonData = data;  // assign jsonData directly
+        this.$router.push({ path: '/searchresults' });
+      } catch (error) {
+        console.error('API call failed:', error);
+      }
     },
   },
 };

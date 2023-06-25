@@ -140,9 +140,16 @@ export default {
     },
     created() {
     this.parsedata();
-    for (const queryId of this.queryIDs) {
+    if (this.apiKey === ""){ // if there is no api, it means user comes from the the history page, so all the search should be final
+        for (const queryId of this.queryIDs) {
+        this.searchState[queryId] = "done";
+    }
+    }else{ // if there is api, it means user comes from the the history page, so all the search should be final
+        for (const queryId of this.queryIDs) {
         this.searchState[queryId] = "initial";
     }
+    }
+    
 },
 
 methods: {
