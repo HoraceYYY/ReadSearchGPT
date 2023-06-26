@@ -222,7 +222,7 @@ def create_cookie():
     response.set_cookie(key="userid", value=unique_id)
     return response
 
-@app.get("/read-cookie/", response_model=UserResponse)
+@app.get("/read-cookie", response_model=UserResponse)
 def read_cookie(userid: str | None = Cookie(None)):
     return {"userid": userid}
 

@@ -183,7 +183,7 @@ async firstSearch(){
       searchDomain: this.domain.trim().toLowerCase(),  
       apiKey: this.apiKey,
     };
-    console.log(data)
+    //console.log(data)
     try {
       this.buttonText = "Searching...";
       const response = await fetch(url, {
