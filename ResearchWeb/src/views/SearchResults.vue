@@ -201,7 +201,7 @@ methods: {
         const queryId = this.queryIDs[this.currentQueryId];
         switch (this.searchState[queryId]) {
             case "initial":
-                const url1 = "http://localhost:8000/secondsearch";  // replace with your API endpoint
+                const url1 = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/secondsearch";  // replace with your API endpoint
                 const data1 = {
                     queryID: queryId,
                     apiKey: this.apiKey,
@@ -227,7 +227,7 @@ methods: {
                 }
                 break;
             case "broad":
-                const url2 = "http://localhost:8000/firstdeepsearch";  // replace with your API endpoint
+                const url2 = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/firstdeepsearch";  // replace with your API endpoint
                 const data2 = {
                     queryID: queryId,
                     searchDomain: this.userDomain,
@@ -294,7 +294,7 @@ methods: {
         }
     },
     async handleDownloadReport() {
-        const url = `http://localhost:8000/task/webdownload`;  // Replace with your API endpoint URL
+        const url = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/webdownload`;  // Replace with your API endpoint URL
         const  downloadQuerise= {
             queryIDs: this.queryIDs
         }
@@ -358,7 +358,7 @@ methods: {
             return            
             //call testapi endpoint to check if api is valid
         }
-        const url = "http://localhost:8000/firstsearch";  // replace with your API endpoint000
+        const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/firstsearch";  // replace with your API endpoint000
         const data = {
             searchqueries: [this.inputValue],
             apiKey: this.apiKey,
@@ -421,7 +421,7 @@ methods: {
   async testApi() {
     // console.log(this.searchQueries)
     const trimmedApiKey = this.apiKeyInput.trim();
-    const url = "http://localhost:8000/testapi";  // replace with your API endpoint
+    const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/testapi";  // replace with your API endpoint
     const payload = {
         apiKey: trimmedApiKey,
     };
