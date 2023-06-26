@@ -124,8 +124,8 @@ export default {
 
 .send-button {
   border: 2px solid #0c952c;
-  background-color: #ffffff;
-  color: #0c952c;
+  background-color: #0c952c;
+  color: #ffffff;
   padding: .375rem 1.5rem; /* Increased padding to make button wider */
   max-width: 300px; /* Added max-width to limit button size */
 }

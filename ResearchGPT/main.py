@@ -230,6 +230,7 @@ def read_cookie(userid: str | None = Cookie(None)):
 async def get_queries(userid: str = Cookie(None), db: Session = Depends(get_db)):
     if not userid:
         return None
+    print(userid)
     tasks = db.query(models.Task).filter(models.Task.userid == userid).all()
     if not tasks:
         return None

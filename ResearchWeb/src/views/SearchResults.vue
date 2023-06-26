@@ -52,7 +52,7 @@
                     </div>
                     <div class="card-footer">
                         <button @click="previousQuery" :class="{'invisible-button': currentQueryId === 0, 'btn-success': true}" >&#10550</button>
-                        <button @click="handleSearchClick" :class="{'btn-success': true}" :disabled="isButtonDisabled">{{ buttonText }}</button>
+                        <button @click="handleSearchClick" :class="buttonClass" :disabled="isButtonDisabled">{{ buttonText }}</button>
                         <button @click="nextQuery" :class="{'invisible-button': currentQueryId === maxQueryId - 1, 'btn-success': true}" >&#10551</button>
                     </div>
                 </div>
@@ -136,7 +136,15 @@ export default {
     isButtonDisabled() {
         const currentSearchState = this.searchState[this.queryIDs[this.currentQueryId]];
         return currentSearchState === "done" || currentSearchState === "searching";
+    },
+    buttonClass() {
+    const currentSearchState = this.searchState[this.queryIDs[this.currentQueryId]];
+    if (currentSearchState === "done" || currentSearchState === "searching") {
+        return 'btn-disabled';
+    } else {
+        return 'btn-success' ;
     }
+}
     },
     created() {
     this.parsedata();
@@ -485,6 +493,7 @@ color: white; /* White text */
   50% {opacity: 0.2;}
   100% {opacity: 1;}
 }
+
 .overlay-wrapper {
   position: relative;
   flex-grow: 1;
@@ -559,6 +568,13 @@ h3, p {
 .btn-success:hover {
   background-color: #006c22;
   border-color: #006c22;
+}
+.btn-disabled {
+    color: #5f5f5f;
+    background-color: #ccc;
+    border-color: #ccc;
+    border-radius: 5px; /* Add rounded corners */
+    padding: 5px 10px; /* Add some padding */
 }
 .query-title {
   text-transform: capitalize;
