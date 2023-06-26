@@ -48,20 +48,20 @@ class UserResponse(BaseModel):
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:5173",  
-    "https://readsearch.azurewebsites.net",
-    "www.readsearchgpt.com",
-    "https://readsearchgpt.com"
-]
+# origins = [
+#     "http://localhost:5173",  
+#     "https://readsearch.azurewebsites.net",
+#     "www.readsearchgpt.com",
+#     "https://readsearchgpt.com"
+# ]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 # Get a db session
 def get_db():
     db = SessionLocal()
