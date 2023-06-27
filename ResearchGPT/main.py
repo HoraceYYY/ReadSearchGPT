@@ -70,7 +70,7 @@ def get_db():
     finally:
         db.close()
 
-@app.post("/api/firstsearch") # this is the entry point of the search, this will search all the topics entered
+@app.post("/firstsearch") # this is the entry point of the search, this will search all the topics entered
 async def first_search(search: firstSearch, userid: str = Cookie(None), db: Session = Depends(get_db)):
     logging.info(f"Userid: {userid}")
     try:
@@ -86,7 +86,7 @@ async def first_search(search: firstSearch, userid: str = Cookie(None), db: Sess
         db.close()
     return querywithresult, api_key# returning api key to store in the front end to make the second and deep search, returning the userDomain for the deep search
 
-@app.post("/api/secondsearch")
+@app.post("/secondsearch")
 async def second_search(search: additionalSearch, db: Session = Depends(get_db)):
     try:
         queryid = search.queryID
@@ -98,7 +98,7 @@ async def second_search(search: additionalSearch, db: Session = Depends(get_db))
         db.close()
     return querywithresult, api_key # returning api key to store in the front end to make the next search
 
-@app.post("/api/firstdeepsearch/")
+@app.post("/firstdeepsearch/")
 async def first_deep_search(search: deepsearch, db: Session = Depends(get_db)):
     try:
         queryid = search.queryID
@@ -166,7 +166,7 @@ async def download_word(queryids, db: Session = Depends(get_db)):
     document.save(file_path)
     return file_path
 
-@app.post("/api/webdownload")
+@app.post("/webdownload")
 async def web_download_excel(download: DownloadResult, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     queryids = download.queryIDs
     print(queryids)
@@ -179,7 +179,7 @@ def delete_file_after_delay(file_path: str, delay: int):
     if os.path.exists(file_path):
         os.remove(file_path)
 
-@app.post("/api/testapi")
+@app.post("/testapi")
 async def testAPI(apiKey: APIKey):
     api_key = apiKey.apiKey
     url = 'https://api.openai.com/v1/chat/completions'
@@ -206,7 +206,7 @@ async def testAPI(apiKey: APIKey):
             print(e)
             return {"Key": f"Not Valid: {e}"}
 
-@app.post("/api/feedback")
+@app.post("/feedback")
 async def create_feedback(feedback: FeedbackBase, db: Session = Depends(get_db)):
     new_feedback = models.Feedback(
         feedback=feedback.feedback
@@ -216,20 +216,20 @@ async def create_feedback(feedback: FeedbackBase, db: Session = Depends(get_db))
     db.refresh(new_feedback)
     return {"Message": "Feedback successfully submitted", "Feedback ID": new_feedback.id}
 
-@app.get("/api/create-cookie")
+@app.get("/create-cookie")
 def create_cookie():
     response = Response()
     unique_id = secrets.token_urlsafe(16) # generates a unique identifier
-    response.set_cookie(key="userid", value=unique_id, max_age=10*365*24*60*60, secure=True, samesite='None', httponly=True, domain='.readsearchgpt.com')
+    response.set_cookie(key="userid", value=unique_id, max_age=10*365*24*60*60, secure=True, samesite='Lax', httponly=True, domain='.readsearchgpt.com')
     print("created cookie after check: ", unique_id)
     return response
 
-@app.get("/api/read-cookie", response_model=UserResponse)
+@app.get("/read-cookie", response_model=UserResponse)
 def read_cookie(userid: str | None = Cookie(None)):
     print("checking cookie user id", userid)
     return {"userid": userid}
 
-@app.get("/api/queryhistory")
+@app.get("/queryhistory")
 async def get_queries(userid: str = Cookie(None), db: Session = Depends(get_db)):
     if not userid:
         return None
@@ -245,7 +245,7 @@ async def get_queries(userid: str = Cookie(None), db: Session = Depends(get_db))
 
     return query_dict
 
-@app.post("/api/historicalresults")
+@app.post("/historicalresults")
 async def get_historical_results(queryids: DownloadResult, db: Session = Depends(get_db)):
     query_ids = queryids.queryIDs
     print(query_ids)

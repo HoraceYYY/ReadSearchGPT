@@ -201,7 +201,7 @@ methods: {
         const queryId = this.queryIDs[this.currentQueryId];
         switch (this.searchState[queryId]) {
             case "initial":
-                const url1 = "https://readsearchgpt.com/api/secondsearch";  // replace with your API endpoint
+                const url1 = "https://api.readsearchgpt.com/secondsearch";  // replace with your API endpoint
                 const data1 = {
                     queryID: queryId,
                     apiKey: this.apiKey,
@@ -227,7 +227,7 @@ methods: {
                 }
                 break;
             case "broad":
-                const url2 = "https://readsearchgpt.com/api/firstdeepsearch";  // replace with your API endpoint
+                const url2 = "https://api.readsearchgpt.com/firstdeepsearch";  // replace with your API endpoint
                 const data2 = {
                     queryID: queryId,
                     searchDomain: this.userDomain,
@@ -294,7 +294,7 @@ methods: {
         }
     },
     async handleDownloadReport() {
-        const url = `https://readsearchgpt.com/api/webdownload`;  // Replace with your API endpoint URL
+        const url = `https://api.readsearchgpt.com/webdownload`;  // Replace with your API endpoint URL
         const  downloadQuerise= {
             queryIDs: this.queryIDs
         }
@@ -358,7 +358,7 @@ methods: {
             return            
             //call testapi endpoint to check if api is valid
         }
-        const url = "https://readsearchgpt.com/api/firstsearch";  // replace with your API endpoint000
+        const url = "https://api.readsearchgpt.com/firstsearch";  // replace with your API endpoint000
         const data = {
             searchqueries: [this.inputValue],
             apiKey: this.apiKey,
@@ -422,7 +422,7 @@ methods: {
   async testApi() {
     // console.log(this.searchQueries)
     const trimmedApiKey = this.apiKeyInput.trim();
-    const url = "https://readsearchgpt.com/api/testapi";  // replace with your API endpoint
+    const url = "https://api.readsearchgpt.com/testapi";  // replace with your API endpoint
     const payload = {
         apiKey: trimmedApiKey,
     };
@@ -449,7 +449,7 @@ methods: {
   }
 },
 async checkCookie() {
-      const url = "https://readsearchgpt.com/api/read-cookie"; // replace with your API endpoint
+      const url = "https://api.readsearchgpt.com/read-cookie"; // replace with your API endpoint
       try {
           const response = await fetch(url, {
               method: 'GET',
@@ -470,7 +470,7 @@ async checkCookie() {
       }
   },
   async createCookie() {
-      const url = "https://readsearchgpt.com/api/create-cookie"; // replace with your API endpoint
+      const url = "https://api.readsearchgpt.com/create-cookie"; // replace with your API endpoint
       try {
           const response = await fetch(url, {
               method: 'GET',

@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     async fetchQueries() {
-      const url = "https://readsearchgpt.com/api/queryhistory";
+      const url = "https://api.readsearchgpt.com/queryhistory";
       try {
         const response = await fetch(url, {
           method: 'GET',
@@ -71,7 +71,7 @@ export default {
       }
     },
     async handleQueryClick(queryId) {
-      const url = "https://readsearchgpt.com/api/historicalresults";  // Replace with your backend URL
+      const url = "https://api.readsearchgpt.com/historicalresults";  // Replace with your backend URL
       const queryIdArray = {queryIDs : [queryId]}
       try {
         const response = await fetch(url, {

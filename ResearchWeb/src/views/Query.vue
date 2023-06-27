@@ -9,7 +9,7 @@
       <div class="card-body">
         <h5 class="fw-bold mb-3 text-start ">Enter Research Topics:</h5>
         <div class="input-group mb-3" v-for="(item, index) in searchQueries" :key="index">
-          <input type="text" class="form-control" v-model="searchQueries[index]" @input="addItemAuto" placeholder="Up to 3 Research Topics... " aria-label="Research Topic">
+          <input type="text" class="form-control" v-model="searchQueries[index]" @input="addItemAuto" placeholder="Ask a research question... " aria-label="Research Topic">
         </div>
         <!-- <h5 class="fw-bold mb-3 text-start ">Enter A Website Domain to Narrow the Search:</h5>
         <div class="input-group mb-3">
@@ -145,12 +145,14 @@ async search() {
     }
   } catch (error) {
     console.error(error);
+    this.isLoading = false
+    this.buttonText = "Search";
   }
 },
 async testApi() {
     // console.log(this.searchQueries)
     const trimmedApiKey = this.apiKey.trim();
-    const url = "https://readsearchgpt.com/api/testapi";  // replace with your API endpoint
+    const url = "https://api.readsearchgpt.com/testapi";  // replace with your API endpoint
     const payload = {
         apiKey: trimmedApiKey,
     };
@@ -177,7 +179,7 @@ async testApi() {
   }
 },
 async firstSearch(){
-  const url = "https://readsearchgpt.com/api/firstsearch";  // replace with your API endpoint
+  const url = "https://api.readsearchgpt.com/firstsearch";  // replace with your API endpoint
   const data = {
       searchqueries: this.searchQueries,
       searchDomain: this.domain.trim().toLowerCase(),  
@@ -205,7 +207,7 @@ async firstSearch(){
       }
   },
   async checkCookie() {
-      const url = "https://readsearchgpt.com/api/read-cookie"; // replace with your API endpoint
+      const url = "https://api.readsearchgpt.com/read-cookie"; // replace with your API endpoint
       try {
           const response = await fetch(url, {
               method: 'GET',
@@ -226,7 +228,7 @@ async firstSearch(){
       }
   },
   async createCookie() {
-      const url = "https://readsearchgpt.com/api/create-cookie"; // replace with your API endpoint
+      const url = "https://api.readsearchgpt.com/create-cookie"; // replace with your API endpoint
       try {
           const response = await fetch(url, {
               method: 'GET',
