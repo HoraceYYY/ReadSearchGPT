@@ -1,6 +1,6 @@
 <template>
   <h1 class="display-4 mb-1 fw-bold">ReadSearch GPT</h1>  
-  <h2 class="h3 mb-1 fw-bold" style="font-style: italic;">Use AI for online research</h2>
+  <h2 class="h3 mb-1 fw-bold" style="font-style: italic;">Get Results Without Searching</h2>
   <div class="container pt-0 d-flex justify-content-center align-items-center" style="min-height: 1vh;"> 
     <div class="card p-4 mb-4 mt-1 rounded shadow" style="position: relative; max-width: 1000px; width: 100%;">
       <div v-if="isLoading" class="overlay">
