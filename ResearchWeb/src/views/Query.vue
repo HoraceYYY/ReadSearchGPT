@@ -150,7 +150,7 @@ async search() {
 async testApi() {
     // console.log(this.searchQueries)
     const trimmedApiKey = this.apiKey.trim();
-    const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/testapi";  // replace with your API endpoint
+    const url = "https://readsearchgpt.com/api/testapi";  // replace with your API endpoint
     const payload = {
         apiKey: trimmedApiKey,
     };
@@ -177,7 +177,7 @@ async testApi() {
   }
 },
 async firstSearch(){
-  const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/firstsearch";  // replace with your API endpoint
+  const url = "https://readsearchgpt.com/api/firstsearch";  // replace with your API endpoint
   const data = {
       searchqueries: this.searchQueries,
       searchDomain: this.domain.trim().toLowerCase(),  
@@ -205,7 +205,7 @@ async firstSearch(){
       }
   },
   async checkCookie() {
-      const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/read-cookie"; // replace with your API endpoint
+      const url = "https://readsearchgpt.com/api/read-cookie"; // replace with your API endpoint
       try {
           const response = await fetch(url, {
               method: 'GET',
@@ -226,7 +226,7 @@ async firstSearch(){
       }
   },
   async createCookie() {
-      const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/create-cookie"; // replace with your API endpoint
+      const url = "https://readsearchgpt.com/api/create-cookie"; // replace with your API endpoint
       try {
           const response = await fetch(url, {
               method: 'GET',
@@ -244,7 +244,6 @@ async firstSearch(){
 }
 }
 </script>
-
   
 <style scoped>
 @keyframes fade {

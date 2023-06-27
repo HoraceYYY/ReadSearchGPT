@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     async fetchQueries() {
-      const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/queryhistory";
+      const url = "https://readsearchgpt.com/api/queryhistory";
       try {
         const response = await fetch(url, {
           method: 'GET',
@@ -71,7 +71,7 @@ export default {
       }
     },
     async handleQueryClick(queryId) {
-      const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/historicalresults";  // Replace with your backend URL
+      const url = "https://readsearchgpt.com/api/historicalresults";  // Replace with your backend URL
       const queryIdArray = {queryIDs : [queryId]}
       try {
         const response = await fetch(url, {

@@ -27,7 +27,7 @@ export default {
           return;
         }
         try {
-        const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/feedback";  // replace with your API endpoint
+        const url = "https://readsearchgpt.com/api/feedback";  // replace with your API endpoint
         const data = {
           feedback: this.feedback
         };

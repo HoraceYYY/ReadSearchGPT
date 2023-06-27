@@ -201,7 +201,7 @@ methods: {
         const queryId = this.queryIDs[this.currentQueryId];
         switch (this.searchState[queryId]) {
             case "initial":
-                const url1 = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/secondsearch";  // replace with your API endpoint
+                const url1 = "https://readsearchgpt.com/api/secondsearch";  // replace with your API endpoint
                 const data1 = {
                     queryID: queryId,
                     apiKey: this.apiKey,
@@ -227,7 +227,7 @@ methods: {
                 }
                 break;
             case "broad":
-                const url2 = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/firstdeepsearch";  // replace with your API endpoint
+                const url2 = "https://readsearchgpt.com/api/firstdeepsearch";  // replace with your API endpoint
                 const data2 = {
                     queryID: queryId,
                     searchDomain: this.userDomain,
@@ -294,7 +294,7 @@ methods: {
         }
     },
     async handleDownloadReport() {
-        const url = `https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/task/webdownload`;  // Replace with your API endpoint URL
+        const url = `https://readsearchgpt.com/api/webdownload`;  // Replace with your API endpoint URL
         const  downloadQuerise= {
             queryIDs: this.queryIDs
         }
@@ -358,13 +358,14 @@ methods: {
             return            
             //call testapi endpoint to check if api is valid
         }
-        const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/firstsearch";  // replace with your API endpoint000
+        const url = "https://readsearchgpt.com/api/firstsearch";  // replace with your API endpoint000
         const data = {
             searchqueries: [this.inputValue],
             apiKey: this.apiKey,
         };
         //console.log(data)
         try {
+            await this.checkCookie();
             this.searchCount++;
             this.showSearchStatusNotification(`ReadSearching ${this.searchCount - this.completedCount}  New Topics...`, false);
             const response = await fetch(url, {
@@ -421,7 +422,7 @@ methods: {
   async testApi() {
     // console.log(this.searchQueries)
     const trimmedApiKey = this.apiKeyInput.trim();
-    const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/testapi";  // replace with your API endpoint
+    const url = "https://readsearchgpt.com/api/testapi";  // replace with your API endpoint
     const payload = {
         apiKey: trimmedApiKey,
     };
@@ -447,6 +448,43 @@ methods: {
     alert(`There is an error when checking the API key. Please try again! Error: ${error}`); // Show detailed error message
   }
 },
+async checkCookie() {
+      const url = "https://readsearchgpt.com/api/read-cookie"; // replace with your API endpoint
+      try {
+          const response = await fetch(url, {
+              method: 'GET',
+              credentials: 'include', // to include cookies
+          });
+
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          if (!data.userid || data.userid === null) {
+              await this.createCookie(); // If no cookie is present, create one.
+          }
+
+      } catch (error) {
+          console.error('API call failed:', error);
+      }
+  },
+  async createCookie() {
+      const url = "https://readsearchgpt.com/api/create-cookie"; // replace with your API endpoint
+      try {
+          const response = await fetch(url, {
+              method: 'GET',
+              credentials: 'include', // to include cookies
+          });
+
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+      } catch (error) {
+          console.error('API call failed:', error);
+      }
+  },
 
     }
 }   
