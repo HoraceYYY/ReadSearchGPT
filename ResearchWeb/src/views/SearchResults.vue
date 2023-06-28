@@ -23,7 +23,7 @@
             </div>
             <div class="col-12 col-md-6">
                 <div class="input-group">
-                    <input type="text" v-model="inputValue" class="form-control" placeholder="Enter new search topic...">
+                    <input type="text" v-model="inputValue" class="form-control" placeholder="Ask another question...">
                     <div clas5s="input-group-append">
                         <button @click="newSearch" class="btn-success btn-outline-primary">New Search</button>
                     </div>
