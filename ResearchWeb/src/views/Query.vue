@@ -3,8 +3,11 @@
   <h2 class="h3 mb-1 fw-bold" style="font-style: italic;">Get Results Without Searching</h2>
   <div class="container pt-0 d-flex justify-content-center align-items-center" style="min-height: 1vh;"> 
     <div class="card p-4 mb-4 mt-1 rounded shadow" style="position: relative; max-width: 1000px; width: 100%;">
-      <div v-if="isLoading" class="overlay">
+      <div v-if="isLoading" class="overlay d-flex flex-column justify-content-center align-items-center">
         <p class="loading-text">Your research will take about 1-2 minutes.</p>
+        <div class="progress" style="width: 80%;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{ width: progress + '%' }" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
       </div>
       <div class="card-body">
         <h5 class="fw-bold mb-3 text-start ">Enter Your Questions:</h5>
@@ -35,7 +38,8 @@ export default {
       return {
         buttonText: "Search",
         passwordFieldType: "password",
-        isLoading: false
+        isLoading: false,
+        progress: 0,
       };
     },
     created() {
@@ -126,6 +130,9 @@ async search() {
       return;
     }
     this.isLoading = true;
+    this.progress = 0; // Reset the progress bar
+    this.progressInterval = setInterval(this.incrementProgress, 1000); // Update the progress bar every second
+
     // If all fields are filled in, start calling api
     this.searchQueries = [...filteredQueries];
     this.buttonText = "Checking Key...";
@@ -136,7 +143,9 @@ async search() {
       // console.log(this.domain)
       await this.checkCookie();
       await this.firstSearch()
+      this.progress = 100;
       this.isLoading = false;
+      clearInterval(this.progressInterval)
     } else {
       this.buttonText = "Search";
       this.isLoading = false;
@@ -147,6 +156,7 @@ async search() {
     console.error(error);
     this.isLoading = false
     this.buttonText = "Search";
+    clearInterval(this.progressInterval);
   }
 },
 async testApi() {
@@ -243,22 +253,24 @@ async firstSearch(){
           console.error('API call failed:', error);
       }
   },
+  incrementProgress() {
+    if (this.progress < 95) {
+      this.progress += 1;
+    } else {
+      clearInterval(this.progressInterval); // Stop the interval once progress reaches 100
+    }
+  },
 }
 }
 </script>
   
 <style scoped>
-@keyframes fade {
-  0% {opacity: 1;}
-  50% {opacity: 0.2;}
-  100% {opacity: 1;}
-}
 
 .loading-text {
   margin-bottom: 40px;
   color: #032152;
   font-size: 2em;
-  animation: fade 3s linear infinite; 
+
 }
 .overlay {
   position: absolute;

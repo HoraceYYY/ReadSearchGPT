@@ -75,7 +75,8 @@ async def first_search(search: firstSearch, userid: str = Cookie(None), db: Sess
     logging.info(f"Userid: {userid}")
     try:
         if not userid:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Userid cookie is missing")
+            print("user id not logged")
+            #raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Userid cookie is missing")
         searchqueries = search.searchqueries
         userDomain = search.searchDomain
         api_key = search.apiKey
@@ -221,6 +222,7 @@ def create_cookie():
     response = Response()
     unique_id = secrets.token_urlsafe(16) # generates a unique identifier
     response.set_cookie(key="userid", value=unique_id, max_age=10*365*24*60*60, secure=True, samesite='Lax', httponly=True, domain='.readsearchgpt.com')
+    #response.set_cookie(key="userid", value=unique_id)
     print("created cookie after check: ", unique_id)
     return response
 

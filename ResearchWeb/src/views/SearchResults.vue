@@ -19,7 +19,7 @@
     <div class="container-fluid px-4">
         <div class="d-flex flex-column flex-md-row align-items-center justify-content-center mb-2 mt-0 gap-2">
             <div class="text-center text-md-start mt-3 mt-md-0">
-                <h1 class="display-12 mb-1 fw-bold">ReadSearch</h1>
+                <h1 class="display-12 mb-1 fw-bold">ReadSearchGPT</h1>
             </div>
             <div class="col-12 col-md-6">
                 <div class="input-group">
@@ -47,8 +47,13 @@
                             </div>
                             <div class="overlay" v-show="searchState[queryIDs[currentQueryId]] === 'searching'"></div>
                         </div>
+                        <div class="loading-text text-center justify-content-center align-items-center" v-show="searchState[queryIDs[currentQueryId]] === 'searching'">
+                            <p> The additional search will take about 1-2 minutes.</p>
+                            <div class="progress" style="width: 100%;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{ width: progress + '%' }" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
                         
-                        <p class="loading-text text-center" v-show="searchState[queryIDs[currentQueryId]] === 'searching'">The additional search will take about 1-2 minutes.</p>
                     </div>
                     <div class="card-footer">
                         <button @click="previousQuery" :class="{'invisible-button': currentQueryId === 0, 'btn-success': true}" >&#10550</button>
@@ -106,6 +111,7 @@ export default {
         searchStatusCompleted: false, // Whether the search is completed
         searchCount: 0,
         completedCount: 0,
+        progress: 0,
         };
     },
     computed: {
@@ -207,6 +213,8 @@ methods: {
                     apiKey: this.apiKey,
                     };
                 this.searchState[queryId] = "searching";
+                this.progress = 0; // Reset the progress bar
+                this.progressInterval = setInterval(this.incrementProgress, 1000); // Update the progress bar every second
                 //console.log(data); 
                 try {
                     const response = await fetch(url1, {
@@ -220,10 +228,13 @@ methods: {
                     this.updateJsonData(searchResult1,this.jsonData)
                     this.parsedata()
                     this.searchState[queryId] = "broad";
+                    this.progress = 100;
+                    clearInterval(this.progressInterval)
                 } catch (error) {
                     console.error(error);
                     alert(`There is an error duing the search: ${error}`);// handle error here
                     this.searchState[queryId] = "initial"
+                    clearInterval(this.progressInterval)
                 }
                 break;
             case "broad":
@@ -234,6 +245,8 @@ methods: {
                     apiKey: this.apiKey,
                     };
                 this.searchState[queryId] = "searching";
+                this.progress = 0; // Reset the progress bar
+                this.progressInterval = setInterval(this.incrementProgress, 1000); // Update the progress bar every second
                 try {
                     const response = await fetch(url2, {
                     method: 'POST',
@@ -246,10 +259,13 @@ methods: {
                     this.updateJsonData(searchResult2,this.jsonData)
                     this.parsedata()
                     this.searchState[queryId] = "done";
+                    this.progress = 100;
+                    clearInterval(this.progressInterval)
                 } catch (error) {
                     console.error(error);
                     alert(`There is an error duing the search: ${error}`);// handle error here
                     this.searchState[queryId] = "broad"
+                    clearInterval(this.progressInterval)
                 }
                 break;
             default:
@@ -347,7 +363,7 @@ methods: {
         }, 2000);
       } else {
         // Update the search status message
-        this.showSearchStatusNotification(`ReadSearching ${this.searchCount - this.completedCount} New Topics...`, false);
+        this.showSearchStatusNotification(`Searching ${this.searchCount - this.completedCount} New Topics`, false);
       }
     },
   async newSearch() {
@@ -367,7 +383,7 @@ methods: {
         try {
             await this.checkCookie();
             this.searchCount++;
-            this.showSearchStatusNotification(`ReadSearching ${this.searchCount - this.completedCount}  New Topics...`, false);
+            this.showSearchStatusNotification(`Searching ${this.searchCount - this.completedCount}  New Topics`, false);
             const response = await fetch(url, {
             method: 'POST',
             credentials: 'include',
@@ -386,6 +402,7 @@ methods: {
             this.completeSearch()
         } catch (error) {
             this.searchCount--;
+            this.searchStatusVisible = false;
             console.error(error);
             alert(`There is an error duing the search: ${error}`);// handle error here
         }
@@ -485,6 +502,13 @@ async checkCookie() {
           console.error('API call failed:', error);
       }
   },
+  incrementProgress() {
+    if (this.progress < 95) {
+      this.progress += 1;
+    } else {
+      clearInterval(this.progressInterval); // Stop the interval once progress reaches 100
+    }
+  },
 
     }
 }   
@@ -526,11 +550,6 @@ cursor: pointer; /* Add a mouse pointer on hover */
 background-color: black; /* Black background */
 color: white; /* White text */
 }
-@keyframes fade {
-  0% {opacity: 1;}
-  50% {opacity: 0.2;}
-  100% {opacity: 1;}
-}
 
 .overlay-wrapper {
   position: relative;
@@ -547,7 +566,6 @@ color: white; /* White text */
   margin-bottom: 40px;
   color: #032152;
   font-size: 2em;
-  animation: fade 3s linear infinite; 
   z-index: 1001;
 }
 .overlay {
