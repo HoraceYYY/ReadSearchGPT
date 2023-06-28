@@ -75,8 +75,8 @@ async def first_search(search: firstSearch, userid: str = Cookie(None), db: Sess
     logging.info(f"Userid: {userid}")
     try:
         if not userid:
-            print("user id not logged")
-            #raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Userid cookie is missing")
+            userid = "user id not logged"
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Userid cookie is missing")
         searchqueries = search.searchqueries
         userDomain = search.searchDomain
         api_key = search.apiKey

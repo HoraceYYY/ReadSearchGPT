@@ -48,7 +48,7 @@
                             <div class="overlay" v-show="searchState[queryIDs[currentQueryId]] === 'searching'"></div>
                         </div>
                         <div class="loading-text text-center justify-content-center align-items-center" v-show="searchState[queryIDs[currentQueryId]] === 'searching'">
-                            <p> The additional search will take about 1-2 minutes.</p>
+                            <p> The additional search should take about 1-2 minutes.</p>
                             <div class="progress" style="width: 100%;">
                                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{ width: progress + '%' }" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>

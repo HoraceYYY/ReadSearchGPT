@@ -4,7 +4,7 @@
   <div class="container pt-0 d-flex justify-content-center align-items-center" style="min-height: 1vh;"> 
     <div class="card p-4 mb-4 mt-1 rounded shadow" style="position: relative; max-width: 1000px; width: 100%;">
       <div v-if="isLoading" class="overlay d-flex flex-column justify-content-center align-items-center">
-        <p class="loading-text">Your research will take about 1-2 minutes.</p>
+        <p class="loading-text">Your research should take about 1-2 minutes.</p>
         <div class="progress" style="width: 80%;">
           <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{ width: progress + '%' }" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
