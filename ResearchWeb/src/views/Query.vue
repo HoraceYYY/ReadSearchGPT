@@ -7,9 +7,9 @@
         <p class="loading-text">Your research will take about 1-2 minutes.</p>
       </div>
       <div class="card-body">
-        <h5 class="fw-bold mb-3 text-start ">Enter Research Topics:</h5>
+        <h5 class="fw-bold mb-3 text-start ">Enter Your Questions:</h5>
         <div class="input-group mb-3" v-for="(item, index) in searchQueries" :key="index">
-          <input type="text" class="form-control" v-model="searchQueries[index]" @input="addItemAuto" placeholder="Ask a research question... " aria-label="Research Topic">
+          <input type="text" class="form-control" v-model="searchQueries[index]" @input="addItemAuto" placeholder="Ask a question... " aria-label="Research Topic">
         </div>
         <!-- <h5 class="fw-bold mb-3 text-start ">Enter A Website Domain to Narrow the Search:</h5>
         <div class="input-group mb-3">
@@ -17,7 +17,7 @@
         </div> -->
         <h5 class="fw-bold mb-3 text-start ">Enter Open AI API Key:</h5>
         <div class="input-group mb-3">
-          <input :type="passwordFieldType" v-model="apiKey" class="form-control" placeholder="API Key..." aria-label="API Key">
+          <input :type="passwordFieldType" v-model="apiKey" class="form-control" placeholder="Your API Key..." aria-label="API Key">
           <button class="btn btn-outline-dark" type="button" @click="togglePasswordField">{{ passwordFieldType === 'password' ? 'Show' : 'Hide' }}</button>
         </div>
         <a href="https://mirage-oval-bce.notion.site/Tutorials-FAQs-d026f83b53c1471589ba8ff49445dc3e" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new tab" class="mb-3 d-inline-block text-center w-100">How to get an API key?</a>
