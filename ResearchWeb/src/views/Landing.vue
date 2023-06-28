@@ -5,8 +5,8 @@
       <div class="card p-4 mb-4 mt-2 rounded shadow" style="max-width: 800px;">
         <div class="card-body">
           <!-- <h3 class="mb-4"></h3> -->
-          <p class="lead">ReadSearch uses AI to study 10's - 100's of websites on any topics to free you from spending hours sifting through online information.</p>
-          <p class="lead">ReadSearch believes in Privacy and DO NOT Track Your Personal Information.</p>
+          <p class="lead">Unlike ChatGPT using outdated information, ReadSearchGPT uses up-to-date internet information to answer your questions.</p>
+          <p class="lead">ReadSearch frees you from spending hours sifting through online information and maintains your Privacy as we DO NOT track your personal information.</p>
         </div>
       </div>
       <button @click="goToNextPage" class="btn btn-lg btn-success">Let's Go</button>
