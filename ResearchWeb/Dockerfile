@@ -23,4 +23,4 @@ COPY serve.json ./
 RUN npm install -g serve
 
 # Start server
-CMD [ "serve", "-s", "dist", "-c", "serve.json"]
+CMD [ "serve", "-s", "dist", "-c", "../serve.json"]

@@ -16,7 +16,7 @@
       <div class="modal-content">
         <span class="close" @click.stop="closeModal">&times;</span>
         <div class="video-wrapper">
-            <iframe :src="'https://www.youtube.com/embed/YqK010ThgDg'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe :src="'https://www.youtube.com/embed/pkS46QVw664'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           </div>      
       </div>
     </div>

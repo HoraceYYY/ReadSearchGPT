@@ -23,7 +23,7 @@
           <input :type="passwordFieldType" v-model="apiKey" class="form-control" placeholder="Your API Key..." aria-label="API Key">
           <button class="btn btn-outline-dark" type="button" @click="togglePasswordField">{{ passwordFieldType === 'password' ? 'Show' : 'Hide' }}</button>
         </div>
-        <a href="https://mirage-oval-bce.notion.site/Tutorials-FAQs-d026f83b53c1471589ba8ff49445dc3e" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new tab" class="mb-3 d-inline-block text-center w-100">How to get an API key?</a>
+        <a href="https://youtu.be/vi-n5-XOPbc" target="_blank" rel="noopener noreferrer" aria-label="Opens in a new tab" class="mb-3 d-inline-block text-center w-100">How to get an API key?</a>
         <div class="d-grid gap-2">
           <button class="btn btn-lg btn-success text-white" @click="search">{{ buttonText }}</button>
         </div>
