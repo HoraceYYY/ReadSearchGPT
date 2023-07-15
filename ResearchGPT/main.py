@@ -99,7 +99,7 @@ async def second_search(search: additionalSearch, db: Session = Depends(get_db))
         db.close()
     return querywithresult, api_key # returning api key to store in the front end to make the next search
 
-@app.post("/firstdeepsearch/")
+@app.post("/firstdeepsearch")
 async def first_deep_search(search: deepsearch, db: Session = Depends(get_db)):
     try:
         queryid = search.queryID
