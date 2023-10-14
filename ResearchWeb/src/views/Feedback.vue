@@ -27,7 +27,7 @@ export default {
           return;
         }
         try {
-        const url = "https://readsearchapi.ashymoss-b9207c1e.westus.azurecontainerapps.io/feedback";  // replace with your API endpoint
+        const url = "https://readsearchgpt.com/api/feedback";  // replace with your API endpoint
         const data = {
           feedback: this.feedback
         };
@@ -71,8 +71,10 @@ export default {
 
 <template>
   <div class="container">
+    <h1 class="display-4 mb-1 fw-bold">ReadSearch GPT</h1>  
+    <h2 class="h3 mb-1 fw-bold" style="font-style: italic;">Use AI for online research</h2>
     <form @submit.prevent="sendFeedback">
-      <div class="form-group">
+      <div class="form-group mt-2">
         <label for="feedback" class="form-label">Tell us about your experience of the product or new features you would like to see:</label>
         <textarea id="feedback" v-model="feedback" class="form-control" placeholder="Enter your feedback here..." maxlength="1500" rows="8" />
         <p v-if="wordCount > 1500" class="word-count-warning">Please limit your feedback to 1500 words</p>
@@ -122,8 +124,8 @@ export default {
 
 .send-button {
   border: 2px solid #0c952c;
-  background-color: #ffffff;
-  color: #0c952c;
+  background-color: #0c952c;
+  color: #ffffff;
   padding: .375rem 1.5rem; /* Increased padding to make button wider */
   max-width: 300px; /* Added max-width to limit button size */
 }
@@ -146,4 +148,7 @@ export default {
 .error-message {
   color: red;
 }
+h1, h2 {
+    color: #5781c0; /* Using the primary color for headings */
+  }
 </style>

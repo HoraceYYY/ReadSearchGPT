@@ -2,26 +2,19 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    searchQueries: [""],
+    queryIDs: [],
+    searchQueries: [""], 
     apiKey: "",
-    width: null,
-    depth: null,
     domain: "",
     jsonData: {},
-    taskId: ""
+    researchId: "",
+    queries: {}, //a dictionary of queryID:query
+    urlResults: {}, //a dict of queryID: [url, title, content]
+    urlSummaries: {}, // a dict of queryID: summary
   },
   mutations: {
-    setSearchQueries(state, searchQueries) {
-      state.searchQueries = searchQueries;
-    },
     setApiKey(state, apiKey) {
       state.apiKey = apiKey;
-    },
-    setWidth(state, width) {
-      state.width = width;
-    },
-    setDepth(state, depth) {
-      state.depth = depth;
     },
     setDomain(state, domain) {
       state.domain = domain;
@@ -30,22 +23,16 @@ export default createStore({
       //state.jsonData = { ...jsonData };
       state.jsonData = jsonData;
     },
-    setTaskId(state, taskId) {
-      state.taskId = taskId;
+    setResearchId(state, researchId) {
+      state.researchId = researchId;
+    },
+    setSearchQueries(state, searchQueries) {
+      state.searchQueries = searchQueries;
     },
   },
   actions: {
-    SearchQueries({ commit }, searchQueries) {
-      commit('setSearchQueries', searchQueries);
-    },
     ApiKey({ commit }, apiKey) {
       commit('setApiKey', apiKey);
-    },
-    setWidth({ commit }, width) {
-      commit('setWidth', width);
-    },
-    setDepth({ commit }, depth) {
-      commit('setDepth', depth);
     },
     setDomain({ commit }, domain) {
       commit('setDomain', domain);
@@ -53,17 +40,18 @@ export default createStore({
     setJsonData({ commit }, jsonData) {
       commit('setJsonData', jsonData);
     },
-    setTaskId({ commit }, taskId) {
-      commit('setTaskId', taskId);
-    }
+    setResearchId({ commit }, researchId) {
+      commit('setResearchId', researchId);
+    },
+    setSearchQueries({ commit }, searchQueries) {
+      commit('setSearchQueries', searchQueries);
+    },
   },
   getters: {
-    searchQueries: state => state.searchQueries,
     apiKey: state => state.apiKey,
-    width: state => state.width,
-    depth: state => state.depth,
     domain: state => state.domain,
     jsonData: state => state.jsonData,
-    taskId: state => state.taskId
+    researchId: state => state.researchId,
+    searchQueries: state => state.searchQueries,
   }
 })

@@ -16,8 +16,11 @@ COPY . .
 # Build app
 RUN npm run build
 
+# Copy serve.json
+COPY serve.json ./
+
 # Install serve
 RUN npm install -g serve
 
 # Start server
-CMD [ "serve", "-s", "dist" ]
+CMD [ "serve", "-s", "dist", "-c", "../serve.json"]

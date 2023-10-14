@@ -8,7 +8,10 @@ from models import Base
 # load_dotenv(dotenv_path)  # Load the .env file
 
 ##SQLALCHEMY_DATABASE_URL = "postgresql+pg8000://postgres:readsearchpostgres@/tasks?unix_sock=/cloudsql/readsearch:us-central1:readsearchubc/.s.PGSQL.5432"
-SQLALCHEMY_DATABASE_URL = "postgresql://progresql:kavfa0-ramkEg-jaxmid@readsearchdb.postgres.database.azure.com/postgres?sslmode=require"
+##production Postgres DB
+#SQLALCHEMY_DATABASE_URL = "postgresql://progresql:kavfa0-ramkEg-jaxmid@readsearchdb.postgres.database.azure.com/postgres?sslmode=require"
+##sandbox Postgres DB
+SQLALCHEMY_DATABASE_URL = "postgresql://progresql:kavfa0-ramkEg-jaxmid@readsearchdbv2.postgres.database.azure.com/postgres?sslmode=require"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL
 )

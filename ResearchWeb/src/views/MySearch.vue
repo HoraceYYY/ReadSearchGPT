@@ -1,101 +1,149 @@
-<script>
-import { mapGetters } from 'vuex';
-
-export default {
-  data() {
-    return {
-      buttonText: "Find My Results"
-    };
-  },
-  created() {
-  this.taskId = '' //clear the input from previous input of the same session
-},
-  computed: {
-    ...mapGetters(['jsonData']),
-    taskId: {
-      get() {
-        return this.$store.state.taskId;
-      },
-      set(value) {
-        this.$store.dispatch('setTaskId', value);
-      }
-    }
-  },
-  methods: {
-    async findSearch() {
-      const url = `http://localhost:8000/task/${this.taskId}/status`;  // replace with your API endpoint
-      try {
-        this.buttonText = "Retriveing...";
-        const response = await fetch(url,{
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
-        const jsonData = await response.json();
-
-        //console.log(jsonData);
-        this.$store.dispatch('setJsonData', jsonData);
-        await this.$router.push({ path: '/results' });
-      } catch (error) {
-        this.buttonText = "Find My Search"
-        console.error(error);
-        alert(`There is an error during the search: ${error}`);
-      }
-    }
-  }
-};
-</script>
-
 <template>
-  <div class="container">
-    <form @submit.prevent="findSearch">
-      <div class="form-group">
-        <label for="task_id" class="form-label">Enter Research ID to Retrive Results:</label>
-        <input type="text" id="task_id" v-model="taskId" class="form-control" placeholder="Research ID ..." />
+  <div class="container history-container">
+    <h1 class="display-4 mb-1 fw-bold">ReadSearch GPT</h1>  
+    <h2 class="h3 mb-1 fw-bold" style="font-style: italic;">Historical Research Reports</h2>
+    <div class="card">
+        <div class="card-content">
+          <div v-if="isLoading" class="d-flex justify-content-center align-items-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading queries...</span>
+            </div>
+          </div>
+          <div v-else>
+            <div v-for="(query, id) in queries" :key="id" class="mb-2">
+              <div class="singlecard mb-2">
+                <button class="btn w-100 text-primary query-button" @click="handleQueryClick(id)">
+                  {{ query }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="button-container">
-        <button type="submit" class="btn search-button">{{ buttonText }}</button>
-      </div>
-    </form>
   </div>
 </template>
 
 
+<script>
+
+export default {
+  data() {
+    return {
+      isLoading: true,
+      queries: {}
+    }
+  },
+  async created() {
+    await this.fetchQueries();
+  },
+  computed:{
+    jsonData: {
+        get() {
+            return this.$store.state.jsonData;
+        },
+        set(value) {
+            this.$store.dispatch('setJsonData', value);
+        }
+    }
+  },
+  methods: {
+    async fetchQueries() {
+      const url = "https://api.readsearchgpt.com/queryhistory";
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          credentials: 'include', // to include cookies
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        //console.log(data)
+        if (data === null) {
+          this.queries = {}
+        } else {
+          this.queries = data;
+        }
+        
+        this.isLoading = false;
+      } catch (error) {
+        console.error('API call failed:', error);
+      }
+    },
+    async handleQueryClick(queryId) {
+      const url = "https://api.readsearchgpt.com/historicalresults";  // Replace with your backend URL
+      const queryIdArray = {queryIDs : [queryId]}
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(queryIdArray)
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        //console.log(data);
+        // Do something with the data
+        this.jsonData = data;  // assign jsonData directly
+        this.$router.push({ path: '/searchresults' });
+      } catch (error) {
+        console.error('API call failed:', error);
+      }
+    },
+  },
+};
+</script>
 <style scoped>
-.form-group {
-  max-width: 1000px;
-  margin: auto;
+
+h1, h2 {
+  color: #5781c0;
 }
 
-.form-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: left;
-  font-size: 20px;
+.btn.query-button {
+  color: #5781c0;
+  border: none;
+  background-color: transparent;
 }
 
-.form-control {
-  width: 100%;
-  font-style: italic;
-  padding: 10px;
-  font-size: 18px;
+.btn.query-button:hover {
+  color: #333;
+  background-color: #ddd;
 }
 
-.button-container {
+.singlecard {
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.card {
+    height: calc(100vh - 16rem); /* Adjust as needed */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+}
+.card-content {
+ position: relative;
+ overflow-y: auto;
+ padding: 12px;
+ flex-grow: 1;
+}
+.card-footer {
   display: flex;
   justify-content: center;
-  margin-top: 80px;
+  align-items: center;
 }
-
-.search-button {
-  border-color: #0c952c;
-  color: #0c952c;
-}
-
-.search-button:hover {
+.btn-success {
   background-color: #0c952c;
-  color: #fff;
+  border-color: #0c952c;
+  color: #ffffff;
+  border-radius: 5px; /* Add rounded corners */
+  padding: 5px 10px; /* Add some padding */
+}
+.btn-success:hover {
+  background-color: #006c22;
+  border-color: #006c22;
 }
 </style>

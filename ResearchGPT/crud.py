@@ -1,11 +1,21 @@
 from sqlalchemy.orm import Session
 import models
 
-def create_task(db: Session, task: models.Task):
+def create_research(db: Session, userid):
+    task = models.Task(userid=userid)
     db.add(task)
     db.commit()
     db.refresh(task)
     return task
+
+def create_queries(db: Session, task_id, search_queries):
+    queries = models.Query()
+    for query in search_queries:
+        db_query = queries(task_id = task_id, query = query)
+        db.add(db_query)
+    db.commit()
+    return
+
 
 def get_task(db: Session, task_id: str):
     return db.query(models.Task).filter(models.Task.id == task_id).first()
